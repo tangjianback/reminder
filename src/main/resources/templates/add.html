@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>按钮测试</title>
+</head>
+<body>
+<link href="test.css" rel="stylesheet"type="text/css">
+<div class="mr-cont">
+  <h2 style="text-align: center;">信息录入</h2>
+  <hr width="1000" color="black" >
+  <form style="text-align: center;font-size:28px" method="post" th:action = "${url}" enctype="multipart/form-data">
+    <div style="margin-left: 23%;">
+      <div style="float: left; padding-top:10px" >标题:</div>
+      <div style="float: left">
+<!--        <input type="text" name = "search_title" placeholder="字符串长度为6-20，包含数字和字母"  style="width: 700px;height: 28px">-->
+        <input type="text" name = "search_title" th:value="${title}"  style="width: 700px;height: 28px">
+      </div>
+
+    </div>
+    <br>
+    <div style="margin-left: 23%;clear: both;">
+      <div style="float: left; padding-top:190px" >详细:</div>
+      <div style="float: left">
+        <textarea name="search_content" style="width: 700px;height: 400px" th:text="${content}"></textarea>
+      </div>
+    </div>
+    <br>
+    <div style="margin-left: 23%;clear: both;">
+      <div style="float: left; padding-top:10px" >文件:</div>
+      <div style="float: left">
+        <input name = "uploadFile" type="file" placeholder="选择文件" id="nm" style="width: 700px;height: 28px">
+          <span th:text = "${file}"></span>
+      </div>
+    </div>
+    <div id="btn" align="center" style="margin-left: 6%;clear: both;">
+      <input type="hidden" th:value="${id}" name= "id">
+      <input type="submit" th:value="${add_or_update}">
+    </div>
+  </form>
+
+
+
+</div>
+</body>
+</html>

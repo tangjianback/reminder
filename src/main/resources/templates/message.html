@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<span th:text="${message}" ></span>
+<form th:action="${url}" method="get">
+    <input type="hidden" name = "detail" th:value = "${id}">
+    <input type="submit" th:value = "${button_name}">
+</form>
+</body>
+</html>
