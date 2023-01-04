@@ -8,8 +8,10 @@ import java.util.List;
 
 public class Dao {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-    static final String USER = "root";
+
+//    static final String DB_URL = "jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+    static final String DB_URL = "jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+    static final String USER = "tangjian";
     static final String PASS = "123";
     static  Connection conn = null;
     static Statement stmt = null;

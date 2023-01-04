@@ -31,9 +31,13 @@
 			/*width: 100px;
                   height: 100px;*/
 		}
+		#up_search_right1{
+			float: left;
+			width: 200px;
+		}
 		#up_search_right {
 			float: left;
-
+			width: 200px;
 			/*    background: red;*/
 			/*border-width: 2px;
                   border-style: dashed;
@@ -54,6 +58,15 @@
 			text-align: center;
 		}
 		.button2 {
+			/*    width: 440px;*/
+			/*left: 50%;
+                  top: 15%;*/
+			/*margin-left: -200px;
+                  margin-top: -40px;*/
+			margin-top: 73.3px;
+			text-align: center;
+		}
+		.button3 {
 			/*    width: 440px;*/
 			/*left: 50%;
                   top: 15%;*/
@@ -103,9 +116,9 @@
 			background: #2DD1AF;
 			color: #fff;
 			outline: none;
-			-moz-border-radius: 0px 4px 4px 0px;
-			-webkit-border-radius: 0px 4px 4px 0px;
-			border-radius: 0px 4px 4px 0px;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			border-radius: 4px 4px 4px 4px;
 			-webkit-transition: background 0.3s ease-in-out;
 			-moz-transition: background 0.3s ease-in-out;
 			transition: background 0.3s ease-in-out;
@@ -125,16 +138,41 @@
 			background: #4e72be;
 			color: #fff;
 			outline: none;
-			-moz-border-radius: 4px 0px 0px 4px;
-			-webkit-border-radius: 4px 0px 0px 4px;
-			border-radius: 4px 0px 0px 4px;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			border-radius: 4px 4px 4px 4px;
+			-webkit-transition: background 0.3s ease-in-out;
+			-moz-transition: background 0.3s ease-in-out;
+			transition: background 0.3s ease-in-out;
+		}
+		.search-btn2 {
+			display: block;
+			height: 40px;
+			width: 80px;
+			padding: 0;
+			float: left;
+			margin: 0;
+			border: none;
+			cursor: pointer;
+			letter-spacing: 2px;
+			font-size: 14px;
+			font-family: 微软雅黑;
+			background: #b86029;
+			color: #fff;
+			outline: none;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			border-radius: 4px 4px 4px 4px;
 			-webkit-transition: background 0.3s ease-in-out;
 			-moz-transition: background 0.3s ease-in-out;
 			transition: background 0.3s ease-in-out;
 		}
 
+		.search-btn2:hover {
+			background: #793f1a;
+		}
 		.search-btn1:hover {
-			background: #29BC95;
+			background: #243861;
 		}
 		.search-btn:hover {
 			background: #29BC95;
@@ -168,9 +206,9 @@
 
 		}
 		#search-suggest1 {
-			/*border-width: 2px;
-                  border-style: dashed;
-                  border-color: green;*/
+			border-width: 0px;
+			border-style: dashed;
+			border-color: green;
 			clear: both;
 			float: left;
 			width: 1200px;
@@ -195,6 +233,43 @@
            color: green;
            word-break:break-all;
          }*/
+		.tooltip {
+			position: relative;
+			display: inline-block;
+		}
+
+		.tooltip .tooltiptext {
+			visibility: hidden;
+			width: 140px;
+			background-color: #555;
+			color: #fff;
+			text-align: center;
+			border-radius: 6px;
+			padding: 5px;
+			position: absolute;
+			z-index: 1;
+			bottom: 150%;
+			left: 50%;
+			margin-left: -75px;
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+
+		.tooltip .tooltiptext::after {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			margin-left: -5px;
+			border-width: 5px;
+			border-style: solid;
+			border-color: #555 transparent transparent transparent;
+		}
+
+		.tooltip:hover .tooltiptext {
+			visibility: visible;
+			opacity: 1;
+		}
 	</style>
 </head>
 <body>
@@ -209,22 +284,38 @@
 	<div id = "up_search_right">
 		<form class="button2" method="get" action="delete_op">
 			<input type="hidden" name = "id" th:value ="${id}">
-			<input type="submit" class="search-btn" value="删除">
+			<input type="submit" class="search-btn" value="删除" onclick="return clicked();">
+		</form>
+	</div>
+	<div id = "up_search_right1">
+		<form class="button3" method="get" action="index">
+			<input type="submit" class="search-btn2" value="主页">
 		</form>
 	</div>
 </div>
 
 
-
-
 <div class="suggest" id="search-suggest1">
 	<ul>
-		<div ><li >标题<br><span style = "font-size:20px;" th:text = "${title}"></span></li> </div>
-		<div style="margin-top: 10px;">
+		<div style="border-width: 0px;
+                  border-style: dashed;
+                  border-color: red;"><li ><span style = "font-size:20px;" th:text = "${title}">标题</span></li> </div>
+		<div style="margin-top: 10px;border-width: 0px;
+                  border-style: dashed;
+                  border-color: red;
+                  position: relative;">
 			<li>
-				<div>内容</div>
-				<div>
-    <pre style="
+				<div class="tooltip" style="float:left; border-width: 0px;border-color:red;border-style: solid; float: right; margin-bottom: -25px; opacity: 0.8;">
+
+					<button onclick="myFunction()" onmouseout="outFunc()">
+						<span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
+						Copy text
+					</button>
+
+				</div>
+
+				<div style="clear: both;">
+    <pre id = "myInput" style="
     margin: 0 0 1em 0;
     padding: 15px 0;
     background: #F0F0F0;
@@ -233,13 +324,15 @@
     font-size: 14px;
     border-radius: 4px;
     font-size: 16px;
-   " th:text = "${content}">
+
+   " th:text = "${content}"> 内容
 </pre>
+					<!-- <input type="text" value="Hello World" id="myInput"> -->
 				</div>
 			</li>
 		</div>
 
-		<div style="float: left;margin-top: 10px;"><li>文件 <span th:text = "${file_short}">adsafsdf.html</span></li></div>
+		<div style="float: left;margin-top: 10px;"><li><span th:text = "${file_short}"></span></li></div>
 
 		<div style="float: left;margin-top: 10px;">
 			<form action="download" method="get">
@@ -252,13 +345,29 @@
 <script>
 	var oSearchText = document.getElementById('search-text');
 	var oSearchSuggest = document.getElementById('search-suggest');
+	function myFunction() {
+		var copyText = document.getElementById("myInput").innerText;
+		// alert(copyText.value)
+		// copyText.select();
+		// copyText.setSelectionRange(0, 99999);
+		navigator.clipboard.writeText(copyText);
+
+		var tooltip = document.getElementById("myTooltip");
+		tooltip.innerHTML = "Copied: Complete";
+	};
+
+	function outFunc() {
+		var tooltip = document.getElementById("myTooltip");
+		tooltip.innerHTML = "Copy to clipboard";
+	};
 
 	function textAreaAdjust(element) {
 		element.style.height = "1px";
 		element.style.height = (25+element.scrollHeight)+"px";
 	};
-
-
+	function clicked() {
+		return confirm('确认删除?');
+	};
 	document.addEventListener('keyup', function (e) {
 		e = e || event;
 

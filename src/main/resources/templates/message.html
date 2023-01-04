@@ -5,10 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-<span th:text="${message}" ></span>
-<form th:action="${url}" method="get">
-    <input type="hidden" name = "detail" th:value = "${id}">
-    <input type="submit" th:value = "${button_name}">
-</form>
+<div style="margin-left: 10%;margin-top: 10%;">
+    <div style="margin-bottom: 10px;">
+        <span th:text="${message}" th:style = "'font-size:25px;color:'+${color}+';'"></span>
+    </div>
+    <form th:action="${url}" method="get">
+        <input type="hidden" name = "detail" th:value = "${id}">
+        <input type="submit" th:value = "${button_name}" style="height: 30px;width: 80px;">
+    </form>
+</div>
 </body>
 </html>

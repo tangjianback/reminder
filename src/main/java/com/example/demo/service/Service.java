@@ -3,6 +3,8 @@ package com.example.demo.service;
 import com.example.demo.Dao.Dao;
 import com.example.demo.object.Item;
 import com.example.demo.object.Item_query;
+import com.example.demo.object.LUR_imp;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -12,29 +14,35 @@ import java.util.*;
 
 public class Service {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
-    public int get_id_by_title(String title)
+    LUR_imp lru_imp = new LUR_imp();
+    public List<Integer> get_id_by_title(String title)
     {
-        List<Integer> id_list = Dao.get_id_by_title(title);
-        if(id_list.size()==1)
-            return id_list.get(0);
-        else
-        {
-            if(id_list.size()==0)
-                System.out.println("no such a title");
-            else if(id_list.size()>1)
-                System.out.println("multiple title");
-            return -1;
-        }
+        List<Integer> res = Dao.get_id_by_title(title);
+        if(!res.isEmpty())
+            lru_imp.lru_add(res.get(0));
+        return res;
+    }
+    public void set_message(Model model, String message, String url, String button_value,String message_color)
+    {
+        model.addAttribute("message",message);
+        model.addAttribute("color",message_color);
+        model.addAttribute("url",url);
+        model.addAttribute("button_name",button_value);
+        return;
     }
     public Item querry_by_id(Item i){
-        return Dao.query_by_id(i);
+        lru_imp.lru_add(i.getId());
+        Item res =  Dao.query_by_id(i);
+        return res;
     }
     public boolean alter_item(Item i)
     {
+        lru_imp.lru_add(i.getId());
         return Dao.alter(i);
     }
     public boolean delete_item(Item i)
     {
+        lru_imp.lru_del(i.getId());
         return Dao.delete(i);
     }
     public boolean add_item(Item i)
@@ -169,5 +177,10 @@ public class Service {
                 return -3;
             }
         }
+    }
+
+    public List<Item> get_lru_list()
+    {
+        return this.lru_imp.get_recent_viewed_items();
     }
 }
