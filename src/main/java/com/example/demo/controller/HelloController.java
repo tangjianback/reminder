@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.Dao.Dao;
+import com.example.demo.object.File_item;
 import com.example.demo.object.Item;
 import com.example.demo.service.Service;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,20 +12,18 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ContentDisposition;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -34,6 +33,19 @@ public class HelloController implements ApplicationContextAware {
             ;
     Service gloabal_service = new Service();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
+    @RequestMapping(value = "/test1")
+    public String test1(Model model, HttpServletRequest request) {
+        return "test";
+    }
+    @RequestMapping(value = "/test")
+    public String test(Model model, HttpServletRequest request) {
+        System.out.println(request.getParameter("interest"));
+        for(String s: request.getParameterValues("interest"))
+        {
+            System.out.println(s);
+        }
+        return "message";
+    }
     @RequestMapping(value = "/index")
     public String index(Model model) {
         model.addAttribute("test","nihao");
@@ -104,21 +116,29 @@ public class HelloController implements ApplicationContextAware {
             String file = querry_item.getFile();
             String id = querry_item.getId()+"";
 
-            model.addAttribute("add_or_update","更新");
-            model.addAttribute("url","update_op");
             model.addAttribute("title",title);
             model.addAttribute("content",content);
-            // if it has a corresponding file
-            if(file.strip()!="")
-                model.addAttribute("file",file.split("_")[1]);
-            else
-                model.addAttribute("file","No File");
             model.addAttribute("id",id);
-            return "add";
+
+            // if it has a corresponding file
+            String file_name = querry_item.getFile().strip();
+            List<File_item> file_lists =  new LinkedList<File_item>();
+            for(String item_string: file_name.split(";"))
+            {
+                if(!item_string.strip().equals(""))
+                    file_lists.add(new File_item(item_string.strip(),item_string.strip().split("_")[1]));
+            }
+            model.addAttribute("file_list",file_lists );
+            return "update";
         }
     }
     @RequestMapping(value = "/add_op")
-    public String add_op(Model model, HttpServletRequest request, MultipartFile uploadFile) {
+    public String add_op(Model model, HttpServletRequest request, @RequestParam("uploadFile") MultipartFile[] files) {
+        if(files == null)
+        {
+            System.out.println("null?");
+            return "message";
+        }
         String title = request.getParameter("search_title").strip();
         String content = request.getParameter("search_content").strip();
         // it no parameter
@@ -137,11 +157,12 @@ public class HelloController implements ApplicationContextAware {
         List<Integer> temp_list =  gloabal_service.get_id_by_title(title);
         if(!temp_list.isEmpty())
         {
-            gloabal_service.set_message(model,"title already exists","index","返回主页","red");
+            gloabal_service.set_message(model,"标题已经存在","index","返回主页","red");
             return "message";
         }
-        int store_res = gloabal_service.store(uploadFile,title,content);
-        String message;
+        //store multiple files
+        int store_res = gloabal_service.store(files,title,content);
+        String message = null;
         switch (store_res){
             case -3:
                 message = "store file fail";
@@ -187,11 +208,12 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"id is not a integer","index","返回主页","red");
             return "message";
         }
+
         // delete the  corresponding file
-        File f = new File(querry_item.getFile());
-        if(f.exists())
-            f.delete();
-        // if delete success
+        if(!gloabal_service.delete_files_from_string(querry_item.getFile().strip()))
+            System.out.println("warning: some file is not in the dir");
+
+        //delete in the sql
         if(gloabal_service.delete_item(new Item(Integer.parseInt(del_id.strip()),"","","")))
             gloabal_service.set_message(model,"delete "+del_id+"success...","index","返回主页","darkgoldenrod");
         else
@@ -199,7 +221,7 @@ public class HelloController implements ApplicationContextAware {
         return "message";
     }
     @RequestMapping(value = "/update_op")
-    public String update_op(Model model, HttpServletRequest request,MultipartFile uploadFile) {
+    public String update_op(Model model, HttpServletRequest request,@RequestParam("uploadFiles") MultipartFile[] files) {
         String title = request.getParameter("search_title").strip();
         String content = request.getParameter("search_content").strip();
         String id = request.getParameter("id");
@@ -232,7 +254,7 @@ public class HelloController implements ApplicationContextAware {
             return "message";
         }
         String message;
-        int update_res = gloabal_service.update(uploadFile,title,content,Integer.parseInt(id.strip()));
+        int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"));
         switch (update_res){
             case -3:
                 message = "store file fail";
@@ -244,14 +266,19 @@ public class HelloController implements ApplicationContextAware {
                 message = "dir creating fail";
                 break;
             case 0:
-                message = "修改成功(未上传文件)";
+                message = "修改成功(文件列表不变)";
+                break;
+            case 1:
+                message = "修改成功(增加文件)";
+                break;
+            case 2:
+                message = "修改成功(删除文件)";
                 break;
             default:
-                message = "修改成果(已上传文件)";
+                message = "修改成功(增加，删除文件)";
                 break;
         }
-
-        // store successful
+        // update successful
         if(update_res >=0)
         {
             model.addAttribute("id",id);
@@ -287,35 +314,70 @@ public class HelloController implements ApplicationContextAware {
             return "message";
         }
 
+        model.addAttribute("id",query_item.getId()+"");
         model.addAttribute("title",query_item.getTitle()+"");
         model.addAttribute("content",query_item.getContent()+"");
-        String file_name = query_item.getFile();
-        if(file_name == "")
+        String file_name = query_item.getFile().strip();
+        List<File_item> file_lists =  new LinkedList<File_item>();
+        for(String item_string: file_name.split(";"))
         {
-            model.addAttribute("file","");
-            model.addAttribute("file_short","");
+            if(!item_string.strip().equals(""))
+            {
+                String []file_split_names = item_string.split("_");
+                if(file_split_names.length == 2)
+                    file_lists.add(new File_item(item_string.strip(),file_split_names[1]));
+                else
+                    System.out.println("invalid file name");
+            }
         }
-        else
-        {
-            model.addAttribute("file",file_name);
-            model.addAttribute("file_short",file_name.split("_")[1]);
-        }
-        model.addAttribute("id",query_item.getId()+"");
+        model.addAttribute("file_list",file_lists );
         return "item";
     }
 
-    @RequestMapping(path = "/download", method = RequestMethod.GET)
-    public ResponseEntity<Resource> download(HttpServletRequest request) throws IOException {
-        String file_name = request.getParameter("file").strip();
-        // if the no valid file name
-        if(file_name==null || file_name.strip().equals(""))
+    @RequestMapping(path = "/downloadAll", method = RequestMethod.GET)
+    public ResponseEntity<Resource> downloadAll(HttpServletRequest request) throws IOException {
+        String id = request.getParameter("id").strip();
+        // if id is null or empty
+        if(id== null)
         {
+            System.out.println("id is null");
             return null;
         }
-        // file does not exist
-        File file= new File(file_name);
+        int id_int ;
+        try{
+            id_int = Integer.parseInt(id.strip());
+        }catch (NumberFormatException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        // no id in database
+        Item res = gloabal_service.querry_by_id(new Item(id_int,"","",""));
+        if(res == null)
+        {
+            System.out.println("no id in database");
+            return  null;
+        }
+        String files_string = res.getFile();
+        if(files_string.equals(""))
+        {
+            System.out.println("current item has no file");
+            return null;
+        }
+        // get files list
+        String[] files_string_list = files_string.split(";");
+        List<String> file_list = new LinkedList<String>();
+        for(String i : files_string_list)
+        {
+            if(!i.strip().equals(""))
+                file_list.add(i.strip());
+        }
+
+        // get the zip file
+        File file= gloabal_service.zip_multiple_fiels(file_list);
         if(!file.exists())
         {
+            System.out.println("no zipped file exist");
             return null;
         }
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
@@ -323,7 +385,7 @@ public class HelloController implements ApplicationContextAware {
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+file_name.split("_")[1]);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+file.getName());
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentLength(file.length())
@@ -331,6 +393,28 @@ public class HelloController implements ApplicationContextAware {
                 .body(resource);
     }
 
+    @RequestMapping(path = "/download", method = RequestMethod.GET)
+    public ResponseEntity<Resource> download(Model model, HttpServletRequest request) throws IOException {
+        String file_name = request.getParameter("file").strip();
+        // get the file
+        File file= new File(file_name.strip());
+        if(!file.exists())
+        {
+            System.out.println("no file named "+file_name+" exist");
+            return null;
+        }
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+ URLEncoder.encode(file.getName(), "UTF-8"));
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
 
     @RequestMapping(value = "/close")
     public String close() {

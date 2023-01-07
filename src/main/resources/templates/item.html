@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="UTF-8">
-	<title>serchInput</title>
+	<title>详细信息</title>
 	<style>
 		html,
 		body {
@@ -331,15 +331,25 @@
 				</div>
 			</li>
 		</div>
+		<li>
+			<div style="float: left;border-width: 0px;border-style: solid;">
+				<div style="float: left;margin-top: 10px;">
+					<form action="downloadAll" method="get">
+						 <input type="hidden" name = "id" th:value="${id}">
+						<input type="submit"  value="下载所有文件" th:disabled='${#lists.isEmpty(file_list)?"true":"false"}'>
+					</form>
+				</div>
 
-		<div style="float: left;margin-top: 10px;"><li><span th:text = "${file_short}"></span></li></div>
+				<div style="float: left;margin-top: 10px; margin-left: 5px; clear:both;" th:each="c, State : ${file_list}">
+					<a th:href="'download?file='+${c.file}"th:text="${c.short_name}"></a>
+					<!-- <span th:text = "${file_short}">a.text</span> -->
+				</div>
 
-		<div style="float: left;margin-top: 10px;">
-			<form action="download" method="get">
-				<input type="hidden" name = "file" th:value="${file}">
-				<input type="submit"  value="下载" th:disabled='${file==""?"true":"false"}'>
-			</form>
-		</div>
+			</div>
+		</li>
+
+
+
 	</ul>
 </div>
 <script>

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>serchInput</title>
+    <title>备忘录主页</title>
     <style>
         html,
         body {
@@ -16,7 +16,7 @@
             border-style: dashed;
             border-color: red;*/
             margin-left: 30%;
-            margin-top: 4%;
+            margin-top: 10px;
             /*width: 100px;
             height: 100px;*/
         }
@@ -173,7 +173,7 @@
             clear: both;
             float: left;
             width: 1200px;
-            margin-left: 120px;
+            margin-left: 50px;
             display: block;
             background: #fff;
 
@@ -214,13 +214,19 @@
 </div>
 
 
-<div id="search-suggest1">
+
+<div id="search-suggest1" style="border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px">
     <ul th:each="c, State : ${item_list}">
         <li >
             <a th:href="'detail?detail='+${c.Id}" th:text="${c.title}"></a>
         </li>
     </ul>
 </div>
+<div style="float: right;border-width: 2px;border-color: red;border-style: dashed;width: 400px; height: 100px;margin-right: 65px">
+<span style="color: red;">TO DO.</span>
+</div>
+
+
 
 <script>
     var oSearchText = document.getElementById('search-text');

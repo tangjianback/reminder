@@ -3,6 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>信息录入</title>
+    <style>
+        #add_button:hover {
+            background: #793f1a;
+        }
+        #add_button {
+            display: block;
+            height: 40px;
+            width: 100px;
+            padding: 0;
+            float: left;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-size: 18px;
+            font-family: 微软雅黑;
+            background: #b86029;
+            color: #fff;
+            outline: none;
+            -moz-border-radius: 4px 4px 4px 4px;
+            -webkit-border-radius: 4px 4px 4px 4px;
+            border-radius: 4px 4px 4px 4px;
+            -webkit-transition: background 0.3s ease-in-out;
+            -moz-transition: background 0.3s ease-in-out;
+            transition: background 0.3s ease-in-out;
+        }
+    </style>
 </head>
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -31,13 +58,13 @@
         <div style="margin-left: 12%;clear: both;">
             <div style="float: left; padding-top:10px" >文件:</div>
             <div style="float: left">
-                <input name = "uploadFile" type="file" placeholder="选择文件" id="nm" style="width: 1000px;height: 28px">
+                <input name = "uploadFile" type="file" placeholder="选择文件" id="nm" style="width: 1000px;height: 28px" multiple>
                 <span th:text = "${file}"></span>
             </div>
         </div>
         <div id="btn" align="center" style="margin-left: 3%;clear: both;">
             <input type="hidden" th:value="${id}" name= "id">
-            <input type="submit" th:value="${add_or_update}" style="width:100px;height:30px">
+            <input type="submit" value="新建" id = "add_button" style="width:100px;height:30px; margin-left: 45%">
         </div>
     </form>
 
