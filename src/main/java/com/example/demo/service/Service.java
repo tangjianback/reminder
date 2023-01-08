@@ -4,13 +4,11 @@ import com.example.demo.Dao.Dao;
 import com.example.demo.object.Item;
 import com.example.demo.object.Item_query;
 import com.example.demo.object.LUR_imp;
+import com.example.demo.object.Quick_item;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -204,14 +202,15 @@ public class Service {
         // sql successful
         if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files))))
         {
+            boolean del_file_flag = (del_files==null || del_files.length== 0)? false:true;
             // add and delte
-            if(add_file_flag && del_files.length!= 0)
+            if(add_file_flag && del_file_flag)
                 return 3;
             // no file update
-            if(!add_file_flag && del_files.length==0)
+            if(!add_file_flag && !del_file_flag)
                 return 0;
             // only add file
-            if(add_file_flag && del_files.length==0)
+            if(add_file_flag && !del_file_flag)
             {
                 return 1;
             }
@@ -294,5 +293,70 @@ public class Service {
             res+=i+";";
         }
         return  res;
+    }
+    public List<Quick_item> file_to_quick_list()
+    {
+        List<Quick_item> res = new LinkedList<Quick_item>();
+        File quick_file =  new File("uploadFile/quick.txt");
+        if(!quick_file.isFile() || !quick_file.exists())
+        {
+            return res;
+        }
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(quick_file));
+            String line = reader.readLine();
+            while (line != null) {
+                if(!line.strip().equals(""))
+                {
+                    res.add( string_to_quick(line.strip()));
+                }
+                // read next line
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+
+    public void quick_list_to_file(List<Quick_item> quick_list)
+    {
+        File quick_file =  new File("uploadFile/quick.txt");
+        File folder =  new File("uploadFile");
+        if(!folder.isDirectory() && folder.mkdirs() == false)
+        {
+            System.out.println("can not create DIR");
+            return;
+        }
+       // write
+        try{
+            if(!quick_file.exists()){
+                quick_file.createNewFile();
+            }
+            FileWriter fileWritter = new FileWriter(quick_file);
+            for(Quick_item i: quick_list)
+            {
+                fileWritter.write(quick_to_string(i));
+                fileWritter.write(System.lineSeparator());
+            }
+            fileWritter.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    public String quick_to_string(Quick_item i)
+    {
+        return i.getContent() +"**splitline**"+i.getId()+"**splitline**"+i.getUuid();
+    }
+    public Quick_item string_to_quick(String s)
+    {
+        String[] arr = s.strip().split("\\*\\*splitline\\*\\*");
+        if(arr.length!=3)
+            return null;
+        else
+            return new Quick_item(arr[0],arr[1],arr[2]);
     }
 }

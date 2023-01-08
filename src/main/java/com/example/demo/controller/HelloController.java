@@ -2,43 +2,62 @@ package com.example.demo.controller;
 import com.example.demo.Dao.Dao;
 import com.example.demo.object.File_item;
 import com.example.demo.object.Item;
+import com.example.demo.object.Quick_item;
 import com.example.demo.service.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ContentDisposition;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
 public class HelloController implements ApplicationContextAware {
-    private ApplicationContext context = null
-            ;
+    private ApplicationContext context = null;
+    public static boolean need_close = false;
     Service gloabal_service = new Service();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
-    @RequestMapping(value = "/test1")
-    public String test1(Model model, HttpServletRequest request) {
-        return "test";
+
+    @RequestMapping(value = "/ajax_delete_op")
+    public ResponseEntity<String> ajax_delete_op(Model model, HttpServletRequest request) {
+        String delete_str = request.getParameter("delete_uuids");
+        if(delete_str == null || delete_str.strip().equals(""))
+        {
+            return new ResponseEntity<>("no delete needed", HttpStatus.OK);
+        }
+        String [] del_id = delete_str.split(";");
+        List<Quick_item> quick_itemList = gloabal_service.file_to_quick_list();
+        for(String need_del_id : del_id)
+        {
+            if(need_del_id.strip().equals(""))
+                continue;
+            for(Quick_item i: quick_itemList)
+            {
+                if(i.getUuid().equals(need_del_id.strip()))
+                {
+                    quick_itemList.remove(i);
+                    break;
+                }
+            }
+        }
+        gloabal_service.quick_list_to_file(quick_itemList);
+        return  new ResponseEntity<>("okk", HttpStatus.OK);
     }
-    @RequestMapping(value = "/test")
-    public String test(Model model, HttpServletRequest request) {
+    @RequestMapping(value = "/test1")
+    public String test(HttpServletRequest request) {
         System.out.println(request.getParameter("interest"));
         for(String s: request.getParameterValues("interest"))
         {
@@ -48,17 +67,16 @@ public class HelloController implements ApplicationContextAware {
     }
     @RequestMapping(value = "/index")
     public String index(Model model) {
-        model.addAttribute("test","nihao");
         List<Item> item_list = gloabal_service.get_lru_list();
         model.addAttribute("item_list",item_list);
+
+        List<Quick_item> test_quick= gloabal_service.file_to_quick_list();
+        model.addAttribute("quick_list",test_quick);
         return "index";
     }
     @RequestMapping(value = "/")
     public String index_default(Model model) {
-        model.addAttribute("test","nihao");
-        List<Item> item_list = gloabal_service.get_lru_list();
-        model.addAttribute("item_list",item_list);
-        return "index";
+        return "forward:/index";
     }
     @RequestMapping(value = "/search")
     public String search(Model model, HttpServletRequest request) {
@@ -76,6 +94,9 @@ public class HelloController implements ApplicationContextAware {
             item_list = gloabal_service.query_key_word(para_array);
         }
         model.addAttribute("item_list",item_list);
+
+        List<Quick_item> test_quick= gloabal_service.file_to_quick_list();
+        model.addAttribute("quick_list",test_quick);
         return "index";
     }
     @RequestMapping(value = "/add")
@@ -247,12 +268,25 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"id is not parseable","index","返回主页","red");
             return "message";
         }
+        Item query_item = gloabal_service.querry_by_id(new Item(id_int,"","",""));
         // if id is not in the database
-        if(gloabal_service.querry_by_id(new Item(id_int,"","","")) == null)
+        if(query_item== null)
         {
             gloabal_service.set_message(model,"id is not in the database","index","返回主页","red");
             return "message";
         }
+        // check the updated title is already in the database
+        List<Integer> query_title =  gloabal_service.get_id_by_title(title);
+        if(!query_title.isEmpty())
+        {
+            if(query_title.size() > 1)
+                System.out.println("warning ! same title "+title);
+            if(query_title.get(0) != id_int)
+            {
+                gloabal_service.set_message(model,"the title is already in the database","index","返回主页","red");
+            }
+        }
+
         String message;
         int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"));
         switch (update_res){
@@ -415,15 +449,117 @@ public class HelloController implements ApplicationContextAware {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
+    @RequestMapping(value = "/quick_del")
+    public String quick_del_op(Model model, HttpServletRequest request)
+    {
+        String [] del_id = request.getParameterValues("del_quick");
+        List<Quick_item> quick_itemList = gloabal_service.file_to_quick_list();
+        for(String need_del_id : del_id)
+        {
+            for(Quick_item i: quick_itemList)
+            {
+                if(i.getUuid().equals(need_del_id.strip()))
+                {
+                    quick_itemList.remove(i);
+                    break;
+                }
+            }
+        }
+        gloabal_service.quick_list_to_file(quick_itemList);
+        return "forward:/index";
+    }
+    @RequestMapping(value = "/quick_add")
+    public String quick_add(Model model, HttpServletRequest request)
+    {
+        String add_type = request.getParameter("add_type");
+        if(add_type ==  null || add_type.strip().equals(""))
+        {
+            gloabal_service.set_message(model,"no add_type","index","回到主页","red");
+            return "message";
+        }
+        // bonding
+        if(add_type.strip().equals("0"))
+        {
+            // id exist?
+            String id = request.getParameter("id");
+            if(id== null || id.strip().equals(""))
+            {
+                gloabal_service.set_message(model,"no valid id","index","回到主页","red");
+                return "message";
+            }
+            // id valid?
+            int id_int;
+            try{
+                id_int = Integer.parseInt(id.strip());
+            }catch (NumberFormatException e)
+            {
+                e.printStackTrace();
+                gloabal_service.set_message(model,"id is invalid","index","回到主页","red");
+                return "message";
+            }
+            // id is in database?
+            Item query_item=  gloabal_service.querry_by_id(new Item(id_int,"","",""));
+            if(query_item == null)
+            {
+                gloabal_service.set_message(model,"id is not in database","index","回到主页","red");
+                return "message";
+            }
+            // add to model
+            model.addAttribute("title",query_item.getTitle());
+            model.addAttribute("id",query_item.getId()+"");
+            return "quickadd";
+        }
+        // no bonding add
+        else
+        {
+            model.addAttribute("title","");
+            model.addAttribute("id","-1");
+            return "quickadd";
+        }
+    }
+    @RequestMapping(value = "/quick_add_op")
+    public String quick_add_op(Model model, HttpServletRequest request)
+    {
+        String bonding_id = request.getParameter("id");
+        String add_title = request.getParameter("title");
+        if(add_title ==  null || add_title.strip().equals(""))
+        {
+            gloabal_service.set_message(model,"title is empty","index","回到主页","red");
+            return "message";
+        }
+        Quick_item new_quick  = null;
+        // bonding
+        if(bonding_id !=null && !bonding_id.strip().equals(""))
+        {
+            new_quick = new Quick_item(add_title.strip(),bonding_id.strip(), UUID.randomUUID().toString());
+        }
+        else
+            new_quick = new Quick_item(add_title.strip(),"-1", UUID.randomUUID().toString());
+        // store to file
+        List<Quick_item> quick_itemList = gloabal_service.file_to_quick_list();
+        quick_itemList.add(new_quick);
+        gloabal_service.quick_list_to_file(quick_itemList);
+        return "forward:/index";
+    }
+
 
     @RequestMapping(value = "/close")
-    public String close() {
-        Dao.close_connection();
-        System.out.println("clear resource");
-//        ConfigurableApplicationContext ctx = (ConfigurableApplicationContext) context;
-//        ctx.registerShutdownHook();
-//        ctx.close();
-        return "debug";
+    public String close(Model model, HttpServletRequest request) {
+        String message = "";
+        if(HelloController.need_close)
+        {
+            Dao.close_connection();
+            message =" close okk";
+            HelloController.need_close = false;
+            System.out.println("clear resource test "+ request.getRequestURI().toString());
+        }
+        else
+        {
+            System.out.println("no need to close the sql connection");
+            message = " close already";
+        }
+        model.addAttribute("message",message);
+        return "message";
     }
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

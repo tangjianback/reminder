@@ -35,6 +35,14 @@
 			float: left;
 			width: 200px;
 		}
+		#up_search_right2{
+			/*border-color: red;*/
+			/*border-width: 1px;*/
+			/*border-style: dashed;*/
+			/*margin-top:74px;*/
+			float: left;
+			width: 200px;
+		}
 		#up_search_right {
 			float: left;
 			width: 200px;
@@ -67,6 +75,15 @@
 			text-align: center;
 		}
 		.button3 {
+			/*    width: 440px;*/
+			/*left: 50%;
+                  top: 15%;*/
+			/*margin-left: -200px;
+                  margin-top: -40px;*/
+			margin-top: 73.3px;
+			text-align: center;
+		}
+		.button4 {
 			/*    width: 440px;*/
 			/*left: 50%;
                   top: 15%;*/
@@ -167,7 +184,31 @@
 			-moz-transition: background 0.3s ease-in-out;
 			transition: background 0.3s ease-in-out;
 		}
-
+		.search-btn3 {
+			display: block;
+			height: 40px;
+			width: 80px;
+			padding: 0;
+			float: left;
+			margin: 0;
+			border: none;
+			cursor: pointer;
+			letter-spacing: 2px;
+			font-size: 14px;
+			font-family: 微软雅黑;
+			background: #ba6ac4;
+			color: #fff;
+			outline: none;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			border-radius: 4px 4px 4px 4px;
+			-webkit-transition: background 0.3s ease-in-out;
+			-moz-transition: background 0.3s ease-in-out;
+			transition: background 0.3s ease-in-out;
+		}
+		.search-btn3:hover {
+			background: #b318c5;
+		}
 		.search-btn2:hover {
 			background: #793f1a;
 		}
@@ -274,7 +315,7 @@
 </head>
 <body>
 
-<div id = "up_search">
+<div id = "up_search" style="border-style: dashed;border-width: 0px;border-color: red; width: 1000px">
 	<div id = "up_search_left">
 		<form class="button1" method="get" action="update">
 			<input type="hidden" name = "id" th:value ="${id}">
@@ -290,6 +331,14 @@
 	<div id = "up_search_right1">
 		<form class="button3" method="get" action="index">
 			<input type="submit" class="search-btn2" value="主页">
+		</form>
+	</div>
+	<div id = "up_search_right2">
+		<form class="button4" method="get" action="quick_add">
+			<input type="hidden" name="id" th:value="${id}">
+<!--			0: bonding add-->
+			<input type="hidden" name="add_type" value="0">
+			<input type="submit" class="search-btn3" value="待办">
 		</form>
 	</div>
 </div>
@@ -347,9 +396,6 @@
 
 			</div>
 		</li>
-
-
-
 	</ul>
 </div>
 <script>

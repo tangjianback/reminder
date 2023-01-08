@@ -131,9 +131,59 @@
             -moz-transition: background 0.3s ease-in-out;
             transition: background 0.3s ease-in-out;
         }
+        .search-btn_small1 {
+            display: block;
+            height: 20px;
+            width: 40px;
+            padding: 0;
+            float: left;
+            margin: 0;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-family: 微软雅黑;
+            background: #ce71d9;
+            color: #fff;
+            outline: none;
+            -moz-border-radius: 4px 4px 4px 4px;
+            -webkit-border-radius: 4px 4px 4px 4px;
+            border-radius: 4px 4px 4px 4px;
+            -webkit-transition: background 0.3s ease-in-out;
+            -moz-transition: background 0.3s ease-in-out;
+            transition: background 0.3s ease-in-out;
+        }
+        .search-btn_small2 {
+            display: block;
+            height: 20px;
+            width: 40px;
+            padding: 0;
+            float: left;
+            margin: 0;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-family: 微软雅黑;
+            background: #63c090;
+            color: #fff;
+            outline: none;
+            -moz-border-radius: 4px 4px 4px 4px;
+            -webkit-border-radius: 4px 4px 4px 4px;
+            border-radius: 4px 4px 4px 4px;
+            -webkit-transition: background 0.3s ease-in-out;
+            -moz-transition: background 0.3s ease-in-out;
+            transition: background 0.3s ease-in-out;
+        }
+        .search-btn_small2:hover {
+            background: #21a862;
+        }
+        .search-btn_small1:hover {
+            background: #c22ac0;
+        }
 
         .search-btn1:hover {
-            background: #29BC95;
+            background: #4053be;
         }
         .search-btn:hover {
             background: #29BC95;
@@ -195,6 +245,23 @@
             word-break:break-all;
             /*		overflow:hidden;*/
         }
+        .jiange_on{
+            text-decoration: line-through;
+            text-decoration-color: red;
+            color: #a5a6a5;
+        }
+        .jiange_off{
+            text-decoration: none;
+            color: black;
+        }
+        .jiange_not_url{
+            pointer-events:none;
+        }
+        .jiange_debug{
+            border-style: dashed;
+            border-width: 0px;
+            border-color: red;
+        }
     </style>
 </head>
 <body>
@@ -222,8 +289,54 @@
         </li>
     </ul>
 </div>
-<div style="float: right;border-width: 2px;border-color: red;border-style: dashed;width: 400px; height: 100px;margin-right: 65px">
-<span style="color: red;">TO DO.</span>
+
+<div style="float: right;border-width: 0px;border-color: red;border-style: dashed;width: 400px;margin-right: 65px">
+    <div class="list" style="width:400px;border-style: solid;border-color: red;border-width: 0px;">
+        <div style="float: left;border-width: 0px;border-color: red;border-style: dashed; margin-left: 33%;font-size: 20px;font-weight: bold"> 待办事项</div>
+        <form action="quick_del" method="post">
+
+        <div  style="float: left; width: 400px;"  th:each="c, State : ${quick_list}">
+            <div class="jiange_debug" style="float: left">
+                <div style="float: left" class="jiange_debug"><input class="input_check"  th:id="${c.uuid}" type="checkbox"  th:value="${c.uuid}"  name="del_quick" th:onchange = "check_line(this.getAttribute('id'))"></div>
+                <div style="float: left; width: 362px; margin-left: 10px;"
+                     th:class="${c.id=='-1'?'jiange_debug jiange_not_url':'jiange_debug'}">
+                    <a  style = "word-wrap:break-word;" class="jiange_off" th:id="${c.uuid}+'jiange'"  th:href="'detail?detail='+${c.id}" th:text="${c.content}"></a></div>
+                <div style="clear: both"></div>
+            </div>
+        </div>
+
+<!--            <div style="float: left; width: 400px;" >-->
+<!--                <div class="jiange_debug" style="float: left">-->
+<!--                    <div style="float: left" class="jiange_debug"><input class="input_check" type="checkbox"  value="1231231" onchange="check_line('test')"></div>-->
+<!--                    <div style="margin-left:10px;float: left; width: 362px" class="jiange_debug jiange_not_url"><a  style = "word-wrap:break-word; pointer-events:none" class="jiange_off" id = "testjiange"  href="/" >nihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihao</a></div>-->
+<!--                    <div style="clear: both"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div style="float: left; width: 400px;" >-->
+<!--                <div class="jiange_debug" style="float: left">-->
+<!--                    <div style="float: left" class="jiange_debug"><input class="input_check" type="checkbox"  value="123" onchange="check_line('test')"></div>-->
+<!--                    <div style="margin-left:10px;float: left; width: 362px" class="jiange_debug jiange_not_url"><a  style = "word-wrap:break-word; color: black;pointer-events:none" class="jiange_off" id = "testjiange1"  href="/" >nihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihao</a></div>-->
+<!--                    <div style="clear: both"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div style="margin-left:110px;float: left; width: 100px;height: 20px;border-width: 0px;border-color: green" class="jiange_debug">
+                    <input type="button" class="search-btn_small1" value="删除" style="height: 20px;width: 50px" onclick="loadXMLDoc()">
+            </div>
+            <!--    <input type="submit" value="按钮" >-->
+        </form>
+
+        <div style="float: left; width: 100px;height: 20px;border-width: 0px;border-color: black" class="jiange_debug">
+                <form action="quick_add" method="get" target="_blank">
+<!--                    1 represents add without bonding_id/-->
+                    <input type="hidden" name="add_type" value="1">
+                    <input type="submit" class="search-btn_small2" value="新建" style="height: 20px;width: 50px" >
+                </form>
+        </div>
+        <div style="clear: both"></div>
+    </div>
+<!--    <div id="myDiv"><h2>使用 AJAX 修改该文本内容</h2></div>-->
+<!--    <button type="button" onclick="loadXMLDoc()">修改内容</button>-->
 </div>
 
 
@@ -231,6 +344,65 @@
 <script>
     var oSearchText = document.getElementById('search-text');
     var oSearchSuggest = document.getElementById('search-suggest');
+
+    function loadXMLDoc()
+    {
+        var xmlhttp;
+        if (window.XMLHttpRequest)
+        {
+            //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {
+            // IE6, IE5 浏览器执行代码
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                for(var i = 0;i<delte_arr.length;i++)
+                {
+                    var input_temp =   document.getElementById(delte_arr[i]);
+                    var input_temp_f = input_temp.parentNode.parentNode;
+                    input_temp_f.parentNode.removeChild(input_temp_f);
+                }
+                document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+            }
+        }
+        var delte_arr = []
+        var input1 = document.getElementsByClassName('input_check');
+        for(var i = 0;i< input1.length;i++)
+        {
+            if(input1[i].checked == true)
+            {
+                delte_arr.push(input1[i].value)
+            }
+        }
+
+        var delte_parameter = ""
+        for(var i = 0;i<delte_arr.length;i++)
+        {
+            delte_parameter +=delte_arr[i]+";"
+        }
+        xmlhttp.open("GET","/ajax_delete_op?delete_uuids="+delte_parameter,true);
+        xmlhttp.send();
+    }
+
+    function check_line( name) {
+        var l1 = document.getElementById(name + 'jiange');
+        // 存在jiange
+        if (l1.getAttribute('class') && l1.getAttribute('class').indexOf('jiange_on') > -1){
+            l1.classList.remove("jiange_on");
+            l1.classList.add("jiange_off");
+        }
+        else
+        {
+            l1.classList.remove("jiange_off");
+            l1.classList.add("jiange_on");
+        }
+    }
 
     document.addEventListener('keyup', function (e) {
         e = e || event;

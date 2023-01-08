@@ -1,4 +1,5 @@
 package com.example.demo.Dao;
+import com.example.demo.controller.HelloController;
 import com.example.demo.object.Item;
 
 import java.sql.*;
@@ -9,8 +10,8 @@ import java.util.List;
 public class Dao {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 
-    static final String DB_URL = "jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-    //static final String DB_URL = "jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+    //static final String DB_URL = "jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+    static final String DB_URL = "jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
     static final String USER = "root";
     static final String PASS = "123";
     static  Connection conn = null;
@@ -26,6 +27,7 @@ public class Dao {
             // 执行查询
             System.out.println(" 实例化Statement对象...");
             stmt = conn.createStatement();
+            HelloController.need_close = true;
         } catch (SQLException se) {
             // 处理 JDBC 错误
             se.printStackTrace();
