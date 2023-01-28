@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register</title>
+  <base th:href="@{/}">
+  <link rel="stylesheet" th:href="@{libs/particles/css/style.css}">
+  <link rel="stylesheet" th:href="@{libs/sweetalert2/sweetalert2.min.css}">
+  <link rel="stylesheet" th:href="@{css/base.css}">
+  <link rel="stylesheet" th:href="@{css/login.css}">
+</head>
+<body>
+<!-- particles.js container -->
+<div id="particles-js"></div>
+<div id="wrapper">
+  <div>
+<!--    <img src="../../static/img/jiange.png" width=300px />-->
+    <img th:src="@{img/jiange.png}" width=260px />
+    <h2>Keep Your Memory</h2>
+  </div>
+  <nav class="switch_nav">
+    <a href="javascript:;" id="switch_signup" class="switch_btn on">Register</a>
+    <a href="user/login" id="switch_login" class="switch_btn">Login</a>
+    <div class="switch_bottom" id="switch_bottom"></div>
+  </nav>
+  <form method="post" action="user/register_op">
+    <ul class="group_input">
+      <li>
+        <input type="text" placeholder="Name" class="name required" id="name" name = 'name'/>
+      </li>
+      <li>
+        <input type="text" placeholder="Email" class="mobile required" id="mobile" name = 'mail'/>
+      </li>
+      <li>
+        <input type="password" placeholder="Password)" class="psd required" id="psd" name ='psd'/>
+      </li>
+    </ul>
+    <button type="submit" class="submit_btn" id="btnSubmit" onclick="sendSubmit()">Register</button>
+    <span class="agreement-tip">click the button means you are agree with us<a href="javascript:;">reminder webpage</a></span>
+  </form>
+
+<!--  <div class="QRcode_btn">-->
+<!--    <div type="submit" class="submit_btn download_btn">下载知乎App</div>-->
+<!--    <div class="QRcode">-->
+<!--      <img src="img/QRcode.png" alt="QRcode" />-->
+<!--      <div class="box"></div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+
+<!--  <div id="footer">-->
+<!--    <span>&copy;2017知乎</span><span>·</span><a href="javascript:;">知乎圆桌</a><span>·</span><a href="javascript:;">发现</a><span>·</span><a href="javascript:;">移动应用</a><span>·</span><a href="javascript:;">使用机构账号登录</a><span>·</span><a href="javascript:;">联系我们</a><span>·</span><a href="javascript:;">工作来知乎</a><br />-->
+<!--    <span>·</span><a href="javascript:;">京ICP证110745号</a><span>·</span><span>京公网安备11010802010035号</span><span>·</span><a href="javascript:;">出版物经营许可证</a>-->
+<!--  </div>-->
+</div>
+<script th:src="@{libs/jquery-1.12.4/jquery.min.js}"></script>
+<script th:src="@{libs/sweetalert2/sweetalert2.min.js}"></script>
+<script th:src="@{libs/particles/particles.min.js}"></script>
+<script th:src="@{libs/particles/js/app.js}"></script>
+<!-- <script src="libs/particles/js/lib/stats.js"></script> -->
+<script>
+  var count_particles, stats, update;
+  stats = new Stats;
+  stats.setMode(0);
+  stats.domElement.style.position = 'absolute';
+  stats.domElement.style.left = '0px';
+  stats.domElement.style.top = '0px';
+  document.body.appendChild(stats.domElement);
+  count_particles = document.querySelector('.js-count-particles');
+  update = function() {
+    stats.begin();
+    stats.end();
+    if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
+      count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
+    }
+    requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+</script>
+<script>
+  $(".download_btn").click(function(){
+    if($(".QRcode").css("display")=="none"){
+      $(".QRcode").show();
+      $(".download_btn").text("关闭二维码");
+    }else{
+      $(".QRcode").hide();
+      $(".download_btn").text("下载知乎App");
+    }
+  });
+</script>
+<script>
+  $(function(){
+    //为表单的必填文本框添加提示信息（选择form中的所有后代input元素）
+    // $("form :input.required").each(function () {
+    //     //通过jquery api：$("HTML字符串") 创建jquery对象
+    //     var $required = $("<strong class='high'>*</strong>");
+    //     //添加到this对象的父级对象下
+    //     $(this).parent().append($required);
+    // });
+    // var errorMsg = $(".error-msg").text();
+    //为表单元素添加失去焦点事件
+    $("form :input").blur(function(){
+      var $parent = $(this).parent();
+      $parent.find(".msg").remove(); //删除以前的提醒元素（find()：查找匹配元素集中元素的所有匹配元素）
+      //验证姓名
+      if($(this).is("#name")){
+        var nameVal = $.trim(this.value);
+        var regName = /[~#^$@%&!*()<>:;'"{}【】  ]/;
+        if(nameVal == "" || nameVal.length < 2 || regName.test(nameVal)){
+          var errorMsg = " 姓名非空，长度2-20位，不包含特殊字符！";
+          $parent.append("<span class='msg onError'>" + errorMsg + "</span>");
+        } else{
+          var okMsg=" 输入正确";
+          $parent.append("<span class='msg onSuccess'>" + okMsg + "</span>");
+        }
+      }
+      //验证手机号
+      if($(this).is("#mobile")){
+        var mobileVal = $.trim(this.value);
+        var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        if(mobileVal == "" || !mobileVal.match(validRegex)){
+          var errorMsg = " 请输入有效的邮箱号码！";
+          $parent.append("<span class='msg onError'>" + errorMsg + "</span>");
+        } else{
+          var okMsg=" 输入正确";
+          $parent.append("<span class='msg onSuccess'>" + okMsg + "</span>");
+        }
+      }
+      //验证密码
+      if($(this).is("#psd")){
+        var psdVal = $.trim(this.value);
+        var regPsd = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/;
+        if(psdVal== "" || !regPsd.test(psdVal)){
+          var errorMsg = " 密码为6-20位字母、数字的组合！";
+          $parent.append("<span class='msg onError'>" + errorMsg + "</span>");
+        }
+        else{
+          var okMsg=" 输入正确";
+          $parent.append("<span class='msg onSuccess'>" + okMsg + "</span>");
+        }
+      }
+    }).keyup(function(){
+      //triggerHandler 防止事件执行完后，浏览器自动为标签获得焦点
+      $(this).triggerHandler("blur");
+    }).focus(function(){
+      $(this).triggerHandler("blur");
+    });
+
+    //点击重置按钮时，通过trigger()来触发文本框的失去焦点事件
+    $("#btnSubmit").click(function(){
+      //trigger 事件执行完后，浏览器会为submit按钮获得焦点
+      $("form .required:input").trigger("blur");
+      var numError = $("form .onError").length;
+      if(numError){
+        return false;
+      }
+    });
+  })
+
+</script>
+</body>
+</html>

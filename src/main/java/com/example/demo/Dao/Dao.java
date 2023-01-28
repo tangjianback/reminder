@@ -1,4 +1,5 @@
 package com.example.demo.Dao;
+import com.example.demo.ConnectionFactory;
 import com.example.demo.controller.HelloController;
 import com.example.demo.object.Item;
 
@@ -8,26 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Dao {
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-
-    //static final String DB_URL = "jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-    static final String DB_URL = "jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-    static final String USER = "root";
-    static final String PASS = "123";
     static  Connection conn = null;
     static Statement stmt = null;
     static {
         try {
-            // 注册 JDBC 驱动
-            Class.forName(JDBC_DRIVER);
-            // 打开链接
-            System.out.println("连接数据库...");
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-            // 执行查询
-            System.out.println(" 实例化Statement对象...");
+            conn = ConnectionFactory.get_connection();
             stmt = conn.createStatement();
-            HelloController.need_close = true;
         } catch (SQLException se) {
             // 处理 JDBC 错误
             se.printStackTrace();
@@ -36,164 +23,113 @@ public class Dao {
             e.printStackTrace();
         }
     }
-
-    public static LinkedList<Integer> get_id_by_title(String title)
+    public static void flush_connection()
     {
-        LinkedList<Integer> res = new LinkedList<Integer>();
-        String sql = "select * from search_table where search_title = '"+ title.replaceAll("'","''")+"'";
+        try
+        {
+            stmt.close();
+            conn.close();
+            conn = ConnectionFactory.get_connection();
+            stmt = conn.createStatement();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
-        try {
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                // 通过字段检索
-                int id = rs.getInt("search_id");
-                res.add(id);
-            }
-            rs.close();
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        } catch (Exception e) {
-            // 处理 Class.forName 错误
-            e.printStackTrace();
+    public static int get_id_by_title(String title,int uid) throws SQLException {
+        LinkedList<Integer> res = new LinkedList<Integer>();
+        String sql = "select search_id from search_table where search_title = '"+ title.replaceAll("'","''")+"' and user_id = "+uid;
+
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            // 通过字段检索
+            int id = rs.getInt("search_id");
+            return id;
         }
-        return res;
+        rs.close();
+        return -1;
     }
-    public static List<Item> query_all() {
+    public static List<Item> query_all(int u_id) throws SQLException {
         LinkedList<Item> res = new LinkedList<>();
-        String sql = "select * from search_table";
-        try {
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                // 通过字段检索
-                int id = rs.getInt("search_id");
-                String title = rs.getString("search_title");
-                String content = rs.getString("search_content");
-                String file = rs.getString("search_file");
-                // 输出数据
-                res.add(new Item(id,title,content,file));
-            }
-            rs.close();
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        } catch (Exception e) {
-            // 处理 Class.forName 错误
-            e.printStackTrace();
+        String sql = "select * from search_table where user_id = "+ u_id;
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            // 通过字段检索
+            int id = rs.getInt("search_id");
+            String title = rs.getString("search_title");
+            String content = rs.getString("search_content");
+            String file = rs.getString("search_file");
+            int user_id = rs.getInt("user_id");
+            // 输出数据
+            res.add(new Item(id,title,content,file,user_id));
         }
+        rs.close();
         return res;
     }
-    public static List<Item> query(String word) {
+    public static List<Item> query(String word, int uid) throws SQLException {
         word = word.replaceAll("'","''");
         LinkedList<Item> res = new LinkedList<>();
-        String sql = "select * from search_table where search_title like '%"+word+"%'";
-        try {
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                // 通过字段检索
-                int id = rs.getInt("search_id");
-                String title = rs.getString("search_title");
-                String content = rs.getString("search_content");
-                String file = rs.getString("search_file");
-                // 输出数据
-                res.add(new Item(id,title,content,file));
-            }
-            rs.close();
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        } catch (Exception e) {
-            // 处理 Class.forName 错误
-            e.printStackTrace();
+        String sql = "select * from search_table where user_id = "+uid+" and search_title like '%"+word+"%'";
+
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            // 通过字段检索
+            int id = rs.getInt("search_id");
+            String title = rs.getString("search_title");
+            String content = rs.getString("search_content");
+            String file = rs.getString("search_file");
+            int user_id= rs.getInt("user_id");
+            // 输出数据
+            res.add(new Item(id,title,content,file,user_id));
         }
+        rs.close();
         return res;
     }
 
-    public static boolean alter(Item item)
-    {
+    public static boolean alter(Item item) throws SQLException {
         int res = 0;
         item.setTitle(item.getTitle().replaceAll("'","''"));
         item.setContent(item.getContent().replaceAll("'","''"));
         String sql = "UPDATE search_table SET search_title = '"+item.getTitle()+"', search_content = '"+item.getContent()+"', search_file = '"+item.getFile()+"' WHERE search_id = "+item.getId();
-        try {
-            res = stmt.executeUpdate(sql);
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        } catch (Exception e) {
-            // 处理 Class.forName 错误
-            e.printStackTrace();
-        }
+
+        res = stmt.executeUpdate(sql);
+
         return (res == 1?true:false );
     }
-    public static boolean delete(Item item)
-    {
+    public static boolean delete_item_by_id(int id_out) throws SQLException {
         int res = 0;
-        String sql = "DELETE FROM  search_table WHERE  search_id = "+item.getId();
-        try {
-            res = stmt.executeUpdate(sql);
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        } catch (Exception e) {
-            // 处理 Class.forName 错误
-            e.printStackTrace();
-        }
+        String sql = "DELETE FROM  search_table WHERE  search_id = "+id_out;
+
+        res = stmt.executeUpdate(sql);
+
         return (res == 1?true:false );
     }
-    public  static boolean insert(Item item)
-    {
+    public  static boolean insert(Item item) throws SQLException {
         item.setTitle(item.getTitle().replaceAll("'","''"));
         item.setContent(item.getContent().replaceAll("'","''"));
         int res = 0;
-        String sql = "INSERT INTO search_table(search_title,search_content,search_file)  VALUES('"+item.getTitle()+ "','"+item.getContent()+"','"+item.getFile()+"')";
-        try {
-            res = stmt.executeUpdate(sql);
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        } catch (Exception e) {
-            // 处理 Class.forName 错误
-            e.printStackTrace();
-        }
+        String sql = "INSERT INTO search_table(search_title,search_content,search_file,user_id)  VALUES('"+item.getTitle()+ "','"+item.getContent()+"','"+item.getFile()+"',"+item.getUid()+")";
+
+        res = stmt.executeUpdate(sql);
         return (res == 1?true:false );
     }
-    public  static Item query_by_id(Item item)
-    {
+    public  static Item query_by_id( int out_id) throws SQLException {
         Item res_item = null;
-        String sql = "select * from search_table where search_id = "+ item.getId();
-        try {
-            ResultSet rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                // 通过字段检索
-                int id = rs.getInt("search_id");
-                String title = rs.getString("search_title");
-                String content = rs.getString("search_content");
-                String file = rs.getString("search_file");
-                // 输出数据
-                res_item = new Item(id,title,content,file);
-            }
-            rs.close();
-        } catch (SQLException se) {
-        // 处理 JDBC 错误
-        se.printStackTrace();
-         } catch (Exception e) {
-        // 处理 Class.forName 错误
-        e.printStackTrace();
+        String sql = "select * from search_table where search_id = "+ out_id;
+
+        ResultSet rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            // 通过字段检索
+            int id = rs.getInt("search_id");
+            String title = rs.getString("search_title");
+            String content = rs.getString("search_content");
+            String file = rs.getString("search_file");
+            int user_id = rs.getInt("user_id");
+            // 输出数据
+            res_item = new Item(id,title,content,file,user_id);
         }
+        rs.close();
         return res_item;
-    }
-    public  static void close_connection()
-    {
-        // 关闭资源
-        try {
-            if (stmt != null) stmt.close();
-        } catch (SQLException se2) {
-        }// 什么都不做
-        try {
-            if (conn != null) conn.close();
-        } catch (SQLException se) {
-            se.printStackTrace();
-        }
     }
 }

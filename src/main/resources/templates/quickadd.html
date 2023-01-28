@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>信息录入</title>
+  <title>QuickAdd</title>
   <style>
     #add_button:hover {
       background: #793f1a;
@@ -34,13 +34,12 @@
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-<link href="test.css" rel="stylesheet"type="text/css">
 <div class="mr-cont">
-  <h2 style="text-align: center;">小信息录入</h2>
+  <h2 style="text-align: center;" th:text="${user.language==0?'QuickAdd':'小信息录入'}"></h2>
   <hr width="1200" color="black" >
-  <form style="text-align: center;font-size:28px" method="post" th:action = "quick_add_op" >
+  <form style="text-align: center;font-size:28px" method="post" th:action = "@{/quick_add_op}" >
     <div style="float: left; margin-left: 12%;border-color: red;border-width: 0px;border-style: solid">
-      <div style="float: left; padding-top:10px" >标题:</div>
+      <div style="float: left; padding-top:10px" th:text="${user.language==0?'Title:':'标题:'}"></div>
       <div style="float: left">
         <!--        <input type="text" name = "search_title" placeholder="字符串长度为6-20，包含数字和字母"  style="width: 700px;height: 28px">-->
         <input type="text" name = "title"  th:value = "${title}" style="width: 1000px;height: 28px">
@@ -48,7 +47,7 @@
       </div>
 
       <div style="clear: both; margin-left: 0px;">
-        <input type="submit" id = "update_button1" value="提交增加" style="height: 30px;" onclick="return update();">
+        <input type="submit" id = "update_button1" th:value="${user.language==0?'Confirm':'确认提交'}" style="height: 30px;" onclick="return update();">
       </div>
     </div>
   </form>

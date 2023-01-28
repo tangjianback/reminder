@@ -3,12 +3,11 @@ package com.example.demo.service;
 import com.example.demo.Dao.Dao;
 import com.example.demo.object.Item;
 import com.example.demo.object.Item_query;
-import com.example.demo.object.LUR_imp;
-import com.example.demo.object.Quick_item;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -16,13 +15,18 @@ import java.util.zip.ZipOutputStream;
 
 public class Service {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
-    LUR_imp lru_imp = new LUR_imp();
-    public List<Integer> get_id_by_title(String title)
+    public int get_id_by_title(String title,int uid)
     {
-        List<Integer> res = Dao.get_id_by_title(title);
-        if(!res.isEmpty())
-            lru_imp.lru_add(res.get(0));
-        return res;
+        try {
+            return Dao.get_id_by_title(title,uid);
+        } catch (SQLException e) {
+            Dao.flush_connection();
+            try {
+                return Dao.get_id_by_title(title,uid);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
     public void set_message(Model model, String message, String url, String button_value,String message_color)
     {
@@ -32,33 +36,78 @@ public class Service {
         model.addAttribute("button_name",button_value);
         return;
     }
-    public Item querry_by_id(Item i){
-        lru_imp.lru_add(i.getId());
-        Item res =  Dao.query_by_id(i);
+    public Item querry_by_id(int id){
+        Item res = null;
+        try {
+            res = Dao.query_by_id(id);
+        } catch (SQLException e) {
+            Dao.flush_connection();
+            try {
+                res = Dao.query_by_id(id);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
         return res;
     }
     public boolean alter_item(Item i)
     {
-        lru_imp.lru_add(i.getId());
-        return Dao.alter(i);
+        try {
+            return Dao.alter(i);
+        } catch (SQLException e) {
+            Dao.flush_connection();
+            try {
+                return Dao.alter(i);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
-    public boolean delete_item(Item i)
+    public boolean delete_item_by_id(int id)
     {
-        lru_imp.lru_del(i.getId());
-        return Dao.delete(i);
+        try {
+            return Dao.delete_item_by_id(id);
+        } catch (SQLException e) {
+            Dao.flush_connection();
+            try {
+                return Dao.delete_item_by_id(id);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
     public boolean add_item(Item i)
     {
-        return Dao.insert(i);
+        try {
+            return Dao.insert(i);
+        } catch (SQLException e) {
+            Dao.flush_connection();
+            try {
+                return Dao.insert(i);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
-    public LinkedList<Item> query_key_word(String[] keywords) {
+    public LinkedList<Item> query_key_word(String[] keywords,int u_id) {
     {
         TreeMap<Item, Integer> my_map = new TreeMap<Item, Integer>();
         for(String k : keywords)
         {
             if(k.strip().equals(""))
                 continue;
-            for (Item temp_item: Dao.query(k))
+            List<Item> temp_item_list = null;
+            try {
+                temp_item_list  = Dao.query(k,u_id);
+            } catch (SQLException e) {
+                Dao.flush_connection();
+                try {
+                    temp_item_list  = Dao.query(k,u_id);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            for (Item temp_item: temp_item_list)
             {
                 // if it contains the item
                 if(!my_map.containsKey(temp_item))
@@ -89,7 +138,7 @@ public class Service {
     }
 
 //    finished 1: no dile but add 0; dircreate_file:-1; sqlerror:-2; storefail:-3;
-    public int store(MultipartFile[] uploadFiles, String title, String content)
+    public int store(MultipartFile[] uploadFiles, String title, String content,int uid)
     {
         String format = sdf.format(new Date());
         File folder = new File("uploadFile/" + format);
@@ -124,7 +173,7 @@ public class Service {
             }
         }
         // sql executing
-        if(this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles))))
+        if(this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles),uid)))
         {
             if(stored_fles.isEmpty())
                 return 0;
@@ -144,10 +193,10 @@ public class Service {
 
     }
     //    finished :1; nofile:0; dircreate_file:-1; sqlerror:-2; storefail:-3;
-    public int update(MultipartFile[] uploadFiles, String title, String content, int ID, String[] del_files)
+    public int update(MultipartFile[] uploadFiles, String title, String content, int ID, String[] del_files, int uid)
     {
         // prepare the new files string
-        Item query_item  = this.querry_by_id(new Item(ID,"","",""));
+        Item query_item  = this.querry_by_id(ID);
         if(query_item==null)
             return -2;
         List<String> old_string_files = this.get_files_by_string(query_item.getFile());
@@ -200,7 +249,7 @@ public class Service {
         }
         // execute sql
         // sql successful
-        if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files))))
+        if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files),uid)))
         {
             boolean del_file_flag = (del_files==null || del_files.length== 0)? false:true;
             // add and delte
@@ -223,10 +272,6 @@ public class Service {
         }
     }
 
-    public List<Item> get_lru_list()
-    {
-        return this.lru_imp.get_recent_viewed_items();
-    }
 
     public File zip_multiple_fiels(List<String> srcFiles) throws IOException {
         File folder = new File("uploadFile");
@@ -293,70 +338,5 @@ public class Service {
             res+=i+";";
         }
         return  res;
-    }
-    public List<Quick_item> file_to_quick_list()
-    {
-        List<Quick_item> res = new LinkedList<Quick_item>();
-        File quick_file =  new File("uploadFile/quick.txt");
-        if(!quick_file.isFile() || !quick_file.exists())
-        {
-            return res;
-        }
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(quick_file));
-            String line = reader.readLine();
-            while (line != null) {
-                if(!line.strip().equals(""))
-                {
-                    res.add( string_to_quick(line.strip()));
-                }
-                // read next line
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
-
-
-    public void quick_list_to_file(List<Quick_item> quick_list)
-    {
-        File quick_file =  new File("uploadFile/quick.txt");
-        File folder =  new File("uploadFile");
-        if(!folder.isDirectory() && folder.mkdirs() == false)
-        {
-            System.out.println("can not create DIR");
-            return;
-        }
-       // write
-        try{
-            if(!quick_file.exists()){
-                quick_file.createNewFile();
-            }
-            FileWriter fileWritter = new FileWriter(quick_file);
-            for(Quick_item i: quick_list)
-            {
-                fileWritter.write(quick_to_string(i));
-                fileWritter.write(System.lineSeparator());
-            }
-            fileWritter.close();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-    public String quick_to_string(Quick_item i)
-    {
-        return i.getContent() +"**splitline**"+i.getId()+"**splitline**"+i.getUuid();
-    }
-    public Quick_item string_to_quick(String s)
-    {
-        String[] arr = s.strip().split("\\*\\*splitline\\*\\*");
-        if(arr.length!=3)
-            return null;
-        else
-            return new Quick_item(arr[0],arr[1],arr[2]);
     }
 }

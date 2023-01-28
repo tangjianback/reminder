@@ -2,7 +2,10 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="UTF-8">
-	<title>详细信息</title>
+	<title>Detail</title>
+	<link rel="stylesheet" th:href="@{css/code.css}">
+	<script th:src="@{libs/code.js}"></script>
+	<script>hljs.highlightAll();</script>
 	<style>
 		html,
 		body {
@@ -315,47 +318,44 @@
 </head>
 <body>
 
-<div id = "up_search" style="border-style: dashed;border-width: 0px;border-color: red; width: 1000px">
+<div id = "up_search" style="border-style: dashed;border-width: 0px;border-color: red; width: 1000px; margin-left: 400px;">
 	<div id = "up_search_left">
-		<form class="button1" method="get" action="update">
+		<form class="button1" method="get" th:action="@{/update}">
 			<input type="hidden" name = "id" th:value ="${id}">
-			<input type="submit" class="search-btn1" value="修改">
+			<input type="submit" class="search-btn1" th:value="${user.language==0?'Update':'修改'}">
 		</form>
 	</div>
 	<div id = "up_search_right">
-		<form class="button2" method="get" action="delete_op">
+		<form class="button2" method="get" th:action="@{/delete_op}">
 			<input type="hidden" name = "id" th:value ="${id}">
-			<input type="submit" class="search-btn" value="删除" onclick="return clicked();">
+			<input type="submit" class="search-btn" th:value="${user.language==0?'Delete':'删除'}" onclick="return clicked();">
 		</form>
 	</div>
 	<div id = "up_search_right1">
-		<form class="button3" method="get" action="index">
-			<input type="submit" class="search-btn2" value="主页">
+		<form class="button3" method="get" th:action="@{/index}">
+			<input type="submit" class="search-btn2" th:value="${user.language==0?'Home':'主页'}">
 		</form>
 	</div>
 	<div id = "up_search_right2">
-		<form class="button4" method="get" action="quick_add">
+		<form class="button4" method="get" th:action="@{/quick_add}">
 			<input type="hidden" name="id" th:value="${id}">
 <!--			0: bonding add-->
 			<input type="hidden" name="add_type" value="0">
-			<input type="submit" class="search-btn3" value="待办">
+			<input type="submit" class="search-btn3" th:value="${user.language==0?'Todo':'待办'}">
 		</form>
 	</div>
 </div>
 
 
-<div class="suggest" id="search-suggest1">
-	<ul>
+<div class="suggest" id="search-suggest1" style="margin-top: 20px;">
 		<div style="border-width: 0px;
                   border-style: dashed;
-                  border-color: red;"><li ><span style = "font-size:20px;" th:text = "${title}">标题</span></li> </div>
+                  border-color: red;"><span style = "font-size:20px;" th:text = "${title}" ></span></div>
 		<div style="margin-top: 10px;border-width: 0px;
                   border-style: dashed;
                   border-color: red;
                   position: relative;">
-			<li>
-				<div class="tooltip" style="float:left; border-width: 0px;border-color:red;border-style: solid; float: right; margin-bottom: -25px; opacity: 0.8;">
-
+				<div class="tooltip" style="float:left; border-width: 0px;border-color:red;border-style: solid; float: right; margin-bottom: -30px; opacity: 0.8;">
 					<button onclick="myFunction()" onmouseout="outFunc()">
 						<span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
 						Copy text
@@ -364,39 +364,28 @@
 				</div>
 
 				<div style="clear: both;">
-    <pre id = "myInput" style="
-    margin: 0 0 1em 0;
-    padding: 15px 0;
-    background: #F0F0F0;
-    border: 1px solid #090;
-    text-align: left;
-    font-size: 14px;
-    border-radius: 4px;
-    font-size: 16px;
-
-   " th:text = "${content}"> 内容
+    <pre  style="border: 0px solid #090;border-radius: 4px;background: #f3f3f3">
+		<code class="language-plaintext" th:text = "${content}" id = "myInput" style="font-size: 15px;">
+	</code>
 </pre>
+
 					<!-- <input type="text" value="Hello World" id="myInput"> -->
 				</div>
-			</li>
 		</div>
-		<li>
 			<div style="float: left;border-width: 0px;border-style: solid;">
 				<div style="float: left;margin-top: 10px;">
-					<form action="downloadAll" method="get">
+					<form th:action="@{/downloadAll}" method="get">
 						 <input type="hidden" name = "id" th:value="${id}">
-						<input type="submit"  value="下载所有文件" th:disabled='${#lists.isEmpty(file_list)?"true":"false"}'>
+						<input type="submit"  th:value="${user.language==0?'DownloadAll':'一键下载'}" th:disabled='${#lists.isEmpty(file_list)?"true":"false"}'>
 					</form>
 				</div>
 
 				<div style="float: left;margin-top: 10px; margin-left: 5px; clear:both;" th:each="c, State : ${file_list}">
-					<a th:href="'download?file='+${c.file}"th:text="${c.short_name}"></a>
+					<a th:href="'/download?file='+${c.file}"th:text="${c.short_name}"></a>
 					<!-- <span th:text = "${file_short}">a.text</span> -->
 				</div>
 
 			</div>
-		</li>
-	</ul>
 </div>
 <script>
 	var oSearchText = document.getElementById('search-text');
@@ -422,7 +411,7 @@
 		element.style.height = (25+element.scrollHeight)+"px";
 	};
 	function clicked() {
-		return confirm('确认删除?');
+		return confirm('Sure?');
 	};
 	document.addEventListener('keyup', function (e) {
 		e = e || event;

@@ -1,10 +1,13 @@
 package com.example.demo.controller;
-import com.example.demo.Dao.Dao;
+import com.example.demo.ConnectionFactory;
 import com.example.demo.object.File_item;
 import com.example.demo.object.Item;
-import com.example.demo.object.Quick_item;
+import com.example.demo.object.Quick;
+import com.example.demo.object.User;
 import com.example.demo.service.Service;
+import com.example.demo.service.Service_user;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -29,84 +32,115 @@ public class HelloController implements ApplicationContextAware {
     private ApplicationContext context = null;
     public static boolean need_close = false;
     Service gloabal_service = new Service();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
+    Service_user global_service_user = new Service_user();
 
     @RequestMapping(value = "/ajax_delete_op")
     public ResponseEntity<String> ajax_delete_op(Model model, HttpServletRequest request) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer) se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return new ResponseEntity<>("no session!", HttpStatus.OK);
+        }
+
         String delete_str = request.getParameter("delete_uuids");
         if(delete_str == null || delete_str.strip().equals(""))
         {
             return new ResponseEntity<>("no delete needed", HttpStatus.OK);
         }
         String [] del_id = delete_str.split(";");
-        List<Quick_item> quick_itemList = gloabal_service.file_to_quick_list();
+
+        // update the users
+        global_service_user.delete_quick_in_user(current_user_id,del_id);
+
+        // delete the item in quick sql
         for(String need_del_id : del_id)
         {
-            if(need_del_id.strip().equals(""))
-                continue;
-            for(Quick_item i: quick_itemList)
+            if(!need_del_id.strip().equals("")){
+                global_service_user.delete_quick_by_id(Integer.parseInt(need_del_id.strip()));
+            }
+        }
+        return  new ResponseEntity<>("okk", HttpStatus.OK);
+    }
+    @RequestMapping(value = "/index")
+    public String index(Model model,HttpServletRequest request) {
+        //get the user session
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer) se.getAttribute("user");
+
+        //need to login first if no session
+        if(current_user_id == null)
+        {
+            String name = request.getParameter("direct_mail");
+            String pwd = request.getParameter("direct_pwd");
+            if(name == null || pwd ==  null)
+                return "users/login";
+            else
             {
-                if(i.getUuid().equals(need_del_id.strip()))
+                User current_user = global_service_user.get_user_by_mail_or_id(name);
+                if(current_user == null || !current_user.getU_pwd().equals(pwd))
+                    return "users/login";
+                else
                 {
-                    quick_itemList.remove(i);
-                    break;
+                    se.setAttribute("user",current_user.getU_id());
+                    model.addAttribute("user",current_user);
+                    return "index";
                 }
             }
         }
-        gloabal_service.quick_list_to_file(quick_itemList);
-        return  new ResponseEntity<>("okk", HttpStatus.OK);
-    }
-    @RequestMapping(value = "/test1")
-    public String test(HttpServletRequest request) {
-        System.out.println(request.getParameter("interest"));
-        for(String s: request.getParameterValues("interest"))
+        else
         {
-            System.out.println(s);
+            User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
+            model.addAttribute("user",current_user);
+            return "index";
         }
-        return "message";
-    }
-    @RequestMapping(value = "/index")
-    public String index(Model model) {
-        List<Item> item_list = gloabal_service.get_lru_list();
-        model.addAttribute("item_list",item_list);
-
-        List<Quick_item> test_quick= gloabal_service.file_to_quick_list();
-        model.addAttribute("quick_list",test_quick);
-        return "index";
     }
     @RequestMapping(value = "/")
-    public String index_default(Model model) {
+    public String index_default(Model model,HttpServletRequest request) {
         return "forward:/index";
     }
     @RequestMapping(value = "/search")
     public String search(Model model, HttpServletRequest request) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
         String para = request.getParameter("search_words");
         para = para.strip();
-        List<Item> item_list = null;
-        // no input
-        if(para.equals(""))
-        {
-            item_list = gloabal_service.get_lru_list();
-        }
-        else
-        {
-            String [] para_array = para.split(" ");
-            item_list = gloabal_service.query_key_word(para_array);
-        }
-        model.addAttribute("item_list",item_list);
+        User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
 
-        List<Quick_item> test_quick= gloabal_service.file_to_quick_list();
-        model.addAttribute("quick_list",test_quick);
+        // input no empty
+        if(!para.strip().equals("")) {
+            String[] para_array = para.split(" ");
+            current_user.setU_lru_list(gloabal_service.query_key_word(para_array, current_user_id));
+        }
+        model.addAttribute("user",current_user);
         return "index";
     }
+
     @RequestMapping(value = "/add")
     public String add(Model model, HttpServletRequest request) {
-        model.addAttribute("add_or_update","创建");
-        model.addAttribute("url","add_op");
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
+        User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
+        model.addAttribute("user",current_user );
         return "add";
     }
     @RequestMapping(value = "/update")
     public String update(Model model, HttpServletRequest request) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
+
         String del_id = request.getParameter("id");
         // if the no id or id is not int
         if(del_id == null )
@@ -117,7 +151,7 @@ public class HelloController implements ApplicationContextAware {
         // get item of del_id
         Item querry_item = null;
         try{
-            querry_item = gloabal_service.querry_by_id(new Item(Integer.parseInt(del_id.strip()),"","",""));
+            querry_item = gloabal_service.querry_by_id(Integer.parseInt(del_id.strip()));
         }
         catch (NumberFormatException e)
         {
@@ -150,11 +184,19 @@ public class HelloController implements ApplicationContextAware {
                     file_lists.add(new File_item(item_string.strip(),item_string.strip().split("_")[1]));
             }
             model.addAttribute("file_list",file_lists );
+            model.addAttribute("user", global_service_user.get_user_by_mail_or_id(current_user_id+""));
             return "update";
         }
     }
     @RequestMapping(value = "/add_op")
     public String add_op(Model model, HttpServletRequest request, @RequestParam("uploadFile") MultipartFile[] files) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
+
         if(files == null)
         {
             System.out.println("null?");
@@ -175,14 +217,14 @@ public class HelloController implements ApplicationContextAware {
             return "message";
         }
         // if it contains the same title
-        List<Integer> temp_list =  gloabal_service.get_id_by_title(title);
-        if(!temp_list.isEmpty())
+        int query_id =  gloabal_service.get_id_by_title(title, current_user_id);
+        if(query_id > 0)
         {
             gloabal_service.set_message(model,"标题已经存在","index","返回主页","red");
             return "message";
         }
         //store multiple files
-        int store_res = gloabal_service.store(files,title,content);
+        int store_res = gloabal_service.store(files,title,content,current_user_id);
         String message = null;
         switch (store_res){
             case -3:
@@ -204,9 +246,11 @@ public class HelloController implements ApplicationContextAware {
         // store successful
         if(store_res >=0)
         {
-            int id = gloabal_service.get_id_by_title(title).get(0);
+            int id = gloabal_service.get_id_by_title(title,current_user_id);
             model.addAttribute("id",id);
             gloabal_service.set_message(model,message,"detail","查看","darkgoldenrod");
+            // add lru to user
+            global_service_user.lru_to_front(id,current_user_id);
         }
         else
             gloabal_service.set_message(model,message,"index","返回主页","red");
@@ -214,6 +258,13 @@ public class HelloController implements ApplicationContextAware {
     }
     @RequestMapping(value = "/delete_op")
     public String del_op(Model model, HttpServletRequest request) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
+
         String del_id = request.getParameter("id");
         if(del_id==null)
         {
@@ -222,7 +273,7 @@ public class HelloController implements ApplicationContextAware {
         }
         Item querry_item = null;
         try{
-            querry_item =gloabal_service.querry_by_id(new Item(Integer.parseInt(del_id.strip()),"","",""));
+            querry_item =gloabal_service.querry_by_id(Integer.parseInt(del_id.strip()));
         }catch (NumberFormatException e)
         {
             e.printStackTrace();
@@ -234,15 +285,26 @@ public class HelloController implements ApplicationContextAware {
         if(!gloabal_service.delete_files_from_string(querry_item.getFile().strip()))
             System.out.println("warning: some file is not in the dir");
 
-        //delete in the sql
-        if(gloabal_service.delete_item(new Item(Integer.parseInt(del_id.strip()),"","","")))
+        //update user first
+        global_service_user.lru_delte(Integer.parseInt(del_id),current_user_id);
+        //delete the item
+        if(gloabal_service.delete_item_by_id(Integer.parseInt(del_id.strip())))
+        {
             gloabal_service.set_message(model,"delete "+del_id+"success...","index","返回主页","darkgoldenrod");
+        }
         else
             gloabal_service.set_message(model,"delete "+del_id+"failed...","index","返回主页","red");
         return "message";
     }
     @RequestMapping(value = "/update_op")
     public String update_op(Model model, HttpServletRequest request,@RequestParam("uploadFiles") MultipartFile[] files) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
+
         String title = request.getParameter("search_title").strip();
         String content = request.getParameter("search_content").strip();
         String id = request.getParameter("id");
@@ -268,7 +330,7 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"id is not parseable","index","返回主页","red");
             return "message";
         }
-        Item query_item = gloabal_service.querry_by_id(new Item(id_int,"","",""));
+        Item query_item = gloabal_service.querry_by_id(id_int);
         // if id is not in the database
         if(query_item== null)
         {
@@ -276,19 +338,14 @@ public class HelloController implements ApplicationContextAware {
             return "message";
         }
         // check the updated title is already in the database
-        List<Integer> query_title =  gloabal_service.get_id_by_title(title);
-        if(!query_title.isEmpty())
+        int query_title_id =  gloabal_service.get_id_by_title(title,current_user_id);
+        if(query_title_id > 0 && query_title_id != id_int )
         {
-            if(query_title.size() > 1)
-                System.out.println("warning ! same title "+title);
-            if(query_title.get(0) != id_int)
-            {
-                gloabal_service.set_message(model,"the title is already in the database","index","返回主页","red");
-            }
+            gloabal_service.set_message(model,"the title is already in the database","index","返回主页","red");
         }
 
         String message;
-        int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"));
+        int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"),current_user_id);
         switch (update_res){
             case -3:
                 message = "store file fail";
@@ -317,6 +374,8 @@ public class HelloController implements ApplicationContextAware {
         {
             model.addAttribute("id",id);
             gloabal_service.set_message(model,message,"detail","查看","darkgoldenrod");
+            // add lru to user
+            global_service_user.lru_to_front(id_int,current_user_id);
         }
         else{
             gloabal_service.set_message(model,message,"index","返回主页","red");
@@ -326,14 +385,21 @@ public class HelloController implements ApplicationContextAware {
 
     @RequestMapping(value = "/detail")
     public String detail(Model model, HttpServletRequest request) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
+
         String para = request.getParameter("detail");
         if(para == null || para.equals("")){
             gloabal_service.set_message(model,"no id is available", "index","回到主页","red");
             return "message";
         }
-        int id;
+        int id_int;
         try{
-            id  = Integer.parseInt(para);
+            id_int  = Integer.parseInt(para);
         }
         catch (NumberFormatException e )
         {
@@ -341,7 +407,7 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"id is un parseable", "index","回到主页","red");
             return "message";
         }
-        Item query_item = gloabal_service.querry_by_id(new Item(id,"","","" ));
+        Item query_item = gloabal_service.querry_by_id(id_int);
         if(query_item == null)
         {
             gloabal_service.set_message(model,"id is not in database", "index","回到主页","red");
@@ -365,11 +431,21 @@ public class HelloController implements ApplicationContextAware {
             }
         }
         model.addAttribute("file_list",file_lists );
+        model.addAttribute("user",global_service_user.get_user_by_mail_or_id(current_user_id+""));
+        // update the user
+        global_service_user.lru_to_front(id_int,current_user_id);
         return "item";
     }
 
     @RequestMapping(path = "/downloadAll", method = RequestMethod.GET)
     public ResponseEntity<Resource> downloadAll(HttpServletRequest request) throws IOException {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            new ResponseEntity<>("you need to login first", HttpStatus.OK);
+        }
+
         String id = request.getParameter("id").strip();
         // if id is null or empty
         if(id== null)
@@ -386,7 +462,7 @@ public class HelloController implements ApplicationContextAware {
             return null;
         }
         // no id in database
-        Item res = gloabal_service.querry_by_id(new Item(id_int,"","",""));
+        Item res = gloabal_service.querry_by_id(id_int);
         if(res == null)
         {
             System.out.println("no id in database");
@@ -407,8 +483,16 @@ public class HelloController implements ApplicationContextAware {
                 file_list.add(i.strip());
         }
 
+        File file = null;
         // get the zip file
-        File file= gloabal_service.zip_multiple_fiels(file_list);
+        try {
+            file= gloabal_service.zip_multiple_fiels(file_list);
+        }catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+            System.out.println("no file exist for");
+            return null;
+        }
         if(!file.exists())
         {
             System.out.println("no zipped file exist");
@@ -429,6 +513,13 @@ public class HelloController implements ApplicationContextAware {
 
     @RequestMapping(path = "/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(Model model, HttpServletRequest request) throws IOException {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            new ResponseEntity<>("you need to login first", HttpStatus.OK);
+        }
+
         String file_name = request.getParameter("file").strip();
         // get the file
         File file= new File(file_name.strip());
@@ -449,28 +540,17 @@ public class HelloController implements ApplicationContextAware {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
-    @RequestMapping(value = "/quick_del")
-    public String quick_del_op(Model model, HttpServletRequest request)
-    {
-        String [] del_id = request.getParameterValues("del_quick");
-        List<Quick_item> quick_itemList = gloabal_service.file_to_quick_list();
-        for(String need_del_id : del_id)
-        {
-            for(Quick_item i: quick_itemList)
-            {
-                if(i.getUuid().equals(need_del_id.strip()))
-                {
-                    quick_itemList.remove(i);
-                    break;
-                }
-            }
-        }
-        gloabal_service.quick_list_to_file(quick_itemList);
-        return "forward:/index";
-    }
+
     @RequestMapping(value = "/quick_add")
     public String quick_add(Model model, HttpServletRequest request)
     {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return "users/login";
+        }
+
         String add_type = request.getParameter("add_type");
         if(add_type ==  null || add_type.strip().equals(""))
         {
@@ -498,7 +578,7 @@ public class HelloController implements ApplicationContextAware {
                 return "message";
             }
             // id is in database?
-            Item query_item=  gloabal_service.querry_by_id(new Item(id_int,"","",""));
+            Item query_item=  gloabal_service.querry_by_id(id_int);
             if(query_item == null)
             {
                 gloabal_service.set_message(model,"id is not in database","index","回到主页","red");
@@ -507,6 +587,7 @@ public class HelloController implements ApplicationContextAware {
             // add to model
             model.addAttribute("title",query_item.getTitle());
             model.addAttribute("id",query_item.getId()+"");
+            model.addAttribute("user",global_service_user.get_user_by_mail_or_id(current_user_id+""));
             return "quickadd";
         }
         // no bonding add
@@ -514,12 +595,23 @@ public class HelloController implements ApplicationContextAware {
         {
             model.addAttribute("title","");
             model.addAttribute("id","-1");
+            model.addAttribute("user",global_service_user.get_user_by_mail_or_id(current_user_id+""));
             return "quickadd";
         }
     }
     @RequestMapping(value = "/quick_add_op")
     public String quick_add_op(Model model, HttpServletRequest request)
     {
+        //get the the user session
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+
+        //need to login first if no session
+        if(current_user_id == null)
+        {
+            return "users/login";
+        }
+
         String bonding_id = request.getParameter("id");
         String add_title = request.getParameter("title");
         if(add_title ==  null || add_title.strip().equals(""))
@@ -527,38 +619,25 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"title is empty","index","回到主页","red");
             return "message";
         }
-        Quick_item new_quick  = null;
+        Quick new_quick  = null;
         // bonding
         if(bonding_id !=null && !bonding_id.strip().equals(""))
         {
-            new_quick = new Quick_item(add_title.strip(),bonding_id.strip(), UUID.randomUUID().toString());
+            new_quick = new Quick(0,add_title, Integer.parseInt(bonding_id.strip()),current_user_id);
         }
         else
-            new_quick = new Quick_item(add_title.strip(),"-1", UUID.randomUUID().toString());
-        // store to file
-        List<Quick_item> quick_itemList = gloabal_service.file_to_quick_list();
-        quick_itemList.add(new_quick);
-        gloabal_service.quick_list_to_file(quick_itemList);
+            new_quick = new Quick(0,add_title, -1,current_user_id);
+        //add the quick to sql first
+        global_service_user.add_quick(new_quick);
+        // update the user
+        global_service_user.add_quick_in_user(current_user_id,new_quick);
         return "forward:/index";
     }
 
-
     @RequestMapping(value = "/close")
     public String close(Model model, HttpServletRequest request) {
-        String message = "";
-        if(HelloController.need_close)
-        {
-            Dao.close_connection();
-            message =" close okk";
-            HelloController.need_close = false;
-            System.out.println("clear resource test "+ request.getRequestURI().toString());
-        }
-        else
-        {
-            System.out.println("no need to close the sql connection");
-            message = " close already";
-        }
-        model.addAttribute("message",message);
+        ConnectionFactory.CleanConection();
+        model.addAttribute("message","clean....");
         return "message";
     }
     @Override

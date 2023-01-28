@@ -1,0 +1,6 @@
+1 数据表中存在item,就是搜索项，每个搜索项存在一个uid, 存在quick, 每个quick存在一个uid.
+user 存在两个分号分割的字段，一个指向item,一个指向quick
+
+2 增加item 操作, 先增加item, 再更新 user.
+    增加quick,先增加quick ,再更新user;
+3 删除的时候，先跟新user,再删除item/quick

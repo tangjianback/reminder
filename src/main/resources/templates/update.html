@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>信息修改</title>
+  <title>Update</title>
   <style>
     #update_button2:hover {
       background: #793f1a;
@@ -55,9 +55,10 @@
       transition: background 0.3s ease-in-out;
     }
     .jiange_debug{
-      border-color: #793f1a;
-      border-width: 0px;
+      float: left;
       border-style: dashed;
+      border-width: 0px;
+      border-color: red;
     }
     .jiange_add {
       clear: both;
@@ -76,29 +77,30 @@
 
 <body>
 <!--<link href="test.css" rel="stylesheet"type="text/css">-->
-<div class="mr-cont" style="border-style: solid;border-width: 0px;border-color: red; float: left;margin-left: 60px; width: 1300px">
-  <div style="float: left; margin-left: 50px"><h2 style="text-align: center;">信息修改</h2><hr width="1200" color="black" ></div>
-  <div class="jiange_debug" style="float: left;border-color: blue;border-width: 0px;margin-left: 50px;width: 1200px;" >
-  <form style="text-align: center;font-size:28px" method="post" th:action = "update_op" enctype="multipart/form-data">
-
-    <div style="margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1145px" class="jiange_debug" >
-      <div style="float: left;" class="jiange_debug">标题:</div>
+<div  class = 'jiange_debug' style="width: 1420px;">
+  <div style="float: left; margin-left: 50px"><h2 style="text-align: center;" th:text = "${user.language==0?'Info Update':'信息修改'}">Info Update</h2>
+    <hr width="1300" color="black" >
+  </div>
+  <div class="jiange_debug" style="float: left;border-color: blue;border-width: 0px;margin-left: 50px;width: 1400px;" >
+  <form style="text-align: center;font-size:28px" method="post" th:action = "@{/update_op}" enctype="multipart/form-data">
+    <div style="margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1200px" class="jiange_debug" >
+      <div style="float: left; padding-top:5px; width: 80px; text-align: left" th:text="${user.language==0?'Title:':'标题:'}" >Title</div>
       <div style="float: left; margin-left: 10px;margin-top: -5px " class="jiange_debug" >
-        <input type="text" name = "search_title" th:value="${title}"  style="width: 1040px;height: 30px">
+        <input type="text" name = "search_title" th:value="${title}"  style="width: 1100px;height: 30px">
       </div>
       <div style="clear:both"></div>
     </div>
 
-    <div style="margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1145px" class="jiange_debug" >
-      <div style="float: left; padding-top:190px" >详细:</div>
+    <div style="margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1200px" class="jiange_debug" >
+      <div style="float: left; padding-top:190px; width: 80px" th:text="${user.language==0?'Detail':'详细'}">Detail</div>
       <div style="float: left;margin-left: 10px;">
-        <textarea   class="tabSupport" name="search_content" style="resize: none; width: 1042px;height: 500px" th:text="${content}"></textarea>
+        <textarea   class="tabSupport" name="search_content" style="resize: none; width: 1100px;height: 500px; line-height: 20px;" th:text="${content}"></textarea>
       </div>
       <div style="clear:both"></div>
     </div>
 
     <div style="float:left; margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1130px" class="jiange_debug" >
-      <div style="float: left;" class="jiange_debug" >文件:</div>
+      <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Files':'文件'}">Files</div>
       <div style="float: left" class="jiange_debug">
 
         <div style="text-align: left; clear: both; margin-left: 10px; clear:both;" th:each="c, State : ${file_list}">
@@ -109,7 +111,7 @@
                   name="del_files"
                   th:value="${c.file}"
                   th:id ="${c.file}" />
-          <label th:for="${c.file}" th:text ="${c.short_name}" th:id="${c.file}+'jiange'"></label>
+          <label style="font-size: 15px;" th:for="${c.file}" th:text ="${c.short_name}" th:id="${c.file}+'jiange'"></label>
         </div>
 
         <div id = "jiange_list" style="clear: both; margin-left: 10px" class="jiange_debug">
@@ -120,21 +122,21 @@
 
     <div id="btn" align="center" style="float:left;border-width:0px; margin-left: 30px;clear: both;width: 550px" class="jiange_debug">
       <div style="float: left;margin-left: 100px;">
-        <label for="image_uploads" style="border-width: 4px;border-color: #14874c;border-style: solid; border-radius: 6px 6px 6px 6px;font-size: 18px; font-style: normal; ">添加文件
+        <label for="image_uploads" style="border-width: 4px;border-color: #14874c;border-style: solid; border-radius: 6px 6px 6px 6px;font-size: 18px; font-style: normal; " th:text="${user.language==0?'MoreFile:':'添加文件:'}">MoreFile
         </label>
         <input type="file" id="image_uploads" name="uploadFiles" multiple />
       </div>
       <div style="float: left; margin-left: 0px;">
-        <input type="submit" id = "update_button1" value="提交修改" onclick="return update();">
+        <input type="submit" id = "update_button1" value="Confirm" th:value="${user.language==0?'Confirm':'确认提交'}" onclick="return update();">
       </div>
       <div style="clear: both"></div>
       <input type="hidden" th:value="${id}" name= "id">
     </div>
   </form>
     <div style="float: left; margin-left: 60px;border-width: 0px;  border-color: #009900;border-style: dashed" class="jiange_debug">
-      <form action="detail" method="get">
+      <form action="/detail" method="get">
         <input type="hidden" name="detail" th:value="${id}">
-        <input type="submit" id = "update_button2" value="取消修改">
+        <input type="submit" id = "update_button2" value="Cancel" th:value="${user.language==0?'Cancel':'取消修改'}">
       </form>
     </div>
 
@@ -152,7 +154,7 @@
 
   // confirm
   function update() {
-    return confirm('确认更新?');
+    return confirm('Sure?');
   };
 
   // show  delete line

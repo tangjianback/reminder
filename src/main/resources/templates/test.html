@@ -1,61 +1,322 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>68.自定义动态复选框</title>
+  <title>Update</title>
   <style>
-    .jiange_on{
-      text-decoration: line-through;
+    #update_button2:hover {
+      background: #793f1a;
     }
-    .jiange_off{
-        text-decoration: none;
+    #update_button2 {
+      display: block;
+      height: 40px;
+      width: 100px;
+      padding: 0;
+      float: left;
+      margin-top: 10px;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 2px;
+      font-size: 18px;
+      font-family: 微软雅黑;
+      background: #b86029;
+      color: #fff;
+      outline: none;
+      -moz-border-radius: 4px 4px 4px 4px;
+      -webkit-border-radius: 4px 4px 4px 4px;
+      border-radius: 4px 4px 4px 4px;
+      -webkit-transition: background 0.3s ease-in-out;
+      -moz-transition: background 0.3s ease-in-out;
+      transition: background 0.3s ease-in-out;
     }
-
+    #update_button1:hover {
+      background: #243861;
+    }
+    #update_button1 {
+      display: block;
+      height: 40px;
+      width: 100px;
+      padding: 0;
+      float: left;
+      margin-top: 10px;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 2px;
+      font-size: 18px;
+      font-family: 微软雅黑;
+      background: #4e72be;
+      color: #fff;
+      outline: none;
+      -moz-border-radius: 4px 4px 4px 4px;
+      -webkit-border-radius: 4px 4px 4px 4px;
+      border-radius: 4px 4px 4px 4px;
+      -webkit-transition: background 0.3s ease-in-out;
+      -moz-transition: background 0.3s ease-in-out;
+      transition: background 0.3s ease-in-out;
+    }
     .jiange_debug{
+      float: left;
       border-style: dashed;
-      border-width: 1px;
+      border-width: 0px;
       border-color: red;
     }
+    .jiange_add {
+      clear: both;
+      color: green;
+      text-align: left;
+      margin-left: 22px;
+    }
 
+    .jiange{
+      text-decoration: line-through;
+    }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </head>
+
 <body>
-<div class="list" style="width:400px;border-style: solid;border-color: red;border-width: 1px;">
-   <div style="float: left;border-width: 2px;border-color: red;border-style: dashed; margin-left: 33%;font-size: 20px;font-weight: bold"> 待办事项</div>
-    <form>
-    <div style="float: left; width: 400px;" >
-      <div class="jiange_debug" style="float: left">
-          <div style="float: left" class="jiange_debug"><input type="checkbox"  value="nihao" onchange="check_line('test')"></div>
-      <div style="float: left; width: 372px" class="jiange_debug"><a  style = "word-wrap:break-word" class="jiange_off" id = "testjiange"  href="/" style="pointer-events:none;">nihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihao</a></div>
-          <div style="clear: both"></div>
-      </div>
-    </div>
-        <div style="float: left; width: 400px;" >
-            <div class="jiange_debug" style="float: left">
-                <div style="float: left" class="jiange_debug"><input type="checkbox"  value="nihao" onchange="check_line('test')"></div>
-                <div style="float: left; width: 372px" class="jiange_debug"><a  style = "word-wrap:break-word" class="jiange_off" id = "testjiange"  href="/" style="pointer-events:none;">nihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihao</a></div>
-                <div style="clear: both"></div>
-            </div>
+<!--<link href="test.css" rel="stylesheet"type="text/css">-->
+<div  class = 'jiange_debug' style="width: 1420px;">
+  <div style="float: left; margin-left: 50px"><h2 style="text-align: center;">信息修改</h2>
+    <hr width="1300" color="black" >
+  </div>
+  <div class="jiange_debug" style="float: left;border-color: blue;border-width: 0px;margin-left: 50px;width: 1400px;" >
+    <form style="text-align: center;font-size:28px" method="post" action = "/update_op" enctype="multipart/form-data">
+      <div style="margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1200px" class="jiange_debug" >
+        <div style="float: left; padding-top:5px; width: 80px; text-align: left" >标题:</div>
+        <div style="float: left; margin-left: 10px;margin-top: -5px " class="jiange_debug" >
+          <input type="text" name = "search_title" value="柳青农村大数据文档，api调用啥的,中国农业政策信息接口文档"  style="width: 1100px;height: 30px">
         </div>
-<!--    <input type="submit" value="按钮" >-->
+        <div style="clear:both"></div>
+      </div>
+
+      <div style="margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1200px" class="jiange_debug" >
+        <div style="float: left; padding-top:190px; width: 80px">详细</div>
+        <div style="float: left;margin-left: 10px;">
+          <textarea   class="tabSupport" name="search_content" style="resize: none; width: 1100px;height: 500px; line-height: 20px;">接口文档	http://7l11.custom.spolicy.cn/zgny_api/api/doc#501</textarea>
+        </div>
+        <div style="clear:both"></div>
+      </div>
+
+      <div style="float:left; margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1130px" class="jiange_debug" >
+        <div style="float: left; width: 80px; padding-top:5px">文件</div>
+        <div style="float: left" class="jiange_debug">
+
+          <div style="text-align: left; clear: both; margin-left: 10px; clear:both;">
+            <input
+                    type="checkbox"
+                    onchange="check_line(this.getAttribute(&#39;id&#39;))"
+                    name="del_files"
+
+                    value="uploadFile/2023/01//3433b3a2-9bdd-4b67-b3ca-eb683ecca593_中国农业政策信息接口文档.docx"
+                    id ="uploadFile/2023/01//3433b3a2-9bdd-4b67-b3ca-eb683ecca593_中国农业政策信息接口文档.docx" />
+            <label style="font-size: 15px;" for="uploadFile/2023/01//3433b3a2-9bdd-4b67-b3ca-eb683ecca593_中国农业政策信息接口文档.docx" id="uploadFile/2023/01//3433b3a2-9bdd-4b67-b3ca-eb683ecca593_中国农业政策信息接口文档.docxjiange">中国农业政策信息接口文档.docx</label>
+          </div>
+
+          <div id = "jiange_list" style="clear: both; margin-left: 10px" class="jiange_debug">
+          </div>
+          <div style="clear:both"></div>
+        </div>
+      </div>
+
+      <div id="btn" align="center" style="float:left;border-width:0px; margin-left: 30px;clear: both;width: 550px" class="jiange_debug">
+        <div style="float: left;margin-left: 100px;">
+          <label for="image_uploads" style="border-width: 4px;border-color: #14874c;border-style: solid; border-radius: 6px 6px 6px 6px;font-size: 18px; font-style: normal; ">添加文件:</label>
+          <input type="file" id="image_uploads" name="uploadFiles" multiple />
+        </div>
+        <div style="float: left; margin-left: 0px;">
+          <input type="submit" id = "update_button1" value="确认提交" onclick="return update();">
+        </div>
+        <div style="clear: both"></div>
+        <input type="hidden" value="14" name= "id">
+      </div>
     </form>
-    <div style="clear: both"></div>
+    <div style="float: left; margin-left: 60px;border-width: 0px;  border-color: #009900;border-style: dashed" class="jiange_debug">
+      <form action="/detail" method="get">
+        <input type="hidden" name="detail" value="14">
+        <input type="submit" id = "update_button2" value="取消修改">
+      </form>
+    </div>
+
+
+  </div>
+
+
 </div>
-</body>
-<script>
-  function check_line( name) {
-      var l1 = document.getElementById(name + 'jiange');
-      // 存在jiange
-      if (l1.getAttribute('class') && l1.getAttribute('class').indexOf('jiange_on') > -1){
-         l1.classList.remove("jiange_on");
-        l1.classList.add("jiange_off");
+<script type="text/javascript">
+  const input = document.querySelector('#image_uploads');
+  input.style.opacity = 0;
+  var temp_add_count = 0;
+
+  input.addEventListener('change', updateImageDisplay);
+
+  // confirm
+  function update() {
+    return confirm('Sure?');
+  };
+
+  // show  delete line
+  function check_line( name){
+    var l1=document.getElementById(name+'jiange');
+    if(l1.getAttribute('class') && l1.getAttribute('class').indexOf('jiange') >-1)
+      l1.classList.remove("jiange")
+    else
+      l1.classList.add("jiange")
+  }
+
+  function updateImageDisplay() {
+
+    div_1 = document.querySelector('#jiange_list');
+
+    old_add_files = document.querySelectorAll('.jiange_add')
+
+    if(old_add_files !== null)
+    {
+      for (const son_file of old_add_files){
+        div_1.removeChild(son_file)
+      }
+    }
+    const curFiles = input.files;
+
+    if (curFiles.length !== 0) {
+      for (const file of curFiles) {
+        var element_span = document.createElement("span");
+        var element_div = document.createElement("div");
+        element_div.className = "jiange_add";
+        // element.setAttribute("id", "test");
+        element_span.innerHTML = file.name +'  (' +returnFileSize(file.size)+')'
+        element_div.appendChild(element_span)
+        div_1.appendChild(element_div);
+        // alert(file.size)
+        // alert(file.name)
+
+      }
+
+    }
+  }
+
+
+  function returnFileSize(number) {
+    if (number < 1024) {
+      return `${number} bytes`;
+    } else if (number >= 1024 && number < 1048576) {
+      return `${(number / 1024).toFixed(1)} KB`;
+    } else if (number >= 1048576) {
+      return `${(number / 1048576).toFixed(1)} MB`;
+    }
+  }
+
+
+  $(function() {
+    var enabled = true;
+    $("textarea.tabSupport").keydown(function(e) {
+
+      // Escape key toggles tab on/off
+      if (e.keyCode==27)
+      {
+        enabled = !enabled;
+        return false;
+      }
+
+      // Enter Key?
+      if (e.keyCode === 13 && enabled)
+      {
+        // selection?
+        if (this.selectionStart == this.selectionEnd)
+        {
+          // find start of the current line
+          var sel = this.selectionStart;
+          var text = $(this).val();
+          while (sel > 0 && text[sel-1] != '\n')
+            sel--;
+
+          var lineStart = sel;
+          while (text[sel] == ' ' || text[sel]=='\t')
+            sel++;
+
+          if (sel > lineStart)
+          {
+            // Insert carriage return and indented text
+            document.execCommand('insertText', false, "\n" + text.substr(lineStart, sel-lineStart));
+
+            // Scroll caret visible
+            this.blur();
+            this.focus();
+            return false;
+          }
+        }
+      }
+
+      // Tab key?
+      if(e.keyCode === 9 && enabled)
+      {
+        // selection?
+        if (this.selectionStart == this.selectionEnd)
+        {
+          // These single character operations are undoable
+          if (!e.shiftKey)
+          {
+            document.execCommand('insertText', false, "\t");
+          }
+          else
+          {
+            var text = this.value;
+            if (this.selectionStart > 0 && text[this.selectionStart-1]=='\t')
+            {
+              document.execCommand('delete');
+            }
+          }
         }
         else
         {
-            l1.classList.remove("jiange_off");
-            l1.classList.add("jiange_on");
+          // Block indent/unindent trashes undo stack.
+          // Select whole lines
+          var selStart = this.selectionStart;
+          var selEnd = this.selectionEnd;
+          var text = $(this).val();
+          while (selStart > 0 && text[selStart-1] != '\n')
+            selStart--;
+          while (selEnd > 0 && text[selEnd-1]!='\n' && selEnd < text.length)
+            selEnd++;
+
+          // Get selected text
+          var lines = text.substr(selStart, selEnd - selStart).split('\n');
+
+          // Insert tabs
+          for (var i=0; i<lines.length; i++)
+          {
+            // Don't indent last line if cursor at start of line
+            if (i==lines.length-1 && lines[i].length==0)
+              continue;
+
+            // Tab or Shift+Tab?
+            if (e.shiftKey)
+            {
+              if (lines[i].startsWith('\t'))
+                lines[i] = lines[i].substr(1);
+              else if (lines[i].startsWith("    "))
+                lines[i] = lines[i].substr(4);
+            }
+            else
+              lines[i] = "\t" + lines[i];
+          }
+          lines = lines.join('\n');
+
+          // Update the text area
+          this.value = text.substr(0, selStart) + lines + text.substr(selEnd);
+          this.selectionStart = selStart;
+          this.selectionEnd = selStart + lines.length;
         }
-  }
+
+        return false;
+      }
+
+      enabled = true;
+      return true;
+    });
+  });
 </script>
+</body>
 </html>

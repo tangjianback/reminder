@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>信息录入</title>
+    <title>InfoAdd</title>
     <style>
         #add_button:hover {
             background: #793f1a;
@@ -29,42 +29,46 @@
             -moz-transition: background 0.3s ease-in-out;
             transition: background 0.3s ease-in-out;
         }
+        .jiange_debug{
+            float: left;
+            border-style: dashed;
+            border-width: 0px;
+            border-color: red;
+        }
     </style>
 </head>
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-<link href="test.css" rel="stylesheet"type="text/css">
-<div class="mr-cont">
-    <h2 style="text-align: center;">信息录入</h2>
+<div  class = 'jiange_debug' style="width: 1420px;">
+    <h2 style="text-align: center;" th:text="${user.language ==0?'Info Add':'信息录入'}">info Add</h2>
     <hr width="1200" color="black" >
-    <form style="text-align: center;font-size:28px" method="post" th:action = "${url}" enctype="multipart/form-data">
-        <div style="margin-left: 12%;">
-            <div style="float: left; padding-top:10px" >标题:</div>
+    <form style="text-align: center;font-size:28px" method="post" th:action = "@{/add_op}" enctype="multipart/form-data">
+        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
+            <div style="float: left; padding-top:5px; width: 80px; text-align: left" th:text="${user.language==0?'Title:':'标题:'}" >Title</div>
             <div style="float: left">
                 <!--        <input type="text" name = "search_title" placeholder="字符串长度为6-20，包含数字和字母"  style="width: 700px;height: 28px">-->
-                <input type="text" name = "search_title" th:value="${title}"  style="width: 1000px;height: 28px">
+                <input type="text" name = "search_title"  style="width: 1100px;height: 28px">
             </div>
+        </div>
 
-        </div>
         <br>
-        <div style="margin-left: 12%;clear: both;">
-            <div style="float: left; padding-top:190px" >详细:</div>
+        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
+            <div style="float: left; padding-top:190px; width: 80px" th:text="${user.language==0?'Detail':'详细'}">Detail</div>
             <div style="float: left">
-                <textarea class="tabSupport" name="search_content" style="width: 1000px;height: 500px" th:text="${content}"></textarea>
+                <textarea class="tabSupport" name="search_content" style="width: 1100px;height: 500px"></textarea>
             </div>
         </div>
         <br>
-        <div style="margin-left: 12%;clear: both;">
-            <div style="float: left; padding-top:10px" >文件:</div>
+        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
+            <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Files':'文件'}">Files</div>
             <div style="float: left">
-                <input name = "uploadFile" type="file" placeholder="选择文件" id="nm" style="width: 1000px;height: 28px" multiple>
-                <span th:text = "${file}"></span>
+                <input name = "uploadFile" type="file" th:placeholder="${user.language==0?'Select Files':'选择文件'}" id="nm" style="width: 1000px;height: 28px" multiple>
             </div>
         </div>
-        <div id="btn" align="center" style="margin-left: 3%;clear: both;">
+        <div id="btn" align="center" style="margin-left: 80px;clear: both;">
             <input type="hidden" th:value="${id}" name= "id">
-            <input type="submit" value="新建" id = "add_button" style="width:100px;height:30px; margin-left: 45%">
+            <input type="submit" value = 'Create' th:value="${user.language==0?'Create':'新建'}" id = "add_button" style="width:100px;height:30px; margin-left: 45%">
         </div>
     </form>
 

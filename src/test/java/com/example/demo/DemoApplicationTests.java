@@ -1,6 +1,4 @@
 package com.example.demo;
-
-import com.example.demo.object.Quick_item;
 import com.example.demo.service.Service;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
