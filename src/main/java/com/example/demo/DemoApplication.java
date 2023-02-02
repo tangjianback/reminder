@@ -23,8 +23,8 @@ public class DemoApplication extends WebMvcConfigurationSupport {
 		registry.addResourceHandler("/js/**").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/static/js/");
 		registry.addResourceHandler("/libs/**").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/static/libs/");
 		registry.addResourceHandler("/img/**").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/static/img/");
+		registry.addResourceHandler("/uploadFile/**").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX +"/uploadFile/");
 		registry.addResourceHandler("/favicon.ico").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/static/favicon.ico");
-
 		super.addResourceHandlers(registry);
 	}
 }

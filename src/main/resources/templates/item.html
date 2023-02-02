@@ -350,7 +350,7 @@
 <div class="suggest" id="search-suggest1" style="margin-top: 20px;">
 		<div style="border-width: 0px;
                   border-style: dashed;
-                  border-color: red;"><span style = "font-size:20px;" th:text = "${title}" ></span></div>
+                  border-color: red;"><span th:style ="'font-size:20px;'+${publics==1?'text-decoration:underline;':''}" th:text = "${title}" ></span></div>
 		<div style="margin-top: 10px;border-width: 0px;
                   border-style: dashed;
                   border-color: red;
@@ -365,10 +365,9 @@
 
 				<div style="clear: both;">
     <pre  style="border: 0px solid #090;border-radius: 4px;background: #f3f3f3">
-		<code class="language-plaintext" th:text = "${content}" id = "myInput" style="font-size: 15px;">
+		<code class="language-plaintext" th:text = "${content}" id = "myInput" style="font-size: 15px;">test
 	</code>
 </pre>
-
 					<!-- <input type="text" value="Hello World" id="myInput"> -->
 				</div>
 		</div>

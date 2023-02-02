@@ -68,6 +68,12 @@ public class HelloController implements ApplicationContextAware {
         HttpSession se = request.getSession();
         Integer current_user_id = (Integer) se.getAttribute("user");
 
+//        User current_user = global_service_user.get_user_by_mail_or_id("tangjians@icloud.com");
+//        se.setAttribute("user",current_user.getU_id());
+//        model.addAttribute("user",current_user);
+//        return "index";
+
+
         //need to login first if no session
         if(current_user_id == null)
         {
@@ -94,6 +100,7 @@ public class HelloController implements ApplicationContextAware {
             model.addAttribute("user",current_user);
             return "index";
         }
+
     }
     @RequestMapping(value = "/")
     public String index_default(Model model,HttpServletRequest request) {
@@ -170,10 +177,12 @@ public class HelloController implements ApplicationContextAware {
             String content = querry_item.getContent();
             String file = querry_item.getFile();
             String id = querry_item.getId()+"";
+            String type = querry_item.getCategory()+"";
 
             model.addAttribute("title",title);
             model.addAttribute("content",content);
             model.addAttribute("id",id);
+            model.addAttribute("type",type);
 
             // if it has a corresponding file
             String file_name = querry_item.getFile().strip();
@@ -204,8 +213,10 @@ public class HelloController implements ApplicationContextAware {
         }
         String title = request.getParameter("search_title").strip();
         String content = request.getParameter("search_content").strip();
+        String category_id = request.getParameter("type").strip();
+        String public_item = request.getParameter("public").strip();
         // it no parameter
-        if(title==null || content == null)
+        if(title==null || content == null || category_id== null)
         {
             gloabal_service.set_message(model,"title or content  miss","index","返回主页","red");
             return "message";
@@ -224,7 +235,7 @@ public class HelloController implements ApplicationContextAware {
             return "message";
         }
         //store multiple files
-        int store_res = gloabal_service.store(files,title,content,current_user_id);
+        int store_res = gloabal_service.store(files,title,content,current_user_id,Integer.parseInt(category_id),public_item);
         String message = null;
         switch (store_res){
             case -3:
@@ -308,6 +319,7 @@ public class HelloController implements ApplicationContextAware {
         String title = request.getParameter("search_title").strip();
         String content = request.getParameter("search_content").strip();
         String id = request.getParameter("id");
+        String cate_id = request.getParameter("type");
         // if no enough parameters
         if(title == null || content == null || id ==null)
         {
@@ -345,7 +357,7 @@ public class HelloController implements ApplicationContextAware {
         }
 
         String message;
-        int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"),current_user_id);
+        int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"),current_user_id, Integer.parseInt(cate_id));
         switch (update_res){
             case -3:
                 message = "store file fail";
@@ -431,10 +443,26 @@ public class HelloController implements ApplicationContextAware {
             }
         }
         model.addAttribute("file_list",file_lists );
+        model.addAttribute("publics",query_item.getPublics());
         model.addAttribute("user",global_service_user.get_user_by_mail_or_id(current_user_id+""));
         // update the user
         global_service_user.lru_to_front(id_int,current_user_id);
-        return "item";
+        // photo or normal
+        int type = query_item.getCategory();
+        if(type == 0)
+            return "item";
+        else
+        {
+            for(File_item temp :file_lists)
+            {
+                if( !temp.getFile().endsWith(".jpg") && !temp.getFile().endsWith(".png"))
+                {
+                    gloabal_service.set_message(model,"contains no photo in the dataset", "index","回到主页","red");
+                    return "message";
+                }
+            }
+            return "photo";
+        }
     }
 
     @RequestMapping(path = "/downloadAll", method = RequestMethod.GET)
@@ -522,7 +550,7 @@ public class HelloController implements ApplicationContextAware {
 
         String file_name = request.getParameter("file").strip();
         // get the file
-        File file= new File(file_name.strip());
+        File file= new File("src/main/resources/uploadFile/"+file_name.strip());
         if(!file.exists())
         {
             System.out.println("no file named "+file_name+" exist");

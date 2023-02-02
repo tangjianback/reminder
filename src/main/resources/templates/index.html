@@ -230,6 +230,9 @@
             border-width: 0px;
             border-color: red;
         }
+        .myser{
+            background:
+        }
     </style>
 </head>
 <body>
@@ -259,10 +262,14 @@
 </div>
 
 <div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
-<div id="search-suggest1" style="border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px">
-    <ul th:each="c, State : ${user.u_lru_list}">
-        <li >
-            <a th:href="'/detail?detail='+${c.Id}" th:text="${c.title}"></a>
+<div id="search-suggest1" th:style="'border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;'+${#lists.isEmpty(user.u_lru_list)?'height:10px;':''}">
+        <ul th:each="c, State : ${user.u_lru_list}">
+        <li>
+            <div style="float: left" th:if="${c.category==0}"><img th:src="@{/img/note.png}" width=18px /></div>
+            <div style="float: left" th:if="${c.category==1}"><img th:src="@{/img/photo.png}" width=18px /></div>
+            <div style="float: left" th:if="${c.publics==1}"><a th:href="'/detail?detail='+${c.Id}" th:text="${c.title}" style="background-color: #cbcecb"></a></div>
+            <div style="float: left" th:if="${c.publics==0}"><a th:href="'/detail?detail='+${c.Id}" th:text="${c.title}"></a></div>
+            <div style="clear: both"></div>
         </li>
     </ul>
 </div>

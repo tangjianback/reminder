@@ -131,6 +131,7 @@
       </div>
       <div style="clear: both"></div>
       <input type="hidden" th:value="${id}" name= "id">
+      <input type="hidden" th:value="${type}" name = "type">
     </div>
   </form>
     <div style="float: left; margin-left: 60px;border-width: 0px;  border-color: #009900;border-style: dashed" class="jiange_debug">
@@ -309,7 +310,6 @@
           this.selectionStart = selStart;
           this.selectionEnd = selStart + lines.length;
         }
-
         return false;
       }
 

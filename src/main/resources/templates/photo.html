@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>PhotoDetail</title>
+  <style>
+    html,
+    body {
+      font-family: 微软雅黑;
+      /*    overflow: hidden;*/
+    }
+    #up_search {
+      float: left;
+    }
+    .up_search_left {
+      float: left;
+      width: 200px;
+    }
+
+
+    .button1 {
+      /*    width: 420px;*/
+      /*left: 44.45%;
+            top: 24.3%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
+      text-align: center;
+    }
+    .button2 {
+      /*    width: 440px;*/
+      /*left: 50%;
+            top: 15%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
+      text-align: center;
+    }
+    .button3 {
+      /*    width: 440px;*/
+      /*left: 50%;
+            top: 15%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
+      text-align: center;
+    }
+    .button4 {
+      /*    width: 440px;*/
+      /*left: 50%;
+            top: 15%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
+      text-align: center;
+    }
+    .button2>h2 {
+      color: #666;
+      letter-spacing: 2px;
+    }
+
+
+    .search-btn {
+      display: block;
+      height: 40px;
+      width: 80px;
+      padding: 0;
+      float: left;
+      margin: 0;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 2px;
+      font-size: 14px;
+      font-family: 微软雅黑;
+      background: #cbcecb;
+      color: black;
+      outline: none;
+      -moz-border-radius: 4px 4px 4px 4px;
+      -webkit-border-radius: 4px 4px 4px 4px;
+      border-radius: 4px 4px 4px 4px;
+      -webkit-transition: background 0.8s ease-in-out;
+      -moz-transition: background 0.8s ease-in-out;
+      transition: background 0.8s ease-in-out;
+    }
+
+    .search-btn:hover {
+      background: #ffffff;
+      color: #a5a6a5;
+    }
+    #search-suggest {
+      position: absolute;
+      left: 50%;
+      top: 15%;
+      margin-left: -190px;
+      margin-top: 70px;
+      display: none;
+      background: #fff;
+
+    }
+    #search-suggest ul {
+      list-style: none;
+      width: 318px;
+      border: 1px solid #b4b4b4;
+      padding: 0;
+      margin: 0;
+      box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.15);
+    }
+    #search-suggest ul li {
+      padding: 3px 10px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    #search-suggest ul li:hover {
+      background: #eee;
+
+    }
+    #search-suggest1 {
+      border-width: 0px;
+      border-style: dashed;
+      border-color: green;
+      clear: both;
+      float: left;
+      width: 1200px;
+      margin-left: 120px;
+      display: block;
+      background: #fff;
+
+    }
+    #search-suggest1 ul li {
+      padding: 3px 10px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      font-size: 19px;
+      word-break:break-all;
+      /*    overflow:hidden;*/
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 140px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 150%;
+      left: 50%;
+      margin-left: -75px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .jiange_debug{
+      border-style: dashed;
+      border-width: 0px;
+      border-color: red;
+    }
+  </style>
+  <link rel="stylesheet" th:href="@{css/style_photo.css}">
+<!--  <link rel="stylesheet" href="../static/css/style_photo.css">-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div id = "up_search" style="margin-top:40px; float:left; border-style: dashed;border-width: 0px;border-color: black; width: 1400px; ">
+  <div class= "up_search_left" style="margin-left: 250px">
+    <form class="button1" method="get" th:action="@{/update}">
+      <input type="hidden" name = "id" th:value ="${id}">
+      <input type="submit" class="search-btn" th:value="${user.language==0?'Update':'修改'}">
+    </form>
+  </div>
+  <div class = "up_search_left" style="border-width: 0px; border-style: dashed; border-color: red">
+    <form class="button2" method="get" th:action="@{/delete_op}">
+      <input type="hidden" name = "id" th:value ="${id}">
+      <input type="submit" class="search-btn" th:value="${user.language==0?'Delete':'删除'}" onclick="return clicked();">
+    </form>
+  </div>
+  <div class = "up_search_left">
+    <form class="button3" method="get" th:action="@{/index}">
+      <input type="submit" class="search-btn" th:value="${user.language==0?'Home':'主页'}">
+    </form>
+  </div>
+  <div class = "up_search_left">
+    <form class="button4" method="get" th:action="@{/quick_add}">
+      <input type="hidden" name="id" th:value="${id}">
+      <!--			0: bonding add-->
+      <input type="hidden" name="add_type" value="0">
+      <input type="submit" class="search-btn" th:value="${user.language==0?'Todo':'待办'}">
+    </form>
+  </div>
+  <div class="up_search_left">
+    <form th:action="@{/downloadAll}" method="get">
+      <input type="hidden" name = "id" th:value="${id}">
+      <input type="submit"  class="search-btn" th:value="${user.language==0?'DownloadAll':'一键下载'}" th:disabled='${#lists.isEmpty(file_list)?"true":"false"}'>
+    </form>
+  </div>
+</div>
+
+<!--gallery画廊-->
+<div class="gallery-section jiange_debug" style="float: left; border-width: 0px;width: 1420px;margin-left: 10px;" >
+  <div class="inner-width jiange_debug">
+    <h1 th:text = "${title}" th:style ="${publics==1?'text-decoration:underline;':''}">标题</h1>
+    <div class="border"></div>
+    <div style="float:left; margin-top: -30px;border-width: 0px;
+                  border-style: dashed;
+                  border-color: red;width: 1200px; margin-left: 100px">
+    <pre  style="border: 0px solid #090;border-radius: 4px;background: #f3f3f3">
+		<code class="language-plaintext" th:text = "${content}" id = "myInput" style="font-size: 15px;">test
+	    </code>
+    </pre>
+      </div>
+    </div>
+
+<!--  <div style="float: left;margin-top: 10px; margin-left: 5px; clear:both;" th:each="c, State : ${file_list}">-->
+<!--    <a th:href="'/download?file='+${c.file}"th:text="${c.short_name}"></a>-->
+<!--    &lt;!&ndash; <span th:text = "${file_short}">a.text</span> &ndash;&gt;-->
+<!--  </div>-->
+    <div class="gallery" style="float: left">
+      <td th:each="c, State : ${file_list}">
+        <a th:href="@{uploadFile/{filename}(filename=${c.file})}" class="image">
+          <img th:src="@{uploadFile/{filename}(filename=${c.file})}" alt="">
+        </a>
+      </td>
+    </div>
+    <div style="clear: both"></div>
+  </div>
+</div>
+<div style="clear: both"></div>
+<script>
+
+  $(".gallery").magnificPopup({
+    delegate: 'a',
+    type: 'image',
+    gallery:{
+      enabled: true
+    }
+  });
+
+  var oSearchText = document.getElementById('search-text');
+  var oSearchSuggest = document.getElementById('search-suggest');
+  function myFunction() {
+    var copyText = document.getElementById("myInput").innerText;
+    // alert(copyText.value)
+    // copyText.select();
+    // copyText.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(copyText);
+
+    var tooltip = document.getElementById("myTooltip");
+    tooltip.innerHTML = "Copied: Complete";
+  };
+
+  function outFunc() {
+    var tooltip = document.getElementById("myTooltip");
+    tooltip.innerHTML = "Copy to clipboard";
+  };
+
+  function textAreaAdjust(element) {
+    element.style.height = "1px";
+    element.style.height = (25+element.scrollHeight)+"px";
+  };
+  function clicked() {
+    return confirm('Sure?');
+  };
+  document.addEventListener('keyup', function (e) {
+    e = e || event;
+
+    if(e.target.tagName.toLowerCase() == 'input') {
+
+      if (oSearchText.value.length) {
+
+        oSearchSuggest.style.display = 'block';
+      }
+      else {
+
+        oSearchSuggest.style.display = 'none';
+      }
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    e = e || event;
+
+    if (oSearchText.value.length) {
+
+      if (e.target.tagName.toLowerCase() != 'input') {
+
+        oSearchSuggest.style.display = 'none';
+      }else {
+
+        oSearchSuggest.style.display = 'block';
+      }
+    }
+
+  })
+</script>
+</body>
+</html>

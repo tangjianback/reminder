@@ -61,8 +61,10 @@ public class Dao {
             String content = rs.getString("search_content");
             String file = rs.getString("search_file");
             int user_id = rs.getInt("user_id");
+            int cate_id = rs.getInt("category");
+            int publics = rs.getInt("public");
             // 输出数据
-            res.add(new Item(id,title,content,file,user_id));
+            res.add(new Item(id,title,content,file,user_id,cate_id,publics));
         }
         rs.close();
         return res;
@@ -70,8 +72,7 @@ public class Dao {
     public static List<Item> query(String word, int uid) throws SQLException {
         word = word.replaceAll("'","''");
         LinkedList<Item> res = new LinkedList<>();
-        String sql = "select * from search_table where user_id = "+uid+" and search_title like '%"+word+"%'";
-
+        String sql = "select * from search_table where (user_id = "+uid+" or public = 1) and search_title like '%"+word+"%'";
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
             // 通过字段检索
@@ -80,8 +81,10 @@ public class Dao {
             String content = rs.getString("search_content");
             String file = rs.getString("search_file");
             int user_id= rs.getInt("user_id");
+            int cate_id = rs.getInt("category");
+            int publics = rs.getInt("public");
             // 输出数据
-            res.add(new Item(id,title,content,file,user_id));
+            res.add(new Item(id,title,content,file,user_id,cate_id,publics));
         }
         rs.close();
         return res;
@@ -109,8 +112,7 @@ public class Dao {
         item.setTitle(item.getTitle().replaceAll("'","''"));
         item.setContent(item.getContent().replaceAll("'","''"));
         int res = 0;
-        String sql = "INSERT INTO search_table(search_title,search_content,search_file,user_id)  VALUES('"+item.getTitle()+ "','"+item.getContent()+"','"+item.getFile()+"',"+item.getUid()+")";
-
+        String sql = "INSERT INTO search_table(search_title,search_content,search_file,user_id,category,public)  VALUES('"+item.getTitle()+ "','"+item.getContent()+"','"+item.getFile()+"',"+item.getUid()+","+item.getCategory()+","+item.getPublics()+")";
         res = stmt.executeUpdate(sql);
         return (res == 1?true:false );
     }
@@ -126,8 +128,10 @@ public class Dao {
             String content = rs.getString("search_content");
             String file = rs.getString("search_file");
             int user_id = rs.getInt("user_id");
+            int cate_id = rs.getInt("category");
+            int publics = rs.getInt("public");
             // 输出数据
-            res_item = new Item(id,title,content,file,user_id);
+            res_item = new Item(id,title,content,file,user_id,cate_id,publics);
         }
         rs.close();
         return res_item;

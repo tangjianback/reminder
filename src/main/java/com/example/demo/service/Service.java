@@ -138,10 +138,10 @@ public class Service {
     }
 
 //    finished 1: no dile but add 0; dircreate_file:-1; sqlerror:-2; storefail:-3;
-    public int store(MultipartFile[] uploadFiles, String title, String content,int uid)
+    public int store(MultipartFile[] uploadFiles, String title, String content,int uid,int cate_id,String public_item)
     {
         String format = sdf.format(new Date());
-        File folder = new File("uploadFile/" + format);
+        File folder = new File("src/main/resources/uploadFile/" + format);
 
         // if parent dir not exists, then create it, if fails return -1
         if(!folder.isDirectory() && folder.mkdirs() == false)
@@ -159,7 +159,7 @@ public class Service {
             try {
                 File new_file = new File(folder.getAbsolutePath()+"/"+newName);
                 temp_file.transferTo(new_file);
-                stored_fles.add("uploadFile/" + format+"/"+newName);
+                stored_fles.add(format+newName);
             } catch (IOException e) {
                 // if store failed then delete all files stored already
                 e.printStackTrace();
@@ -172,8 +172,14 @@ public class Service {
                 return -3;
             }
         }
+
+        int publics = 0;
+        if(public_item!= null && public_item.strip().equals("1"))
+        {
+            publics = 1;
+        }
         // sql executing
-        if(this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles),uid)))
+        if(this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles),uid,cate_id,publics)))
         {
             if(stored_fles.isEmpty())
                 return 0;
@@ -193,7 +199,7 @@ public class Service {
 
     }
     //    finished :1; nofile:0; dircreate_file:-1; sqlerror:-2; storefail:-3;
-    public int update(MultipartFile[] uploadFiles, String title, String content, int ID, String[] del_files, int uid)
+    public int update(MultipartFile[] uploadFiles, String title, String content, int ID, String[] del_files, int uid,int cate_id)
     {
         // prepare the new files string
         Item query_item  = this.querry_by_id(ID);
@@ -211,7 +217,7 @@ public class Service {
             //delete the requires files
             for(String s: del_files)
             {
-                File temp_file = new File(s.strip());
+                File temp_file = new File("src/main/resources/uploadFile/" +s.strip());
                 if(temp_file.exists())
                     temp_file.delete();
                 else
@@ -221,7 +227,7 @@ public class Service {
 
         //store the files
         String format = sdf.format(new Date());
-        File folder = new File("uploadFile/" + format);
+        File folder = new File("src/main/resources/uploadFile/" + format);
 
         // store files and adding it the list
         // if parent dir not exists, then create it, if fails return -1
@@ -239,7 +245,7 @@ public class Service {
             try {
                 File new_file = new File(folder.getAbsolutePath()+"/"+newName);
                 temp_file.transferTo(new_file);
-                old_string_files.add("uploadFile/" + format+"/"+newName);
+                old_string_files.add(format+newName);
                 add_file_flag = true;
             } catch (IOException e) {
                 // if store failed
@@ -249,7 +255,7 @@ public class Service {
         }
         // execute sql
         // sql successful
-        if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files),uid)))
+        if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files),uid,cate_id,query_item.getPublics())))
         {
             boolean del_file_flag = (del_files==null || del_files.length== 0)? false:true;
             // add and delte
@@ -274,7 +280,7 @@ public class Service {
 
 
     public File zip_multiple_fiels(List<String> srcFiles) throws IOException {
-        File folder = new File("uploadFile");
+        File folder = new File("src/main/resources/uploadFile/");
         // if dir is
         if(!folder.isDirectory())
         {
@@ -284,13 +290,13 @@ public class Service {
             }
         }
         // if the compressed.zip exist
-        File target_zip_file = new File("uploadFile/compressed.zip");
+        File target_zip_file = new File("src/main/resources/uploadFile/compressed.zip");
         if(target_zip_file.exists())
             target_zip_file.delete();
         final FileOutputStream fos = new FileOutputStream(target_zip_file);
         ZipOutputStream zipOut = new ZipOutputStream(fos);
         for (String srcFile : srcFiles) {
-            File fileToZip = new File(srcFile);
+            File fileToZip = new File("src/main/resources/uploadFile/"+srcFile);
             FileInputStream fis = new FileInputStream(fileToZip);
             ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
             zipOut.putNextEntry(zipEntry);
@@ -311,11 +317,15 @@ public class Service {
         {
             if(!s.equals(""))
             {
-                File temp_file= new File(s.strip());
+                File temp_file= new File("src/main/resources/uploadFile/"+s.strip());
                 if(temp_file.exists())
                     temp_file.delete();
                 else
+                {
                     flag = false;
+                    System.out.println(temp_file.getAbsolutePath());
+                }
+
             }
         }
         return flag;

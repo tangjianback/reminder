@@ -38,8 +38,7 @@
     </style>
 </head>
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
+<script th:src="@{libs/jquery-1.12.4/jquery.min.js}"></script>
 <div  class = 'jiange_debug' style="width: 1420px;">
     <h2 style="text-align: center;" th:text="${user.language ==0?'Info Add':'信息录入'}">info Add</h2>
     <hr width="1200" color="black" >
@@ -56,7 +55,7 @@
         <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
             <div style="float: left; padding-top:190px; width: 80px" th:text="${user.language==0?'Detail':'详细'}">Detail</div>
             <div style="float: left">
-                <textarea class="tabSupport" name="search_content" style="width: 1100px;height: 500px"></textarea>
+                <textarea class="tabSupport" name="search_content" style="width: 1100px;height: 450px"></textarea>
             </div>
         </div>
         <br>
@@ -66,6 +65,21 @@
                 <input name = "uploadFile" type="file" th:placeholder="${user.language==0?'Select Files':'选择文件'}" id="nm" style="width: 1000px;height: 28px" multiple>
             </div>
         </div>
+        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
+            <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Type':'类别'}">Type</div>
+            <div style="float: left;margin-top:4px;margin-left: 10px">
+            <input  type="radio"   name="type" value="0" checked="checked"><label style="font-size: 16px" th:text = "${user.language==0?'normal':'普通'}">普通</label>
+            <input type="radio" name="type" value="1"  ><label style="font-size: 16px" th:text = "${user.language==0?'photo':'照片'}">照片</label>
+            </div>
+        </div>
+        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
+            <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Public':'公开'}">Public</div>
+            <div style="float: left;margin-top:4px;margin-left: 10px">
+                <input  type="checkbox"   name="public" value="1"><label style="font-size: 16px" ></label>
+            </div>
+        </div>
+
+
         <div id="btn" align="center" style="margin-left: 80px;clear: both;">
             <input type="hidden" th:value="${id}" name= "id">
             <input type="submit" value = 'Create' th:value="${user.language==0?'Create':'新建'}" id = "add_button" style="width:100px;height:30px; margin-left: 45%">

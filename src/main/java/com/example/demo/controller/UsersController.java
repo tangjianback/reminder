@@ -153,4 +153,10 @@ public class UsersController {
         }
         return "forward:/index";
     }
+    @RequestMapping(value = "/test")
+    public String test(Model model, HttpServletRequest request) {
+        User current_user = global_user_service.get_user_by_mail_or_id("tangjians@icloud.com");
+        model.addAttribute("user",current_user);
+       return "photo";
+    }
 }

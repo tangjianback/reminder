@@ -8,6 +8,36 @@ public class Item implements Comparable<Item>{
     String content;
     String file;
     int uid;
+    int category;
+    int publics;
+
+    public int getPublics() {
+        return publics;
+    }
+
+    public void setPublics(int publics) {
+        this.publics = publics;
+    }
+
+
+
+    public int getCategory() {
+        return category;
+    }
+
+    public void setCategory(int category) {
+        this.category = category;
+    }
+
+    public Item(int id, String title, String content, String file, int uid, int category, int publics) {
+        Id = id;
+        this.title = title;
+        this.content = content;
+        this.file = file;
+        this.uid = uid;
+        this.category = category;
+        this.publics = publics;
+    }
 
     public int getUid() {
         return uid;
@@ -17,13 +47,6 @@ public class Item implements Comparable<Item>{
         this.uid = uid;
     }
 
-    public Item(int id, String title, String content, String file, int uid) {
-        Id = id;
-        this.title = title;
-        this.content = content;
-        this.file = file;
-        this.uid = uid;
-    }
 
 
     public int getId() {
@@ -79,6 +102,7 @@ public class Item implements Comparable<Item>{
                 ", content='" + content + '\'' +
                 ", file='" + file + '\'' +
                 ", uid=" + uid +
+                ", category=" + category +
                 '}';
     }
 
