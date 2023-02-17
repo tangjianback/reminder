@@ -95,8 +95,8 @@ public class Service_user {
             old_uesr = UserDao.get_user_by_mail_or_id(uid+"");
         }catch (SQLException e)
         {
-            e.printStackTrace();
             try {
+                UserDao.flush_connection();
                 old_uesr = UserDao.get_user_by_mail_or_id(uid+"");
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);

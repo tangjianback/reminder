@@ -3,7 +3,9 @@ package com.example.demo.service;
 import com.example.demo.Dao.Dao;
 import com.example.demo.object.Item;
 import com.example.demo.object.Item_query;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -15,6 +17,46 @@ import java.util.zip.ZipOutputStream;
 
 public class Service {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
+
+    public static String uploadfile_dir;
+    public static int page_size = 10;
+
+    static {
+        try {
+            uploadfile_dir = ResourceUtils.getURL("classpath:").getPath() +"static/uploadFile/";
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Item> get_item_by_page(int page_index, int page_size, int u_id)
+    {
+        try {
+            return Dao.get_items_by_page(page_index,page_size,u_id);
+        } catch (SQLException e) {
+            Dao.flush_connection();
+            try {
+                return  Dao.get_items_by_page(page_index,page_size,u_id);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+    public int get_item_total(int u_id)
+    {
+        try {
+            return Dao.get_item_total(u_id);
+        } catch (SQLException e) {
+            Dao.flush_connection();
+            try {
+                return Dao.get_item_total(u_id);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+
     public int get_id_by_title(String title,int uid)
     {
         try {
@@ -141,8 +183,7 @@ public class Service {
     public int store(MultipartFile[] uploadFiles, String title, String content,int uid,int cate_id,String public_item)
     {
         String format = sdf.format(new Date());
-        File folder = new File("src/main/resources/uploadFile/" + format);
-
+        File  folder = new File(Service.uploadfile_dir + format);
         // if parent dir not exists, then create it, if fails return -1
         if(!folder.isDirectory() && folder.mkdirs() == false)
         {
@@ -217,7 +258,7 @@ public class Service {
             //delete the requires files
             for(String s: del_files)
             {
-                File temp_file = new File("src/main/resources/uploadFile/" +s.strip());
+                File temp_file = new File(Service.uploadfile_dir+"/" +s.strip());
                 if(temp_file.exists())
                     temp_file.delete();
                 else
@@ -227,7 +268,7 @@ public class Service {
 
         //store the files
         String format = sdf.format(new Date());
-        File folder = new File("src/main/resources/uploadFile/" + format);
+        File folder = new File(Service.uploadfile_dir + format);
 
         // store files and adding it the list
         // if parent dir not exists, then create it, if fails return -1
@@ -280,7 +321,7 @@ public class Service {
 
 
     public File zip_multiple_fiels(List<String> srcFiles) throws IOException {
-        File folder = new File("src/main/resources/uploadFile/");
+        File folder = new File(Service.uploadfile_dir);
         // if dir is
         if(!folder.isDirectory())
         {
@@ -290,13 +331,13 @@ public class Service {
             }
         }
         // if the compressed.zip exist
-        File target_zip_file = new File("src/main/resources/uploadFile/compressed.zip");
+        File target_zip_file = new File(Service.uploadfile_dir+"/compressed.zip");
         if(target_zip_file.exists())
             target_zip_file.delete();
         final FileOutputStream fos = new FileOutputStream(target_zip_file);
         ZipOutputStream zipOut = new ZipOutputStream(fos);
         for (String srcFile : srcFiles) {
-            File fileToZip = new File("src/main/resources/uploadFile/"+srcFile);
+            File fileToZip = new File(Service.uploadfile_dir+srcFile);
             FileInputStream fis = new FileInputStream(fileToZip);
             ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
             zipOut.putNextEntry(zipEntry);
@@ -317,7 +358,7 @@ public class Service {
         {
             if(!s.equals(""))
             {
-                File temp_file= new File("src/main/resources/uploadFile/"+s.strip());
+                File temp_file= new File(Service.uploadfile_dir+s.strip());
                 if(temp_file.exists())
                     temp_file.delete();
                 else
@@ -325,7 +366,6 @@ public class Service {
                     flag = false;
                     System.out.println(temp_file.getAbsolutePath());
                 }
-
             }
         }
         return flag;

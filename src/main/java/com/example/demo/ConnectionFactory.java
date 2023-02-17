@@ -18,10 +18,10 @@ public class ConnectionFactory {
         } catch (PropertyVetoException e) {
             throw new RuntimeException(e);
         }
-        cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
-        cpds.setUser("root");
-//        cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false");
-//        cpds.setUser("tangjian");
+//        cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
+//        cpds.setUser("root");
+        cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
+        cpds.setUser("tangjian");
 
         cpds.setPassword("123");
         // Optional Settings
@@ -30,6 +30,9 @@ public class ConnectionFactory {
         cpds.setAcquireIncrement(5);
         cpds.setMaxPoolSize(20);
         cpds.setMaxStatements(100);
+        cpds.setUnreturnedConnectionTimeout(60*60*2);
+        cpds.setDebugUnreturnedConnectionStackTraces(true);
+        cpds.setMaxIdleTime(60*60*4);
     }
     public static Connection get_connection() throws SQLException {
         return cpds.getConnection();
@@ -38,5 +41,4 @@ public class ConnectionFactory {
     {
         cpds.close();
     }
-
 }

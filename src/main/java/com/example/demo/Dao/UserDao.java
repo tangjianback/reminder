@@ -15,67 +15,63 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UserDao {
-    static Connection conn = null;
-    static Statement stmt = null;
-    static {
-        try {
-            conn = ConnectionFactory.get_connection();
-            stmt = conn.createStatement();
-            HelloController.need_close = true;
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        } catch (Exception e) {
-            // 处理 Class.forName 错误
-            e.printStackTrace();
-        }
-    }
     public static void flush_connection()
     {
-        try {
-            stmt.close();
-            conn.close();
-            conn = ConnectionFactory.get_connection();
-            stmt = conn.createStatement();
-        }catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+
     }
 
     public static int get_quick_id_by_title(String title, int uid) throws SQLException {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
+        int res_id = -1;
         LinkedList<Integer> res = new LinkedList<Integer>();
         String sql = "select id from quick where title = '"+ title.replaceAll("'","''")+"' and uid = "+uid;
         ResultSet rs = stmt.executeQuery(sql);
         if (rs.next()) {
             // 通过字段检索
-            int id = rs.getInt("id");
-            return id;
+            res_id = rs.getInt("id");
         }
         rs.close();
-        return -1;
+        stmt.close();
+        conn.close();
+        return res_id;
     }
 
     public static boolean delete_quick_by_id(int  id) throws SQLException {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
         int res = 0;
         String sql = "DELETE FROM  quick WHERE  id = "+id;
         res = stmt.executeUpdate(sql);
+        stmt.close();
+        conn.close();
         return (res == 1?true:false );
     }
 
     public static boolean add_quick(Quick out_quick) throws SQLException {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
         out_quick.setTitle(out_quick.getTitle().replaceAll("'","''"));
         int quick_relevant_id = out_quick.getRelevant_item_id();
         int uid = out_quick.getUid();
         int res = 0;
         String sql = "INSERT INTO quick(title,item_id,uid)  VALUES('" +out_quick.getTitle() +"',"+quick_relevant_id+","+uid+")";
         res = stmt.executeUpdate(sql);
+        stmt.close();
+        conn.close();
+
         return (res == 1?true:false );
     }
 
 
 
     public static boolean update_user(User out_user) throws SQLException {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
         int res = 0;
         out_user.setMail(out_user.getMail().replaceAll("'","''"));
         out_user.setU_name(out_user.getU_name().replaceAll("'","''"));
@@ -91,10 +87,16 @@ public class UserDao {
                 +quick_string+"', language=" +out_user.getLanguage()+ " WHERE id = "+out_user.getU_id();
 
         res = stmt.executeUpdate(sql);
+        stmt.close();
+        conn.close();
+
         return (res == 1?true:false );
     }
 
     public static boolean add_user(User out_user) throws SQLException {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
         out_user.setMail(out_user.getMail().replaceAll("'","''"));
         out_user.setU_name(out_user.getU_name().replaceAll("'","''"));
         out_user.setU_pwd(out_user.getU_pwd().replaceAll("'","''"));
@@ -111,6 +113,8 @@ public class UserDao {
                 +"',"+out_user.getLanguage()+")";
 
         res = stmt.executeUpdate(sql);
+        stmt.close();
+        conn.close();
         return (res == 1?true:false );
 
     }
@@ -118,6 +122,10 @@ public class UserDao {
 
     public static User get_user_by_mail_or_id(String mail_or_id) throws SQLException
     {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+        User res_user = null;
+
         String sql = null;
         if(mail_or_id.contains("@"))
         {
@@ -139,10 +147,12 @@ public class UserDao {
             lru = lru == null? "":lru;
             String quick = rs.getString("quick");
             quick = quick == null? "":quick;
-            return new User(id,name,pwd,mail,lru_to_item_list(lru.strip()),quick_str_to_quick_list(quick.strip()),language);
+            res_user = new User(id,name,pwd,mail,lru_to_item_list(lru.strip()),quick_str_to_quick_list(quick.strip()),language);
         }
         rs.close();
-        return null;
+        stmt.close();
+        conn.close();
+        return res_user;
     }
 
     public static String list_to_lru(List<Item> temp_list)
@@ -205,7 +215,7 @@ public class UserDao {
         return res;
     }
 
-    public static List<Quick> quick_str_to_quick_list(String quick_str)
+    public static List<Quick> quick_str_to_quick_list(String quick_str) throws SQLException
     {
         List<Quick> res = new LinkedList<Quick>();
         if(quick_str == null)
@@ -227,27 +237,22 @@ public class UserDao {
                     continue;
                 }
                 Quick temp = null;
-                try {
-                    temp = UserDao.get_quick_by_id(item_id_int);
-                } catch (SQLException e) {
-                    UserDao.flush_connection();
-                    try {
-                        temp = UserDao.get_quick_by_id(item_id_int);
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
+                temp = UserDao.get_quick_by_id(item_id_int);
                 if(temp!= null)
                     res.add(temp);
                 else
                     System.out.println("some quick id not in the database id is "+item_id);
             }
         }
+
         return  res;
     }
 
 
     public  static Quick get_quick_by_id(int id) throws SQLException {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
         Quick res_item = null;
         String sql = "select * from quick where id = "+ id;
         ResultSet rs = stmt.executeQuery(sql);
@@ -261,6 +266,8 @@ public class UserDao {
             res_item = new Quick(res_id,title,relevant_item,uid);
         }
         rs.close();
+        stmt.close();
+        conn.close();
         return res_item;
     }
 }

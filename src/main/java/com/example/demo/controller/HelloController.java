@@ -106,6 +106,34 @@ public class HelloController implements ApplicationContextAware {
     public String index_default(Model model,HttpServletRequest request) {
         return "forward:/index";
     }
+
+    @RequestMapping(value = "/searchByPage")
+    public String queryBypage(Model model, HttpServletRequest request) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer)se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return  "users/login";
+        }
+        String page_index = request.getParameter("page_index");
+        int page_index_int = Integer.parseInt(page_index);
+        User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
+
+        current_user.setU_lru_list(gloabal_service.get_item_by_page(page_index_int, gloabal_service.page_size, current_user_id));
+        int total_count  = gloabal_service.get_item_total(current_user_id);
+
+        int current_page = page_index_int;
+        int previous_page = page_index_int-1 <0? 0:page_index_int-1;
+        int next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
+
+        model.addAttribute("page", true);
+        model.addAttribute("previous_page",previous_page);
+        model.addAttribute("current_page",current_page);
+        model.addAttribute("next_page",next_page);
+        model.addAttribute("user",current_user);
+        return "index";
+    }
+
     @RequestMapping(value = "/search")
     public String search(Model model, HttpServletRequest request) {
         HttpSession se = request.getSession();
@@ -124,6 +152,7 @@ public class HelloController implements ApplicationContextAware {
             current_user.setU_lru_list(gloabal_service.query_key_word(para_array, current_user_id));
         }
         model.addAttribute("user",current_user);
+        model.addAttribute("page", false);
         return "index";
     }
 
@@ -214,7 +243,9 @@ public class HelloController implements ApplicationContextAware {
         String title = request.getParameter("search_title").strip();
         String content = request.getParameter("search_content").strip();
         String category_id = request.getParameter("type").strip();
-        String public_item = request.getParameter("public").strip();
+        String public_item = request.getParameter("public");
+        if(public_item == null)
+            public_item = "0";
         // it no parameter
         if(title==null || content == null || category_id== null)
         {
@@ -435,7 +466,7 @@ public class HelloController implements ApplicationContextAware {
         {
             if(!item_string.strip().equals(""))
             {
-                String []file_split_names = item_string.split("_");
+                String []file_split_names = item_string.split("_",2);
                 if(file_split_names.length == 2)
                     file_lists.add(new File_item(item_string.strip(),file_split_names[1]));
                 else
@@ -550,7 +581,7 @@ public class HelloController implements ApplicationContextAware {
 
         String file_name = request.getParameter("file").strip();
         // get the file
-        File file= new File("src/main/resources/uploadFile/"+file_name.strip());
+        File file= new File(Service.uploadfile_dir+file_name.strip());
         if(!file.exists())
         {
             System.out.println("no file named "+file_name+" exist");

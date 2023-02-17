@@ -70,9 +70,9 @@
             background: #2DD1AF;
             color: #fff;
             outline: none;
-            -moz-border-radius: 0px 4px 4px 0px;
-            -webkit-border-radius: 0px 4px 4px 0px;
-            border-radius: 0px 4px 4px 0px;
+            -moz-border-radius: 0px 0px 0px 0px;
+            -webkit-border-radius: 0px 0px 0px 0px;
+            border-radius: 0px 0px 0px 0px;
             -webkit-transition: background 0.3s ease-in-out;
             -moz-transition: background 0.3s ease-in-out;
             transition: background 0.3s ease-in-out;
@@ -95,6 +95,50 @@
             -moz-border-radius: 4px 0px 0px 4px;
             -webkit-border-radius: 4px 0px 0px 4px;
             border-radius: 4px 0px 0px 4px;
+            -webkit-transition: background 0.3s ease-in-out;
+            -moz-transition: background 0.3s ease-in-out;
+            transition: background 0.3s ease-in-out;
+        }
+        .search-btn2 {
+            display: block;
+            height: 40px;
+            width: 80px;
+            padding: 0;
+            float: left;
+            margin: 0;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-size: 14px;
+            font-family: 微软雅黑;
+            background: #b5bbb5;
+            color: #fff;
+            outline: none;
+            -moz-border-radius: 0px 4px 4px 0px;
+            -webkit-border-radius: 0px 4px 4px 0px;
+            border-radius: 0px 4px 4px 0px;
+            -webkit-transition: background 0.3s ease-in-out;
+            -moz-transition: background 0.3s ease-in-out;
+            transition: background 0.3s ease-in-out;
+        }
+        .search-btn_page {
+            display: block;
+            height: 20px;
+            width: 60px;
+            padding: 0;
+            float: left;
+            margin: 0;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-size: 14px;
+            font-family: 微软雅黑;
+            background: #eae4e4;
+            color: #2d44c4;
+            outline: none;
+            /*-moz-border-radius: 4px 0px 0px 4px;*/
+            /*-webkit-border-radius: 4px 0px 0px 4px;*/
+            /*border-radius: 4px 0px 0px 4px;*/
             -webkit-transition: background 0.3s ease-in-out;
             -moz-transition: background 0.3s ease-in-out;
             transition: background 0.3s ease-in-out;
@@ -152,6 +196,12 @@
 
         .search-btn1:hover {
             background: #4053be;
+        }
+        .search-btn2:hover {
+            background: #7a7a7e;
+        }
+        .search-btn_page:hover {
+            background: #b4b5bb;
         }
         .search-btn:hover {
             background: #29BC95;
@@ -230,14 +280,17 @@
             border-width: 0px;
             border-color: red;
         }
-        .myser{
-            background:
-        }
     </style>
 </head>
 <body>
 <div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
-<div id = "up_search"  class="jiange_debug" style="margin-left: 400px;">
+<div id = "up_search"  class="jiange_debug" style="margin-left: 300px;border-width: 0px">
+<!--    <div class="jiange_debug" style="float: left;" >-->
+<!--        <form  class="button1"  method="get" th:action="@{/searchByPage}">-->
+<!--            <input type="hidden" name="page_index" value="0">-->
+<!--            <input type="submit" class="search-btn1" th:value="${user.language==0?'FindAll':'全部'}">-->
+<!--        </form>-->
+<!--    </div>-->
     <div id = "up_search_left" class="jiange_debug">
         <form class="button1" method="get" th:action="@{/add}">
             <input type="submit" class="search-btn1" th:value="${user.language==0?'Create':'新建'}">
@@ -250,7 +303,15 @@
             <input type="submit" class="search-btn" th:value="${user.language==0?'Search':'搜索'}">
         </form>
     </div>
-    <div  class="jiange_debug" style="width: 350px;height: 100px;float: left; border-width: 0px;" >
+    <div style="float: left; border-width: 0px" class="jiange_debug">
+        <form class="button1" method="get" th:action="@{/searchByPage}">
+            <input type="hidden" name="page_index" value="0">
+            <input type="submit" class="search-btn2" th:value="${user.language==0?'FindAll':'全部'}">
+        </form>
+    </div>
+
+
+    <div  class="jiange_debug" style="width: 300px;height: 100px;float: left; border-width: 0px;margin-left: 90px" >
         <div style="float: right; border-width: 0px;margin-top: 1px" class="jiange_debug" >
             <a href="/user/login_out" style="color: #29BC95" th:text="${user.language==0?'login out':'登出'}">登出</a>
         </div>
@@ -258,12 +319,14 @@
             <a href="/user/language" style="color: #a23232" th:text="${user.language==0?'中文':'English'}">语言</a>
         </div>
     </div>
+    <div style="clear: both"></div>
 </div>
 </div>
 
 <div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
 <div id="search-suggest1" th:style="'border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;'+${#lists.isEmpty(user.u_lru_list)?'height:10px;':''}">
-        <ul th:each="c, State : ${user.u_lru_list}">
+    <div>
+    <ul th:each="c, State : ${user.u_lru_list}">
         <li>
             <div style="float: left" th:if="${c.category==0}"><img th:src="@{/img/note.png}" width=18px /></div>
             <div style="float: left" th:if="${c.category==1}"><img th:src="@{/img/photo.png}" width=18px /></div>
@@ -272,7 +335,51 @@
             <div style="clear: both"></div>
         </li>
     </ul>
-</div>
+    </div>
+
+    <!--    <div id="search-suggest1" style="border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;">-->
+<!--        <div>-->
+<!--        <ul>-->
+<!--            <li>-->
+<!--                <div style="float: left"><img src="/img/note.png" width=18px /></div>-->
+<!--                <div style="float: left"><a href="/detail?detail=80">可编程交换机的运行基本流程</a></div>-->
+<!--                <div style="clear: both"></div>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--        <ul>-->
+<!--            <li>-->
+<!--                <div style="float: left"><img src="/img/note.png" width=18px /></div>-->
+<!--                <div style="float: left"><a href="/detail?detail=79">RDMA安装过程，命令</a></div>-->
+<!--                <div style="clear: both"></div>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--        </div>-->
+
+
+        <div class="jiange_debug" style="border-width: 0px;width: 900px;" th:if="${page}" >
+            <div  class="jiange_debug" style="margin-left: 350px">
+                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/searchByPage}">
+                    <input type="hidden" name="page_index" value="0">
+                    <input type="submit" class="search-btn_page" th:value="${user.language==0?'Start':'首页'}">
+                </form>
+            </div>
+            <div  class="jiange_debug">
+                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/searchByPage}">
+                    <input type="hidden" name="page_index" th:value="${previous_page}">
+                    <input type="submit" class="search-btn_page" th:value="${user.language==0?'Previous':'上一页'}">
+                </form>
+            </div>
+            <div  class="jiange_debug">
+               <span style="float: left;width: 50px; text-align: center" th:text = "'No.'+${current_page}">No.1</span>
+            </div>
+            <div  class="jiange_debug">
+                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/searchByPage}">
+                    <input type="hidden" name="page_index" th:value="${next_page}">
+                    <input type="submit" class="search-btn_page" th:value="${user.language==0?'Next':'下一页'}">
+                </form>
+            </div>
+        </div>
+    </div>
 
 <div style="float: left;border-width: 0px;width: 400px;margin-left: 50px; border-left-color: #0f88eb; border-left-style: dashed;border-top-color: #0f88eb; border-top-style: dashed;">
 
