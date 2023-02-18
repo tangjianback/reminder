@@ -55,7 +55,7 @@
         <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
             <div style="float: left; padding-top:190px; width: 80px" th:text="${user.language==0?'Detail':'详细'}">Detail</div>
             <div style="float: left">
-                <textarea class="tabSupport" name="search_content" style="width: 1100px;height: 450px"></textarea>
+                <textarea class="tabSupport" name="search_content" style="width: 1100px;height: 450px;line-height: 20px;"></textarea>
             </div>
         </div>
         <br>
@@ -68,14 +68,14 @@
         <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
             <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Type':'类别'}">Type</div>
             <div style="float: left;margin-top:4px;margin-left: 10px">
-            <input  type="radio"   name="type" value="0" checked="checked"><label style="font-size: 16px" th:text = "${user.language==0?'normal':'普通'}">普通</label>
-            <input type="radio" name="type" value="1"  ><label style="font-size: 16px" th:text = "${user.language==0?'photo':'照片'}">照片</label>
+            <input  type="radio"   name="type" value="0" checked="checked"><label style="font-size: 20px" th:text = "${user.language==0?'normal':'普通'}">普通</label>
+            <input type="radio" name="type" value="1"  ><label style="font-size: 20px;" th:text = "${user.language==0?'photo':'照片'}">照片</label>
             </div>
         </div>
         <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
-            <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Public':'公开'}">Public</div>
+            <div style="float: left; width: 80px; padding-top:5px; " th:text="${user.language==0?'Public':'公开'}">Public</div>
             <div style="float: left;margin-top:4px;margin-left: 10px">
-                <input  type="checkbox"   name="public" value="1"><label style="font-size: 16px" ></label>
+                <input  type="checkbox"   name="public" value="1"><label style="font-size: 20px; " ></label>
             </div>
         </div>
 

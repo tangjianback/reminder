@@ -63,6 +63,7 @@
     .jiange_add {
       clear: both;
       color: green;
+      font-size: 20px;
       text-align: left;
       margin-left: 22px;
     }
@@ -111,6 +112,8 @@
                   th:value="${c.file}"
                   th:id ="${c.file}" />
           <label style="font-size: 15px;" th:for="${c.file}" th:text ="${c.short_name}" th:id="${c.file}+'jiange'"></label>
+          <div style="float: left" th:if="${#strings.endsWith(c.short_name,'.png') || #strings.endsWith(c.short_name,'.jpg') }"><img th:src="@{uploadFile/{filename}(filename=${c.file})}" width=18px /></div>
+          <div style="float: left" th:if="${!#strings.endsWith(c.short_name,'.png') && !#strings.endsWith(c.short_name,'.jpg') }"><img th:src="@{/img/file.png}" width=18px /></div>
         </div>
 
         <div id = "jiange_list" style="clear: both; margin-left: 10px" class="jiange_debug">
@@ -121,7 +124,7 @@
 
     <div id="btn" align="center" style="float:left;border-width:0px; margin-left: 30px;clear: both;width: 550px" class="jiange_debug">
       <div style="float: left;margin-left: 100px;">
-        <label for="image_uploads" style="border-width: 4px;border-color: #14874c;border-style: solid; border-radius: 6px 6px 6px 6px;font-size: 18px; font-style: normal; " th:text="${user.language==0?'MoreFile:':'添加文件:'}">MoreFile
+        <label for="image_uploads" style="border-width: 4px;border-color: #14874c;border-style: solid; border-radius: 6px 6px 6px 6px;font-size: 18px; font-style: normal; " th:text="${user.language==0?'MoreFile':'添加文件'}">MoreFile
         </label>
         <input type="file" id="image_uploads" name="uploadFiles" multiple />
       </div>
@@ -186,7 +189,7 @@
         var element_div = document.createElement("div");
         element_div.className = "jiange_add";
         // element.setAttribute("id", "test");
-        element_span.innerHTML = file.name +'  (' +returnFileSize(file.size)+')'
+        element_span.innerHTML = '+ '+file.name +'  (' +returnFileSize(file.size)+')'
         element_div.appendChild(element_span)
         div_1.appendChild(element_div);
         // alert(file.size)

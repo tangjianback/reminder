@@ -182,6 +182,19 @@ public class Service {
 //    finished 1: no dile but add 0; dircreate_file:-1; sqlerror:-2; storefail:-3;
     public int store(MultipartFile[] uploadFiles, String title, String content,int uid,int cate_id,String public_item)
     {
+        //check the item type
+        if(cate_id == 1)
+        {
+            for(MultipartFile temp_file: uploadFiles)
+            {
+                if(!temp_file.getOriginalFilename().endsWith(".png") && !temp_file.getOriginalFilename().endsWith(".jpg"))
+                {
+                    System.out.println(temp_file.getOriginalFilename());
+                    return -4;
+                }
+            }
+        }
+
         String format = sdf.format(new Date());
         File  folder = new File(Service.uploadfile_dir + format);
         // if parent dir not exists, then create it, if fails return -1

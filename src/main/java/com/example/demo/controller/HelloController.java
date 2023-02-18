@@ -219,7 +219,10 @@ public class HelloController implements ApplicationContextAware {
             for(String item_string: file_name.split(";"))
             {
                 if(!item_string.strip().equals(""))
-                    file_lists.add(new File_item(item_string.strip(),item_string.strip().split("_")[1]));
+                {
+                    String []file_split_names = item_string.split("_",2);
+                    file_lists.add(new File_item(item_string.strip(),file_split_names[1]));
+                }
             }
             model.addAttribute("file_list",file_lists );
             model.addAttribute("user", global_service_user.get_user_by_mail_or_id(current_user_id+""));
@@ -265,10 +268,14 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"标题已经存在","index","返回主页","red");
             return "message";
         }
+
         //store multiple files
         int store_res = gloabal_service.store(files,title,content,current_user_id,Integer.parseInt(category_id),public_item);
         String message = null;
         switch (store_res){
+            case -4:
+                message = "contains invalid file for photo item";
+                break;
             case -3:
                 message = "store file fail";
                 break;

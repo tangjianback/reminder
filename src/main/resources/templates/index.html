@@ -328,8 +328,8 @@
     <div>
     <ul th:each="c, State : ${user.u_lru_list}">
         <li>
-            <div style="float: left" th:if="${c.category==0}"><img th:src="@{/img/note.png}" width=18px /></div>
-            <div style="float: left" th:if="${c.category==1}"><img th:src="@{/img/photo.png}" width=18px /></div>
+            <div style="float: left; margin-right: 5px;" th:if="${c.category==0}"><img th:src="@{/img/note.png}" width=18px /></div>
+            <div style="float: left; margin-right: 5px;" th:if="${c.category==1}"><img th:src="@{/img/photo.png}" width=18px /></div>
             <div style="float: left" th:if="${c.publics==1}"><a th:href="'/detail?detail='+${c.Id}" th:text="${c.title}" style="background-color: #cbcecb"></a></div>
             <div style="float: left" th:if="${c.publics==0}"><a th:href="'/detail?detail='+${c.Id}" th:text="${c.title}"></a></div>
             <div style="clear: both"></div>

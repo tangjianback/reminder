@@ -18,10 +18,10 @@ public class ConnectionFactory {
         } catch (PropertyVetoException e) {
             throw new RuntimeException(e);
         }
-//        cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
-//        cpds.setUser("root");
-        cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
-        cpds.setUser("tangjian");
+        cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
+        cpds.setUser("root");
+//        cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
+//        cpds.setUser("tangjian");
 
         cpds.setPassword("123");
         // Optional Settings
