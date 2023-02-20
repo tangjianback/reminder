@@ -5,7 +5,7 @@ This is a spring-boot + mysql based website. I use it to memorize some of the co
 
 2 Page
 
-<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/main/a.png">
+<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/lovelq/a.png">
 
 
-<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/main/b.png">
+<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/lovelq/b.png">
