@@ -1,39 +1,11 @@
 # reminder(备忘录，文件，管理)
-1 介绍
+1 Introduction
 
-这是一个基于spring-boot + mysql的网站。非常的简单，主要的功能就是对一些自己做过的内容的备忘。然后可以通过关键词快速的找到。
-开发这个玩意儿的主要初衷就是，作为写代码的，自己在开发的过程中不可避免的会遇到很多Bug. 解决掉之后就会下意识的把这个过程，甚至具体的命令给记录下来。但是记录在哪就很烦了。如果写博客的话，这个玩意儿其实不至于写个技术帖子，可能就是自己常用的命令。如果写在一个txt文档里面的话，找起来又很麻烦。很可能几天之后都忘记在哪里了。所以就用这个程序完成一些记录吧。
+This is a spring-boot + mysql based website. I use it to memorize some of the content I have done. Then I can quickly find it by keyword.
 
-2 功能展示
+2 Page
 
-2.1 主要的就是搜索啦，根据存储的条目的标题关键词搜索，实现的时候是包含的关键词越多那么这个条目返回的优先级就越高。空格分割多个关键词。
+<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/main/a.png">
 
-<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/main/index.png">
 
-2.2 查找到会在主页返回多个链接，自己点进去看每个详细的条目。如下页面就是我之前存储的一个docker打包spring的过程和命令。 每个条目的内容还是很丰富的，包括文本(我还实现了一个一键快速复制，哈哈)， 多个文件上传，条目的修改。
-
-<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/main/detail.png">
-
-3 扩展功能
-
-我在基本的功能之上添加了一个快速待完成的东西，这玩意长久的显示在主页。可以快速跳转到绑定的条目中。
-
-4 寻找小伙伴
-
-我自己感觉这个还是有用的，至少我会把一些密码，一些功能性的命令啥的保存在上面。如果以后再让我实现一件事的时候，我能想到这玩意儿我做过，那么我就首先会去这个里面查找一下。但是我不是专业的java-web. 整个项目的架构简单，页面也很简单。好多地方可以优化，包括前端的美化，后端的性能优化，甚至可能可以添加一些功能。
-
-5 项目mysql表格式
-
-+----------------+------------------+------+-----+---------+----------------+
-
-| Field        | Type             | Null | Key | Default | Extra          |
-
-+----------------+------------------+------+-----+---------+----------------+
-
-| search_id      | int(10) unsigned | NO   | PRI | NULL    | auto_increment |
-
-| search_title   | varchar(256)     | YES  |     | NULL    |                |
-
-| search_content | text             | NO   |     | NULL    |                |
-
-| search_file    | varchar(512)     | YES  |     | NULL    |                |
+<img width="650" alt="image" src="https://github.com/tangjianback/reminder/blob/main/b.png">

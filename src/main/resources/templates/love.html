@@ -1,0 +1,124 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>柳青青</title>
+
+<style type="text/css">
+@font-face {
+	font-family: digit;
+	src: url("css/Digital-7-Mono.ttf") format("truetype");
+}
+</style>
+    <link th:href="@{css/default.css}" type="text/css" rel="stylesheet">
+    <script type="text/javascript" th:src = "@{libs/love/jquery.js}"></script>
+    <script type="text/javascript" th:src= "@{libs/love/garden.js}"></script>
+    <script type="text/javascript" th:src="@{libs/love/functions.js}"></script>
+
+</head>
+
+<body>
+<!-- <embed src="http://p3qhnc0eg.bkt.clouddn.com/U%20are%20so%20beautiful.mp3" width="0" height="0" loop="-1" autostart="true"> </embed> -->
+
+<!--<embed src="/Users/tangjian/one.mp3" width="0" height="0" loop="-1" autostart="true" hidden="true"> </embed>-->
+
+<div id="mainDiv">
+	<div id="content" style="border-width: 0px; border-color: red; border-style: dashed;">
+		<div id="code" style="border-width: 0px; border-color: red; border-style: dashed;">
+                <span class="comments">/**</span><br />
+                <span class="space"/><span class="comments">* i和u在初中是同学，高中偶尔遇见.但是大学完全没有联系.*/</span><br />
+                Boy i = <span class="keyword">new</span> Boy(<span class="string">"唐剑"</span>);<br />
+                Girl u = <span class="keyword">new</span> Girl(<span class="string">"羊柳青"</span>);<br />
+                <span class="comments">// 初中不知道哪天开始 </span><br />
+                i.haveACrushOn(u);<br />
+                <span class="comments">// 但是...i一直没有勇气告诉安静的u</span><br />
+                <span class="comments">// 过了好久，好久，i的那份crush还在内存中没有释放，就鼓起勇气找了u</span><br />
+                i.sayHiTo(u);<br />
+                <span class="comments">//  傻不拉几的i,以为u对自己一点印象都没有,就提前了表白.</span><br />
+                i.like(u);<br />
+                <span class="comments">// u怎么可能答应,能不拉黑就万幸了.</span><br />
+                u.refuse(i);<br />
+                <span class="comments">// i想要慢慢的等u的接受</span><br />
+                <span class="keyword">boolean</span> isAccept = <span class="keyword">false</span>;<br />
+                <span class="keyword">while</span> (isAccept) {<br />
+                <span class="placeholder"/>i.waitFor(u);<br />
+                <span class="placeholder"/>isAccept = u.thinkOver();<br />
+                }<br />
+                <span class="comments">// u一天傻傻的答应了i</span><br />
+                u.accept(i);<br />
+                <span class="comments">// i好开心，但是，i却经常让u生气.</span><br />
+                <span class="keyword">while</span> (<span class="keyword">True</span>) {<br />
+                <span class="placeholder"/>i.makeSomeoneAngry(u);<br />
+                <span class="placeholder"/>Time.sleep("some days");<br />
+                }<br />
+                <span class="comments">// 慢慢的i知道了，i会让u生气.i变得谨慎，变得畏首畏尾，不知道怎么办.</span><br />
+                i.dontKnowWhatToDo();<br />
+                <span class="comments">// 之后，u告诉了i她的心里的想法，u的感受.并告诉i，她还好。然后..</span><br />
+                 <span class="comments">// i下定了决心.</span><br />
+                 <span class="keyword">while</span> (u.feelHappyWithMe(i) || DeathPart(i,u)) {<br />
+                <span class="placeholder"/>i.haveHopeForTheFuture(u,i);<br />
+                <span class="placeholder"/>i.love(u);<br />
+                }<br />
+                <span class="comments">// 以后养只羊，名柳青</span><br />
+		
+        </div>
+		<div id="loveHeart" style="border:0px solid red;">
+			<canvas id="garden"></canvas>
+			<div id="words">
+				<div id="messages">
+					相遇，相识，相恋...
+					<div id="elapseClock"></div>
+                    &nbsp&nbsp&nbsp柳青青，世界太乱，我们一起走...<br />
+				</div>
+			<div id="loveu">
+					<br/>
+					<div class="signature">-剑哥哥</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div style="clear: both;"></div>
+</div>
+
+<script type="text/javascript">
+
+var offsetX = $("#loveHeart").width() / 2;
+var offsetY = $("#loveHeart").height() / 2 - 55;
+var together = new Date();
+
+
+together.setFullYear(2020,6,13);
+together.setHours(0);
+together.setMinutes(43);
+together.setSeconds(0);
+together.setMilliseconds(0);
+
+
+if (!document.createElement('canvas').getContext) {
+	var msg = document.createElement("div");
+	msg.id = "errorMsg";
+	msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+";
+	document.body.appendChild(msg);
+	$("#code").css("display", "none")
+	$("#copyright").css("position", "absolute");
+	$("#copyright").css("bottom", "10px");
+	document.execCommand("stop");
+} else {
+	setTimeout(function () {
+		startHeartAnimation();
+	}, 5000);
+
+	timeElapse(together);
+	setInterval(function () {
+		timeElapse(together);
+	}, 500);
+
+	adjustCodePosition();
+	$("#code").typewriter();
+}
+</script>
+</body>
+</html>
+

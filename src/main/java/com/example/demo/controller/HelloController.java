@@ -62,6 +62,22 @@ public class HelloController implements ApplicationContextAware {
         }
         return  new ResponseEntity<>("okk", HttpStatus.OK);
     }
+    @RequestMapping(value = "/love")
+    public String love(Model model,HttpServletRequest request) {
+        //get the user session
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer) se.getAttribute("user");
+
+        //need to login first if no session
+        if(current_user_id == null)
+        {
+                return "users/login";
+        }
+        else
+        {
+            return "love";
+        }
+    }
     @RequestMapping(value = "/index")
     public String index(Model model,HttpServletRequest request) {
         //get the user session
