@@ -55,29 +55,48 @@
         <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
             <div style="float: left; padding-top:190px; width: 80px" th:text="${user.language==0?'Detail':'详细'}">Detail</div>
             <div style="float: left">
-                <textarea class="tabSupport" name="search_content" style="width: 1100px;height: 450px;line-height: 20px;"></textarea>
+                <textarea class="tabSupport" name="search_content" style="resize: none;width: 1100px;height: 450px;line-height: 20px;"></textarea>
             </div>
         </div>
         <br>
-        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
-            <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Files':'文件'}">Files</div>
-            <div style="float: left">
-                <input name = "uploadFile" type="file" th:placeholder="${user.language==0?'Select Files':'选择文件'}" id="nm" style="width: 1000px;height: 28px" multiple>
+        <div style="margin-left: 110px; width: 1200px; border-width: 0px;border-color: green" class="jiange_debug">
+            <div>
+                <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Type':'类别'}">Type</div>
+                <div style="float: left;margin-top:4px;margin-left: 10px">
+                    <input  type="radio"   name="type" value="0" checked="checked"><label style="font-size: 20px" th:text = "${user.language==0?'normal':'普通'}">普通</label>
+                    <input type="radio" name="type" value="1"  ><label style="font-size: 20px;" th:text = "${user.language==0?'photo':'照片'}">照片</label>
+                </div>
+            </div>
+            <div style="width: 340px;border-width:0px" class="jiange_debug">
+<!--            <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Files':'文件'}">Files</div>-->
+            <div style="float: left; border-width: 0px; margin-left: 30px;" class="jiange_debug" >
+                <input name = "uploadFile" type="file" th:placeholder="${user.language==0?'Select Files':'选择文件'}" id="nm" style=";height: 28px; overflow:hidden;white-space: nowrap;text-overflow:ellipsis" multiple>
+            </div>
+            </div>
+            <div style="margin-left: 0px; width: 200px; border-width: 0px;" class="jiange_debug" >
+                <div style="float: left; width: 80px; padding-top:5px; " th:text="${user.language==0?'Public':'公开'}">Public</div>
+                <div style="float: left;margin-top:4px;margin-left: 10px">
+                    <input  type="checkbox"   name="public" value="1" style=" width: 20px;height: 20px;">
+                </div>
             </div>
         </div>
-        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
-            <div style="float: left; width: 80px; padding-top:5px" th:text="${user.language==0?'Type':'类别'}">Type</div>
-            <div style="float: left;margin-top:4px;margin-left: 10px">
-            <input  type="radio"   name="type" value="0" checked="checked"><label style="font-size: 20px" th:text = "${user.language==0?'normal':'普通'}">普通</label>
-            <input type="radio" name="type" value="1"  ><label style="font-size: 20px;" th:text = "${user.language==0?'photo':'照片'}">照片</label>
+
+        <div style="margin-left: 110px; width: 1200px; border-width: 0px" class="jiange_debug">
+            <div class="jiange_debug"  style="border-width:0px; float: left; width: 80px; padding-top:5px; " th:text="${user.language==0?'Path':'路径'}">Path</div>
+            <div class="jiange_debug"  style="border-width: 0px;border-color: green;width: 1100px;height: 23px">
+                <div id = "path" style="font-size: 15px; text-align:left;margin-left: 5px;color: #1f7199">/</div>
+                <input id = "path_input" type="hidden" name = 'path' value ='/'>
+            </div>
+
+            <div class="jiange_debug" style="border-width: 0px">
+                <select style=" margin-top: 0px; float: left" name="0" onchange="update_selection(this)">
+                    <option value="CURRENT">CURRENT</option>
+                    <option th:each="c, State : ${ini_folders}" th:value = "${c}" th:text = "${c}"></option>
+                    <option value="*NEW*" >*NEW*</option>
+                </select>
             </div>
         </div>
-        <div style="margin-left: 110px; width: 1200px" class="jiange_debug">
-            <div style="float: left; width: 80px; padding-top:5px; " th:text="${user.language==0?'Public':'公开'}">Public</div>
-            <div style="float: left;margin-top:4px;margin-left: 10px">
-                <input  type="checkbox"   name="public" value="1"><label style="font-size: 20px; " ></label>
-            </div>
-        </div>
+
 
 
         <div id="btn" align="center" style="margin-left: 80px;clear: both;">
@@ -90,12 +109,197 @@
 </div>
 <script type="text/javascript">
 
+    function current_rollbakc(obj)
+    {
+        var select_list = obj.parentNode.getElementsByTagName('select');
+        var delete_index= select_list.length-1;
+        for(; delete_index >=0; delete_index--)
+        {
+            if(obj===select_list[delete_index])
+                break;
+            select_list[delete_index].remove();
+        }
+    }
+
+    function  update_current_path(obj)
+    {
+        // get current path
+        var select_path = ""
+        var select_list = obj.parentNode.getElementsByTagName('select');
+        var index_current = 0;
+        for( ; index_current <select_list.length;index_current++)
+        {
+            var select_index = select_list[index_current].selectedIndex;
+            var current_value = select_list[index_current].options[select_index].value;
+            if(current_value !== "CURRENT")
+                select_path =select_path + current_value +'/';
+            // if(select_list[index_current] === obj)
+            //     break;
+        }
+
+        var path_elem = document.getElementById("path");
+        var path_elem_input = document.getElementById("path_input");
+        path_elem_input.setAttribute("value","/"+select_path);
+        path_elem.innerText="/"+select_path
+    }
+
+
+
+    function update_selection(obj)
+    {
+        var xmlhttp;
+        if (window.XMLHttpRequest)
+        {
+            //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {
+            // IE6, IE5 浏览器执行代码
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        // handle response code
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                var response_str_arr = xmlhttp.responseText.split(";");
+
+                var new_selection = obj.cloneNode(false);
+                // <option value="CURRENT">CURRENT</option>
+                var new_dir_elem_select = document.createElement('option')
+                new_dir_elem_select.value = "CURRENT";
+                new_dir_elem_select.innerText="CURRENT";
+
+                new_selection.appendChild(new_dir_elem_select);
+
+                for(var temp_index = 0; temp_index<response_str_arr.length; temp_index++)
+                {
+                    var temp_value = response_str_arr[temp_index].trim();
+                    if(temp_value!=="")
+                    {
+                        var new_dir_elem_select = document.createElement('option')
+                        new_dir_elem_select.value = temp_value;
+                        new_dir_elem_select.innerText=temp_value;
+                        new_selection.appendChild(new_dir_elem_select);
+                    }
+                }
+
+                var new_dir_elem_new = document.createElement('option')
+                new_dir_elem_new.value = "*NEW*";
+                new_dir_elem_new.innerText= "*NEW*";
+                new_selection.appendChild(new_dir_elem_new);
+
+                new_selection.selectedIndex = 0;
+                obj.parentNode.appendChild(new_selection);
+
+                update_current_path(obj);
+            }
+        }
+
+        var index =obj.selectedIndex
+        var select_value = obj.options[index].value
+
+        switch (select_value){
+            // if create new directory
+            case '*NEW*':
+            {
+                var ret = prompt('Please Key in Dir Name', "");
+                if(ret===null || ret ==="")
+                {
+                    //current_rollbakc(obj);
+                    obj.selectedIndex = obj.getAttribute("name")*1;
+                    break;
+                }
+
+                var temp_len = 0;
+                //check if the dir name is already exist
+                for(; temp_len< obj.options.length; temp_len++)
+                {
+                    if(ret === obj.options[temp_len].value)
+                    {
+                        alert("error "+ ret +"is already in the directory!!")
+                        //current_rollbakc(obj);
+                        obj.selectedIndex = obj.getAttribute("name")*1;
+                        break;
+                    }
+                }
+                // check the dir name is valid
+                if(ret.indexOf("/") !== -1)
+                {
+                    alert("error "+ ret +"contains invalid / !!")
+                    //current_rollbakc(obj);
+                    obj.selectedIndex = obj.getAttribute("name")*1;
+                    break;
+                }
+                current_rollbakc(obj);
+
+                // add the new dir
+                var new_dir_elem = document.createElement('option')
+                new_dir_elem.value = ret;
+                new_dir_elem.innerText=ret;
+                obj.insertBefore(new_dir_elem,obj.options[index])
+                obj.selectedIndex  = obj.selectedIndex-1;
+
+                //add new selection
+                var new_selection = obj.cloneNode(false);
+                // <option value="CURRENT">CURRENT</option>
+                var new_dir_elem_select = document.createElement('option')
+                new_dir_elem_select.value = "CURRENT";
+                new_dir_elem_select.innerText="CURRENT";
+                var new_dir_elem_new = document.createElement('option')
+                new_dir_elem_new.value = "*NEW*";
+                new_dir_elem_new.innerText= "*NEW*";
+
+                new_selection.appendChild(new_dir_elem_select);
+                new_selection.appendChild(new_dir_elem_new);
+                new_selection.selectedIndex = 0;
+                obj.parentNode.appendChild(new_selection);
+                break;
+            }
+            case "CURRENT":
+            {
+                current_rollbakc(obj);
+                break;
+            }
+            default:
+            {
+                // delete right element first
+                var select_list = obj.parentNode.getElementsByTagName('select');
+                var delete_index= select_list.length-1;
+                for(; delete_index >=0; delete_index--)
+                {
+                    if(obj===select_list[delete_index])
+                        break;
+                    select_list[delete_index].remove();
+                }
+                var select_path = "/"
+                var select_list = obj.parentNode.getElementsByTagName('select');
+                var index_current = 0;
+                for( ; index_current <select_list.length;index_current++)
+                {
+                    var select_index = select_list[index_current].selectedIndex;
+                    var current_value = select_list[index_current].options[select_index].value;
+                    if(current_value !== "CURRENT")
+                        select_path =select_path + current_value +'/'
+                    if(select_list[index_current] === obj)
+                        break;
+                }
+                xmlhttp.open("GET","/ajax_folder_by_path?path="+select_path,true);
+                xmlhttp.send();
+            }
+        }
+        update_current_path(obj);
+        obj.setAttribute("name", obj.selectedIndex.toString());
+    }
+
     $(function() {
         var enabled = true;
         $("textarea.tabSupport").keydown(function(e) {
 
             // Escape key toggles tab on/off
-            if (e.keyCode==27)
+            if (e.keyCode===27)
             {
                 enabled = !enabled;
                 return false;
@@ -105,16 +309,16 @@
             if (e.keyCode === 13 && enabled)
             {
                 // selection?
-                if (this.selectionStart == this.selectionEnd)
+                if (this.selectionStart === this.selectionEnd)
                 {
                     // find start of the current line
                     var sel = this.selectionStart;
                     var text = $(this).val();
-                    while (sel > 0 && text[sel-1] != '\n')
+                    while (sel > 0 && text[sel-1] !== '\n')
                         sel--;
 
                     var lineStart = sel;
-                    while (text[sel] == ' ' || text[sel]=='\t')
+                    while (text[sel] === ' ' || text[sel]==='\t')
                         sel++;
 
                     if (sel > lineStart)
@@ -134,7 +338,7 @@
             if(e.keyCode === 9 && enabled)
             {
                 // selection?
-                if (this.selectionStart == this.selectionEnd)
+                if (this.selectionStart === this.selectionEnd)
                 {
                     // These single character operations are undoable
                     if (!e.shiftKey)
@@ -144,7 +348,7 @@
                     else
                     {
                         var text = this.value;
-                        if (this.selectionStart > 0 && text[this.selectionStart-1]=='\t')
+                        if (this.selectionStart > 0 && text[this.selectionStart-1]==='\t')
                         {
                             document.execCommand('delete');
                         }
@@ -157,9 +361,9 @@
                     var selStart = this.selectionStart;
                     var selEnd = this.selectionEnd;
                     var text = $(this).val();
-                    while (selStart > 0 && text[selStart-1] != '\n')
+                    while (selStart > 0 && text[selStart-1] !== '\n')
                         selStart--;
-                    while (selEnd > 0 && text[selEnd-1]!='\n' && selEnd < text.length)
+                    while (selEnd > 0 && text[selEnd-1]!=='\n' && selEnd < text.length)
                         selEnd++;
 
                     // Get selected text
@@ -169,7 +373,7 @@
                     for (var i=0; i<lines.length; i++)
                     {
                         // Don't indent last line if cursor at start of line
-                        if (i==lines.length-1 && lines[i].length==0)
+                        if (i===lines.length-1 && lines[i].length===0)
                             continue;
 
                         // Tab or Shift+Tab?

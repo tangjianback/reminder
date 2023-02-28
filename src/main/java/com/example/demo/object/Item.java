@@ -7,9 +7,56 @@ public class Item implements Comparable<Item>{
     String title;
     String content;
     String file;
+
+    public String getPosition() {
+        return position;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "Id=" + Id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", file='" + file + '\'' +
+                ", uid=" + uid +
+                ", category=" + category +
+                ", publics=" + publics +
+                ", position='" + position + '\'' +
+                ", level=" + level +
+                '}';
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     int uid;
     int category;
+
+    public Item(int id, String title, String content, String file, int uid, int category, int publics, String position, int level) {
+        Id = id;
+        this.title = title;
+        this.content = content;
+        this.file = file;
+        this.uid = uid;
+        this.category = category;
+        this.publics = publics;
+        this.position = position;
+        this.level = level;
+    }
+
     int publics;
+    String position;
+    int level;
 
     public int getPublics() {
         return publics;
@@ -29,15 +76,15 @@ public class Item implements Comparable<Item>{
         this.category = category;
     }
 
-    public Item(int id, String title, String content, String file, int uid, int category, int publics) {
-        Id = id;
-        this.title = title;
-        this.content = content;
-        this.file = file;
-        this.uid = uid;
-        this.category = category;
-        this.publics = publics;
-    }
+//    public Item(int id, String title, String content, String file, int uid, int category, int publics) {
+//        Id = id;
+//        this.title = title;
+//        this.content = content;
+//        this.file = file;
+//        this.uid = uid;
+//        this.category = category;
+//        this.publics = publics;
+//    }
 
     public int getUid() {
         return uid;
@@ -92,18 +139,6 @@ public class Item implements Comparable<Item>{
 
     public void setFile(String file) {
         this.file = file;
-    }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                "Id=" + Id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", file='" + file + '\'' +
-                ", uid=" + uid +
-                ", category=" + category +
-                '}';
     }
 
     @Override

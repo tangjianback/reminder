@@ -9,6 +9,49 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Dao {
+
+    public static List<Item> get_item_by_path(String path, int uid) throws SQLException
+    {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
+        String res_path = null;
+        LinkedList<Item> res = new LinkedList<Item>();
+        String sql = "select search_id from search_table where path = '"+ path.replaceAll("'","''")+"' and user_id = "+uid +";";
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            // 通过字段检索
+            int temp_item_id  = rs.getInt("search_id");
+            res.add(Dao.query_by_id(temp_item_id));
+        }
+        rs.close();
+        stmt.close();
+        conn.close();
+        return res;
+    }
+
+    public static List<String> get_folder_path(String path, int level, int uid) throws SQLException
+    {
+        Connection conn = ConnectionFactory.get_connection();
+        Statement  stmt = conn.createStatement();
+
+        String res_path = null;
+        LinkedList<String> res = new LinkedList<String>();
+        String sql = "select path from search_table where path like '"+ path.replaceAll("'","''")+"%"+"' and user_id = "+uid +" and level > "+level;
+
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            // 通过字段检索
+            res_path = rs.getString("path");
+            res.add(res_path);
+        }
+        rs.close();
+        stmt.close();
+        conn.close();
+        return res;
+    }
+
+
     public static void flush_connection()
     {
 
@@ -64,8 +107,10 @@ public class Dao {
             int user_id = rs.getInt("user_id");
             int cate_id = rs.getInt("category");
             int publics = rs.getInt("public");
+            String path = rs.getString("path");
+            int level = rs.getInt("level");
             // 输出数据
-            res.add(new Item(id,title,content,file,user_id,cate_id,publics));
+            res.add(new Item(id,title,content,file,user_id,cate_id,publics,path,level));
         }
         rs.close();
         stmt.close();
@@ -89,8 +134,10 @@ public class Dao {
             int user_id= rs.getInt("user_id");
             int cate_id = rs.getInt("category");
             int publics = rs.getInt("public");
+            String path = rs.getString("path");
+            int level = rs.getInt("level");
             // 输出数据
-            res.add(new Item(id,title,content,file,user_id,cate_id,publics));
+            res.add(new Item(id,title,content,file,user_id,cate_id,publics,path,level));
         }
         rs.close();
         stmt.close();
@@ -104,7 +151,7 @@ public class Dao {
         int res = 0;
         item.setTitle(item.getTitle().replaceAll("'","''"));
         item.setContent(item.getContent().replaceAll("'","''"));
-        String sql = "UPDATE search_table SET search_title = '"+item.getTitle()+"', search_content = '"+item.getContent()+"', search_file = '"+item.getFile()+"' WHERE search_id = "+item.getId();
+        String sql = "UPDATE search_table SET search_title = '"+item.getTitle()+"', search_content = '"+item.getContent()+"', search_file = '"+item.getFile()+"', path = '"+item.getPosition()+"', level="+item.getLevel()+" WHERE search_id = "+item.getId();
 
         res = stmt.executeUpdate(sql);
         stmt.close();
@@ -127,8 +174,9 @@ public class Dao {
         Statement  stmt = conn.createStatement();
         item.setTitle(item.getTitle().replaceAll("'","''"));
         item.setContent(item.getContent().replaceAll("'","''"));
+        item.setPosition(item.getPosition().replaceAll("'","''"));
+        String sql = "INSERT INTO search_table(search_title,search_content,search_file,user_id,category,public,path,level)  VALUES('"+item.getTitle()+ "','"+item.getContent()+"','"+item.getFile()+"',"+item.getUid()+","+item.getCategory()+","+item.getPublics()+",'"+item.getPosition()+"',"+item.getLevel()+")";
         int res = 0;
-        String sql = "INSERT INTO search_table(search_title,search_content,search_file,user_id,category,public)  VALUES('"+item.getTitle()+ "','"+item.getContent()+"','"+item.getFile()+"',"+item.getUid()+","+item.getCategory()+","+item.getPublics()+")";
         res = stmt.executeUpdate(sql);
         stmt.close();
         conn.close();
@@ -150,8 +198,10 @@ public class Dao {
             int user_id = rs.getInt("user_id");
             int cate_id = rs.getInt("category");
             int publics = rs.getInt("public");
+            String path = rs.getString("path");
+            int level = rs.getInt("level");
             // 输出数据
-            res_item = new Item(id,title,content,file,user_id,cate_id,publics);
+            res_item = new Item(id,title,content,file,user_id,cate_id,publics,path,level);
         }
         rs.close();
         stmt.close();

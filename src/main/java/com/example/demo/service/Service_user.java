@@ -166,7 +166,7 @@ public class Service_user {
         }
         this.set_user_list_nonempty(old_uesr);
         List<Item> old_list = old_uesr.getU_lru_list();
-        old_list.remove(new Item(item_id,"","","",1,0,0));
+        old_list.remove(new Item(item_id,"","","",1,0,0,"",0));
         // write into the mysql
         try {
             UserDao.update_user(old_uesr);

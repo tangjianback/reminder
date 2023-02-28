@@ -144,6 +144,8 @@ public class UsersController {
             {
                 se.setAttribute("user",current_user.getU_id());
                 model.addAttribute("user",current_user);
+                model.addAttribute("result_list", current_user.getU_lru_list());
+                model.addAttribute("init_select",1);
                 return "index";
             }
             else

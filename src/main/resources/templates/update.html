@@ -94,9 +94,27 @@
     <div style="margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1200px" class="jiange_debug" >
       <div style="float: left; padding-top:190px; width: 80px" th:text="${user.language==0?'Detail':'详细'}">Detail</div>
       <div style="float: left;margin-left: 10px;">
-        <textarea   class="tabSupport" name="search_content" style="resize: none; width: 1100px;height: 500px; line-height: 20px;" th:text="${content}"></textarea>
+        <textarea   class="tabSupport" name="search_content" style="resize: none; width: 1100px;height: 400px; line-height: 20px;" th:text="${content}"></textarea>
       </div>
       <div style="clear:both"></div>
+    </div>
+
+    <div style="margin-left: 30px; width: 1200px; border-width: 0px" class="jiange_debug">
+      <div class="jiange_debug"  style="border-width:0px; float: left; width: 80px; padding-top:5px; " th:text="${user.language==0?'Path':'路径'}" ><a>Path</a></div>
+      <div class="jiange_debug"  style="border-width: 0px;border-color: green;width: 1100px;height: 23px">
+        <div id = "path" style="font-size: 15px; text-align:left;margin-left: 5px;color: #1f7199" th:text = "${ini_path}" th:name =  "${ini_path}">/</div>
+        <input id = "path_input" type="hidden" name = 'path' th:value ="${ini_path}">
+      </div>
+
+      <div class="jiange_debug" style="border-width: 0px" id ='default_select'>
+        <select style=" margin-top: 0px; float: left" name="0" onchange="update_selection(this)" th:each="a, State : ${init_folders}">
+          <option value="CURRENT">CURRENT</option>
+          <option th:each="c, State : ${a}" th:value = "${#strings.replace(c,'JIANGEMARK_','')}" th:text = "${#strings.replace(c,'JIANGEMARK_','')}"  th:selected="${#strings.indexOf(c,'JIANGEMARK_')!=-1}?'selected'"></option>
+          <option value="*NEW*" >*NEW*</option>
+        </select>
+      </div>
+      <div id = 'select_before'><button type="button" style="height:20px;text-align: left;float: left" onclick="reset_path(this)">RESET</button></div>
+<!--      <div style="border-color: blue; border-width: 1px;width: 100px;height: 10px;" class="jiange_debug"></div>-->
     </div>
 
     <div style="float:left; margin-left: 30px; border-color: darkorange; border-width: 0px; width: 1130px" class="jiange_debug" >
@@ -121,6 +139,7 @@
         <div style="clear:both"></div>
       </div>
     </div>
+
 
     <div id="btn" align="center" style="float:left;border-width:0px; margin-left: 30px;clear: both;width: 550px" class="jiange_debug">
       <div style="float: left;margin-left: 100px;">
@@ -149,6 +168,10 @@
 
 </div>
 <script type="text/javascript">
+  const original_select = document.getElementById('default_select').cloneNode(true);
+  original_select.setAttribute("id", "test_id");
+  const original_path = document.getElementById("path").innerText;
+
   const input = document.querySelector('#image_uploads');
   input.style.opacity = 0;
   var temp_add_count = 0;
@@ -319,6 +342,208 @@
       return true;
     });
   });
+
+
+  // path
+  function current_rollbakc(obj)
+  {
+    var select_list = obj.parentNode.getElementsByTagName('select');
+    var delete_index= select_list.length-1;
+    for(; delete_index >=0; delete_index--)
+    {
+      if(obj===select_list[delete_index])
+        break;
+      select_list[delete_index].remove();
+    }
+  }
+
+  function  update_current_path(obj)
+  {
+    // get current path
+    var select_path = ""
+    var select_list = obj.parentNode.getElementsByTagName('select');
+    var index_current = 0;
+    for( ; index_current <select_list.length;index_current++)
+    {
+      var select_index = select_list[index_current].selectedIndex;
+      var current_value = select_list[index_current].options[select_index].value;
+      if(current_value !== "CURRENT")
+        select_path =select_path + current_value +'/';
+      // if(select_list[index_current] === obj)
+      //     break;
+    }
+
+    var path_elem = document.getElementById("path");
+    var path_elem_input = document.getElementById("path_input");
+    path_elem_input.setAttribute("value","/"+select_path);
+    path_elem.innerText="/"+select_path
+  }
+
+
+
+  function update_selection(obj)
+  {
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+    {
+      //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+      xmlhttp=new XMLHttpRequest();
+    }
+    else
+    {
+      // IE6, IE5 浏览器执行代码
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    // handle response code
+    xmlhttp.onreadystatechange=function()
+    {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+      {
+        var response_str_arr = xmlhttp.responseText.split(";");
+
+        var new_selection = obj.cloneNode(false);
+        // <option value="CURRENT">CURRENT</option>
+        var new_dir_elem_select = document.createElement('option')
+        new_dir_elem_select.value = "CURRENT";
+        new_dir_elem_select.innerText="CURRENT";
+
+        new_selection.appendChild(new_dir_elem_select);
+
+        for(var temp_index = 0; temp_index<response_str_arr.length; temp_index++)
+        {
+          var temp_value = response_str_arr[temp_index].trim();
+          if(temp_value!=="")
+          {
+            var new_dir_elem_select = document.createElement('option')
+            new_dir_elem_select.value = temp_value;
+            new_dir_elem_select.innerText=temp_value;
+            new_selection.appendChild(new_dir_elem_select);
+          }
+        }
+
+        var new_dir_elem_new = document.createElement('option')
+        new_dir_elem_new.value = "*NEW*";
+        new_dir_elem_new.innerText= "*NEW*";
+        new_selection.appendChild(new_dir_elem_new);
+
+        new_selection.selectedIndex = 0;
+        obj.parentNode.appendChild(new_selection);
+
+        update_current_path(obj);
+      }
+    }
+
+    var index =obj.selectedIndex
+    var select_value = obj.options[index].value
+
+    switch (select_value){
+            // if create new directory
+      case '*NEW*':
+      {
+        var ret = prompt('Please Key in Dir Name', "");
+        if(ret===null || ret ==="")
+        {
+          //current_rollbakc(obj);
+          obj.selectedIndex = obj.getAttribute("name")*1;
+          break;
+        }
+
+        var temp_len = 0;
+        //check if the dir name is already exist
+        for(; temp_len< obj.options.length; temp_len++)
+        {
+          if(ret === obj.options[temp_len].value)
+          {
+            alert("error "+ ret +"is already in the directory!!")
+            //current_rollbakc(obj);
+            obj.selectedIndex = obj.getAttribute("name")*1;
+            break;
+          }
+        }
+        // check the dir name is valid
+        if(ret.indexOf("/") !== -1)
+        {
+          alert("error "+ ret +"contains invalid / !!")
+          //current_rollbakc(obj);
+          obj.selectedIndex = obj.getAttribute("name")*1;
+          break;
+        }
+        current_rollbakc(obj);
+
+        // add the new dir
+        var new_dir_elem = document.createElement('option')
+        new_dir_elem.value = ret;
+        new_dir_elem.innerText=ret;
+        obj.insertBefore(new_dir_elem,obj.options[index])
+        obj.selectedIndex  = obj.selectedIndex-1;
+
+        //add new selection
+        var new_selection = obj.cloneNode(false);
+        // <option value="CURRENT">CURRENT</option>
+        var new_dir_elem_select = document.createElement('option')
+        new_dir_elem_select.value = "CURRENT";
+        new_dir_elem_select.innerText="CURRENT";
+        var new_dir_elem_new = document.createElement('option')
+        new_dir_elem_new.value = "*NEW*";
+        new_dir_elem_new.innerText= "*NEW*";
+
+        new_selection.appendChild(new_dir_elem_select);
+        new_selection.appendChild(new_dir_elem_new);
+        new_selection.selectedIndex = 0;
+        obj.parentNode.appendChild(new_selection);
+        break;
+      }
+      case "CURRENT":
+      {
+        current_rollbakc(obj);
+        break;
+      }
+      default:
+      {
+        // delete right element first
+        var select_list = obj.parentNode.getElementsByTagName('select');
+        var delete_index= select_list.length-1;
+        for(; delete_index >=0; delete_index--)
+        {
+          if(obj===select_list[delete_index])
+            break;
+          select_list[delete_index].remove();
+        }
+        var select_path = "/"
+        var select_list = obj.parentNode.getElementsByTagName('select');
+        var index_current = 0;
+        for( ; index_current <select_list.length;index_current++)
+        {
+          var select_index = select_list[index_current].selectedIndex;
+          var current_value = select_list[index_current].options[select_index].value;
+          if(current_value !== "CURRENT")
+            select_path =select_path + current_value +'/'
+          if(select_list[index_current] === obj)
+            break;
+        }
+        xmlhttp.open("GET","/ajax_folder_by_path?path="+select_path,true);
+        xmlhttp.send();
+      }
+    }
+    update_current_path(obj);
+    obj.setAttribute("name", obj.selectedIndex.toString());
+  }
+
+  function reset_path(obj)
+  {
+    var current_select = document.getElementById('default_select');
+    current_select.remove();
+    var help_node = document.getElementById('select_before');
+    var clone_original = original_select.cloneNode(true);
+    clone_original.setAttribute("id",'default_select');
+    help_node.parentNode.insertBefore(clone_original,help_node);
+
+    var path_elem = document.getElementById("path");
+    var path_elem_input = document.getElementById("path_input");
+    path_elem_input.setAttribute("value",original_path);
+    path_elem.innerText=original_path;
+  }
 </script>
 </body>
 </html>

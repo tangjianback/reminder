@@ -34,6 +34,19 @@ public class HelloController implements ApplicationContextAware {
     Service gloabal_service = new Service();
     Service_user global_service_user = new Service_user();
 
+    @RequestMapping(value = "/ajax_folder_by_path")
+    public ResponseEntity<String> ajax_folder_by_path(Model model, HttpServletRequest request) {
+        HttpSession se = request.getSession();
+        Integer current_user_id = (Integer) se.getAttribute("user");
+        if(current_user_id == null)
+        {
+            return new ResponseEntity<>("no session!", HttpStatus.OK);
+        }
+        String path = request.getParameter("path");
+        String folders = gloabal_service.get_folder_by_path(path,current_user_id);
+        return  new ResponseEntity<>(folders, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/ajax_delete_op")
     public ResponseEntity<String> ajax_delete_op(Model model, HttpServletRequest request) {
         HttpSession se = request.getSession();
@@ -78,99 +91,110 @@ public class HelloController implements ApplicationContextAware {
             return "love";
         }
     }
+
     @RequestMapping(value = "/index")
     public String index(Model model,HttpServletRequest request) {
-        //get the user session
         HttpSession se = request.getSession();
         Integer current_user_id = (Integer) se.getAttribute("user");
-
-//        User current_user = global_service_user.get_user_by_mail_or_id("tangjians@icloud.com");
-//        se.setAttribute("user",current_user.getU_id());
-//        model.addAttribute("user",current_user);
-//        return "index";
-
 
         //need to login first if no session
         if(current_user_id == null)
         {
-            String name = request.getParameter("direct_mail");
-            String pwd = request.getParameter("direct_pwd");
-            if(name == null || pwd ==  null)
                 return "users/login";
-            else
-            {
-                User current_user = global_service_user.get_user_by_mail_or_id(name);
-                if(current_user == null || !current_user.getU_pwd().equals(pwd))
-                    return "users/login";
-                else
-                {
-                    se.setAttribute("user",current_user.getU_id());
-                    model.addAttribute("user",current_user);
-                    return "index";
-                }
-            }
         }
         else
         {
             User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
             model.addAttribute("user",current_user);
+            String select = request.getParameter("select");
+            if(select == null)
+                select = "1";
+            int index_type = Integer.parseInt(select);
+
+            String page_index = request.getParameter("page_index");
+            if(page_index == null)
+                page_index = "0";
+            int page_index_int = Integer.parseInt(page_index);
+            int total_count  = 0;
+            int previous_page = 0;
+            int next_page = 0;
+
+            switch (index_type) {
+                case 1: // lru
+                    model.addAttribute("result_list", current_user.getU_lru_list());
+                    model.addAttribute("init_select",1);
+                    model.addAttribute("page", false);
+                    break;
+                case 2: // cate
+                    String [] s= request.getParameterValues("selects");
+                    String out_path = "/";
+                    int click_index = Integer.parseInt(request.getParameter("click_index"));
+                    if (s!= null)
+                        for(String i: s) {
+                            if (!i.strip().equals("") && !i.strip().equals("CURRENT") && click_index>=0)
+                            {
+                                out_path += i + "/";
+                                click_index--;
+                            }
+                            else
+                                break;
+                        }
+                    List<Item> res_list = gloabal_service.get_item_by_path(out_path,current_user_id);
+                    total_count  = res_list.size();
+                    previous_page = Math.max(page_index_int - 1, 0);
+                    next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
+
+                    model.addAttribute("page", true);
+                    model.addAttribute("previous_page",previous_page);
+                    model.addAttribute("current_page",page_index_int);
+                    model.addAttribute("next_page",next_page);
+                    model.addAttribute("result_list", res_list.subList(page_index_int*gloabal_service.page_size,Math.min((page_index_int+1)*gloabal_service.page_size,res_list.size())));
+                    model.addAttribute("init_folders",gloabal_service.get_complete_folders_by_path(out_path,current_user_id));
+                    model.addAttribute("selects", s==null?new LinkedList<String>():Arrays.stream(s).toList());
+                    model.addAttribute("click_index", request.getParameter("click_index"));
+                    model.addAttribute("init_select",2);
+                    break;
+                case 3: // all
+                    total_count  = gloabal_service.get_item_total(current_user_id);
+                    previous_page = Math.max(page_index_int - 1, 0);
+                    next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
+
+                    model.addAttribute("page", true);
+                    model.addAttribute("previous_page",previous_page);
+                    model.addAttribute("current_page",page_index_int);
+                    model.addAttribute("next_page",next_page);
+                    model.addAttribute("result_list", gloabal_service.get_item_by_page(page_index_int, gloabal_service.page_size, current_user_id));
+                    model.addAttribute("init_select",3);
+                    break;
+                default: // search
+                    String para = request.getParameter("search_words");
+                    if(para == null)
+                        para = "";
+                    para = para.strip();
+                    String[] para_array = para.split(" ");
+                    List<Item> current_list = gloabal_service.query_key_word(para_array, current_user_id);
+                    total_count  = current_list.size();
+                    previous_page = Math.max(page_index_int - 1, 0);
+                    next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
+
+                    model.addAttribute("page", true);
+                    model.addAttribute("previous_page",previous_page);
+                    model.addAttribute("current_page",page_index_int);
+                    model.addAttribute("next_page",next_page);
+                    model.addAttribute("result_list", current_list.subList(page_index_int*gloabal_service.page_size,Math.min((page_index_int+1)*gloabal_service.page_size,current_list.size())));
+                    model.addAttribute("key_words",para.strip());
+                    model.addAttribute("init_select",4);
+            };
             return "index";
         }
 
     }
+
     @RequestMapping(value = "/")
     public String index_default(Model model,HttpServletRequest request) {
         return "forward:/index";
     }
 
-    @RequestMapping(value = "/searchByPage")
-    public String queryBypage(Model model, HttpServletRequest request) {
-        HttpSession se = request.getSession();
-        Integer current_user_id = (Integer)se.getAttribute("user");
-        if(current_user_id == null)
-        {
-            return  "users/login";
-        }
-        String page_index = request.getParameter("page_index");
-        int page_index_int = Integer.parseInt(page_index);
-        User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
-
-        current_user.setU_lru_list(gloabal_service.get_item_by_page(page_index_int, gloabal_service.page_size, current_user_id));
-        int total_count  = gloabal_service.get_item_total(current_user_id);
-
-        int current_page = page_index_int;
-        int previous_page = page_index_int-1 <0? 0:page_index_int-1;
-        int next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
-
-        model.addAttribute("page", true);
-        model.addAttribute("previous_page",previous_page);
-        model.addAttribute("current_page",current_page);
-        model.addAttribute("next_page",next_page);
-        model.addAttribute("user",current_user);
-        return "index";
-    }
-
-    @RequestMapping(value = "/search")
-    public String search(Model model, HttpServletRequest request) {
-        HttpSession se = request.getSession();
-        Integer current_user_id = (Integer)se.getAttribute("user");
-        if(current_user_id == null)
-        {
-            return  "users/login";
-        }
-        String para = request.getParameter("search_words");
-        para = para.strip();
-        User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
-
-        // input no empty
-        if(!para.strip().equals("")) {
-            String[] para_array = para.split(" ");
-            current_user.setU_lru_list(gloabal_service.query_key_word(para_array, current_user_id));
-        }
-        model.addAttribute("user",current_user);
-        model.addAttribute("page", false);
-        return "index";
-    }
 
     @RequestMapping(value = "/add")
     public String add(Model model, HttpServletRequest request) {
@@ -182,6 +206,13 @@ public class HelloController implements ApplicationContextAware {
         }
         User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
         model.addAttribute("user",current_user );
+        List<String>  ini_dirs = new LinkedList<String>();
+        for(String temp_s : gloabal_service.get_folder_by_path("/",current_user_id).split(";"))
+        {
+            if(temp_s.strip()!="")
+                ini_dirs.add(temp_s);
+        }
+        model.addAttribute("ini_folders",ini_dirs);
         return "add";
     }
     @RequestMapping(value = "/update")
@@ -223,11 +254,15 @@ public class HelloController implements ApplicationContextAware {
             String file = querry_item.getFile();
             String id = querry_item.getId()+"";
             String type = querry_item.getCategory()+"";
+            String path = querry_item.getPosition();
 
             model.addAttribute("title",title);
             model.addAttribute("content",content);
             model.addAttribute("id",id);
             model.addAttribute("type",type);
+            model.addAttribute("ini_path",path);
+
+            model.addAttribute("init_folders",gloabal_service.get_complete_folders_by_path(path,current_user_id));
 
             // if it has a corresponding file
             String file_name = querry_item.getFile().strip();
@@ -263,8 +298,17 @@ public class HelloController implements ApplicationContextAware {
         String content = request.getParameter("search_content").strip();
         String category_id = request.getParameter("type").strip();
         String public_item = request.getParameter("public");
+        String path = request.getParameter("path");
+
         if(public_item == null)
             public_item = "0";
+
+        //if path invalid
+        if(path.indexOf("//") !=-1|| !path.startsWith("/"))
+        {
+            gloabal_service.set_message(model,"invalid path: "+path,"index","返回主页","red");
+            return "message";
+        }
         // it no parameter
         if(title==null || content == null || category_id== null)
         {
@@ -286,7 +330,7 @@ public class HelloController implements ApplicationContextAware {
         }
 
         //store multiple files
-        int store_res = gloabal_service.store(files,title,content,current_user_id,Integer.parseInt(category_id),public_item);
+        int store_res = gloabal_service.store(files,title,content,current_user_id,Integer.parseInt(category_id),public_item,path.strip());
         String message = null;
         switch (store_res){
             case -4:
@@ -374,6 +418,15 @@ public class HelloController implements ApplicationContextAware {
         String content = request.getParameter("search_content").strip();
         String id = request.getParameter("id");
         String cate_id = request.getParameter("type");
+        String path = request.getParameter("path").strip();
+
+        //if path invalid
+        if(path.indexOf("//")!=-1 || !path.startsWith("/"))
+        {
+            gloabal_service.set_message(model,"invalid path: "+path,"index","返回主页","red");
+            return "message";
+        }
+
         // if no enough parameters
         if(title == null || content == null || id ==null)
         {
@@ -397,6 +450,7 @@ public class HelloController implements ApplicationContextAware {
             return "message";
         }
         Item query_item = gloabal_service.querry_by_id(id_int);
+        String old_path = query_item.getPosition();
         // if id is not in the database
         if(query_item== null)
         {
@@ -411,7 +465,7 @@ public class HelloController implements ApplicationContextAware {
         }
 
         String message;
-        int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"),current_user_id, Integer.parseInt(cate_id));
+        int update_res = gloabal_service.update(files,title,content,Integer.parseInt(id.strip()),request.getParameterValues("del_files"),current_user_id, Integer.parseInt(cate_id),path);
         switch (update_res){
             case -3:
                 message = "store file fail";
@@ -423,21 +477,25 @@ public class HelloController implements ApplicationContextAware {
                 message = "dir creating fail";
                 break;
             case 0:
-                message = "修改成功(文件列表不变)";
+                message = "修改成功(文件列表不变,";
                 break;
             case 1:
-                message = "修改成功(增加文件)";
+                message = "修改成功(增加文件,";
                 break;
             case 2:
-                message = "修改成功(删除文件)";
+                message = "修改成功(删除文件,";
                 break;
             default:
-                message = "修改成功(增加，删除文件)";
+                message = "修改成功(增加&删除文件,";
                 break;
         }
         // update successful
         if(update_res >=0)
         {
+            if(old_path.equals(path))
+                message+="笔记路径不变)";
+            else
+                message+="笔记路径改变)";
             model.addAttribute("id",id);
             gloabal_service.set_message(model,message,"detail","查看","darkgoldenrod");
             // add lru to user
@@ -483,6 +541,7 @@ public class HelloController implements ApplicationContextAware {
         model.addAttribute("id",query_item.getId()+"");
         model.addAttribute("title",query_item.getTitle()+"");
         model.addAttribute("content",query_item.getContent()+"");
+        model.addAttribute("path",query_item.getPosition()+"");
         String file_name = query_item.getFile().strip();
         List<File_item> file_lists =  new LinkedList<File_item>();
         for(String item_string: file_name.split(";"))

@@ -29,6 +29,83 @@ public class Service {
         }
     }
 
+    public List<List<String>>  get_complete_folders_by_path(String path,int current_user_id)
+    {
+        List<List<String>> init_folders =  new LinkedList<List<String>>();
+        // /a/b/
+        for(int i = 0;i< path.length();i++)
+        {
+            if(path.charAt(i)== '/')
+            {
+                String current_dir = "";
+                if(i!= path.length()-1)
+                {
+                    String[]  temp_temp_list = path.substring(i+1).split("/");
+                    current_dir = temp_temp_list[0];
+
+                }
+
+                String str_list = this.get_folder_by_path(path.substring(0,i+1),current_user_id);
+                List<String> temp_str_folder_list = new LinkedList<String>();
+                for(String s: str_list.split(";"))
+                {
+                    if(!s.strip().equals(""))
+                    {
+                        if(s.strip().equals(current_dir))
+                        {
+                            temp_str_folder_list.add("JIANGEMARK_"+s.strip());
+
+                        }
+                        else
+                            temp_str_folder_list.add(s.strip());
+                    }
+                }
+                init_folders.add(temp_str_folder_list);
+            }
+        }
+        return init_folders;
+    }
+
+
+    public List<Item> get_item_by_path(String s, int uid)
+    {
+        try {
+            return Dao.get_item_by_path(s,uid);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public String get_folder_by_path(String s, int uid)
+    {
+        int level= 0;
+        for(int i = 0;i<s.length();i++)
+        {
+            if(s.charAt(i) == '/')
+                level++;
+        }
+        List<String> res = new LinkedList<String>();
+        String floder_strs = "";
+        try {
+            for(String temp: Dao.get_folder_path(s,level,uid))
+            {
+                String new_substring =temp.substring(s.length());
+                String new_folder = new_substring.split("/")[0];
+                if(!res.contains(new_folder))
+                    res.add(new_folder);
+            }
+            for(String temp: res)
+            {
+                floder_strs+=temp+";";
+            }
+            return floder_strs;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public List<Item> get_item_by_page(int page_index, int page_size, int u_id)
     {
         try {
@@ -180,8 +257,9 @@ public class Service {
     }
 
 //    finished 1: no dile but add 0; dircreate_file:-1; sqlerror:-2; storefail:-3;
-    public int store(MultipartFile[] uploadFiles, String title, String content,int uid,int cate_id,String public_item)
+    public int store(MultipartFile[] uploadFiles, String title, String content,int uid,int cate_id,String public_item, String path)
     {
+
         //check the item type
         if(cate_id == 1)
         {
@@ -232,8 +310,10 @@ public class Service {
         {
             publics = 1;
         }
+
+        int level = path.split("/").length;
         // sql executing
-        if(this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles),uid,cate_id,publics)))
+        if(this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles),uid,cate_id,publics,path,level)))
         {
             if(stored_fles.isEmpty())
                 return 0;
@@ -253,7 +333,7 @@ public class Service {
 
     }
     //    finished :1; nofile:0; dircreate_file:-1; sqlerror:-2; storefail:-3;
-    public int update(MultipartFile[] uploadFiles, String title, String content, int ID, String[] del_files, int uid,int cate_id)
+    public int update(MultipartFile[] uploadFiles, String title, String content, int ID, String[] del_files, int uid,int cate_id,String path)
     {
         // prepare the new files string
         Item query_item  = this.querry_by_id(ID);
@@ -308,8 +388,9 @@ public class Service {
             }
         }
         // execute sql
+        int level = path.split("/").length;
         // sql successful
-        if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files),uid,cate_id,query_item.getPublics())))
+        if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files),uid,cate_id,query_item.getPublics(),path,level)))
         {
             boolean del_file_flag = (del_files==null || del_files.length== 0)? false:true;
             // add and delte

@@ -298,22 +298,23 @@
         </form>
     </div>
     <div id = "up_search_right"  class="jiange_debug">
-        <form class="button2" method="get" th:action="@{/search}">
+        <form class="button2" method="get" th:action="@{/index}">
             <h2 th:text = "${user.u_name}+${user.language == 0?' Reminder Search':'备忘录搜索'}">test</h2>
             <input class="search-text" id="search-text" type="text" th:placeholder="${user.language==0?'please input key words':'请输入搜索内容'}" maxlength="100" name="search_words">
+            <input type="hidden" name="select" value = "4">
             <input type="submit" class="search-btn" th:value="${user.language==0?'Search':'搜索'}">
         </form>
     </div>
-    <div style="float: left; border-width: 0px" class="jiange_debug">
-        <form class="button1" method="get" th:action="@{/searchByPage}">
-            <input type="hidden" name="page_index" value="0">
-            <input type="submit" class="search-btn2" th:value="${user.language==0?'FindAll':'全部'}">
-        </form>
-    </div>
+<!--    <div style="float: left; border-width: 0px" class="jiange_debug">-->
+<!--        <form class="button1" method="get" th:action="@{/searchByPage}">-->
+<!--            <input type="hidden" name="page_index" value="0">-->
+<!--            <input type="submit" class="search-btn2" th:value="${user.language==0?'FindAll':'全部'}">-->
+<!--        </form>-->
+<!--    </div>-->
 
 
     <div  class="jiange_debug" style="width: 300px;height: 100px;float: left; border-width: 0px;margin-left: 90px" >
-        <div style="float: right; border-width: 0px;margin-top: 1px" class="jiange_debug" >
+        <div style="float: right; border-width: 0px;margin-top: 0px" class="jiange_debug" >
             <a href="/user/login_out" style="color: #29BC95" th:text="${user.language==0?'login out':'登出'}">登出</a>
         </div>
         <div style="float: right; border-width: 0px; margin-right: 20px;" class="jiange_debug" >
@@ -326,8 +327,26 @@
 
 <div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
 <div id="search-suggest1" th:style="'border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;'+${#lists.isEmpty(user.u_lru_list)?'height:10px;':''}">
-    <div>
-    <ul th:each="c, State : ${user.u_lru_list}">
+    <div class="jiange_debug" style="border-width: 0px; height: 20px;margin-top: 5px;margin-left: 20px">
+        <div class="jiange_debug" style="border-width: 0px;float: left">
+            <form id = "select_id" method="get" th:action="@{/index}" >
+                <select style=" margin-top: 0px; float: left" name = 'select' onchange="selection(this)">
+                    <option value="1" th:selected="${init_select==1}?'selected'" th:text="${user.language==0?'LATEST':'最近'}">LATEST</option>
+                    <option value="2" th:selected="${init_select==2}?'selected'" th:text="${user.language==0?'CATE':'路径'}">CATE</option>
+                    <option value="3" th:selected="${init_select==3}?'selected'" th:text="${user.language==0?'ALL':'所有'}">ALL</option>
+                    <option value="4" th:selected="${init_select==4}?'selected'" >*</option>
+                </select>
+                <select style=" margin-top: 0px; float: left" th:each="ini_folder, State : ${init_folders}"   name="selects" onchange="selection(this)">
+                    <option value="CURRENT">CURRENT</option>
+                    <option th:each="c, State : ${ini_folder}" th:value = "${#strings.replace(c,'JIANGEMARK_','')}" th:text = "${#strings.replace(c,'JIANGEMARK_','')}"  th:selected="${#strings.indexOf(c,'JIANGEMARK_')!=-1}?'selected'"></option>
+                </select>
+                <input type="hidden" id = 'click_index' name = "click_index" value = "0">
+            </form>
+
+        </div>
+    </div>
+    <div style=" height: 540px;">
+    <ul th:each="c, State : ${result_list}">
         <li>
             <div style="float: left; margin-right: 5px;" th:if="${c.category==0}"><img th:src="@{/img/note.png}" width=18px /></div>
             <div style="float: left; margin-right: 5px;" th:if="${c.category==1}"><img th:src="@{/img/photo.png}" width=18px /></div>
@@ -338,8 +357,22 @@
     </ul>
     </div>
 
-    <!--    <div id="search-suggest1" style="border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;">-->
-<!--        <div>-->
+<!--        <div id="search-suggest1" style="border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;">-->
+<!--        <div class="jiange_debug" style="border-width: 1px; height: 20px;">-->
+<!--            <div class="jiange_debug" style="border-width: 1px">-->
+<!--                <select style=" margin-top: 0px; float: left" name="0" onchange="selection(this)">-->
+<!--                    <option value="CATE">CATE</option>-->
+<!--                    <option value="ALL">ALL</option>-->
+<!--                    <option value="LATEST">LATEST</option>-->
+<!--                </select>-->
+<!--&lt;!&ndash;                <select style=" margin-top: 0px; float: left" name="0" onchange="update_selection(this)">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <option value="CURRENT">CURRENT</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <option th:each="c, State : ${ini_folders}" th:value = "${c}" th:text = "${c}"></option>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <option value="*NEW*" >*NEW*</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                </select>&ndash;&gt;-->
+<!--            </div>-->
+<!--        </div>-->
+<!--            <div class="jiange_debug" style="border-width: 1px">-->
 <!--        <ul>-->
 <!--            <li>-->
 <!--                <div style="float: left"><img src="/img/note.png" width=18px /></div>-->
@@ -359,14 +392,26 @@
 
         <div class="jiange_debug" style="border-width: 0px;width: 900px;" th:if="${page}" >
             <div  class="jiange_debug" style="margin-left: 350px">
-                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/searchByPage}">
+                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/index}">
                     <input type="hidden" name="page_index" value="0">
+                    <input type="hidden" name="select" th:value="${init_select}">
+                    <input type="hidden" name="search_words" th:if="${init_select==4}" th:value = "${key_words}">
+                    <div  th:if="${init_select==2}" th:each="c, State : ${selects}">
+                        <input type="hidden" name="selects" th:value = "${c}">
+                    </div>
+                    <input th:if="${init_select==2}" type="hidden" name="click_index" th:value = "${click_index}">
                     <input type="submit" class="search-btn_page" th:value="${user.language==0?'Start':'首页'}">
                 </form>
             </div>
             <div  class="jiange_debug">
-                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/searchByPage}">
+                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/index}">
                     <input type="hidden" name="page_index" th:value="${previous_page}">
+                    <input type="hidden" name="select" th:value="${init_select}">
+                    <input type="hidden" name="search_words" th:if="${init_select==4}" th:value = "${key_words}">
+                    <div  th:if="${init_select==2}" th:each="c, State : ${selects}">
+                        <input type="hidden" name="selects" th:value = "${c}">
+                    </div>
+                    <input th:if="${init_select==2}" type="hidden" name="click_index" th:value = "${click_index}">
                     <input type="submit" class="search-btn_page" th:value="${user.language==0?'Previous':'上一页'}">
                 </form>
             </div>
@@ -374,8 +419,14 @@
                <span style="float: left;width: 50px; text-align: center" th:text = "'No.'+${current_page}">No.1</span>
             </div>
             <div  class="jiange_debug">
-                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/searchByPage}">
+                <form class="button1" style="margin-top: 0px;" method="get" th:action="@{/index}">
                     <input type="hidden" name="page_index" th:value="${next_page}">
+                    <input type="hidden" name="select" th:value="${init_select}">
+                    <input type="hidden" name="search_words" th:if="${init_select==4}" th:value = "${key_words}">
+                    <div  th:if="${init_select==2}" th:each="c, State : ${selects}">
+                        <input type="hidden" name="selects" th:value = "${c}">
+                    </div>
+                    <input th:if="${init_select==2}" type="hidden" name="click_index" th:value = "${click_index}">
                     <input type="submit" class="search-btn_page" th:value="${user.language==0?'Next':'下一页'}">
                 </form>
             </div>
@@ -388,7 +439,7 @@
         <div style="float: left;border-width: 0px;border-color: red;border-style: dashed; margin-left: 140px;font-size: 20px;font-weight: bold" th:text="${user.language==0?'Todo Lists':'待办事项'}"></div>
         <form th:action="@{/quick_del}" method="post">
 
-        <div  style="float: left; width: 400px;"  th:each="c, State : ${user.quicks}">
+        <div  style="float: left; width: 400px;border-width: 0px"  th:each="c, State : ${user.quicks}" class="jiange_debug">
             <div class="jiange_debug" style="float: left">
                 <div style="float: left" class="jiange_debug"><input class="input_check"  th:id="${c.id}" type="checkbox"  th:value="${c.id}"  name="del_quick" th:onchange = "check_line(this.getAttribute('id'))"></div>
                 <div style="float: left; width: 362px; margin-left: 10px;"
@@ -529,6 +580,21 @@
         }
 
     })
+    function selection(obj)
+    {
+        var select_index = obj.selectedIndex;
+        // alert(obj.options[select_index].value)
+
+        var select_arr = obj.parentNode.getElementsByTagName("select");
+        var current_index = 0;
+        while(select_arr[current_index] !== obj)
+        {
+            current_index++;
+        }
+        document.getElementById("click_index").setAttribute("value",(current_index-1).toString())
+        document.getElementById("select_id").submit();
+    }
+
 </script>
 </body>
 </html>
