@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Random;
+
 @Controller
 public class UsersController {
     Service_user global_user_service = new Service_user();
@@ -70,6 +72,74 @@ public class UsersController {
             return "forward:/index";
         }
     }
+
+    @RequestMapping(value = "/user/resendmail")
+    public String resend_mail(Model model, HttpServletRequest request) {
+        return "resendmail";
+    }
+
+    @RequestMapping(value = "/user/resendmail_op")
+    public String resend_mail_op(Model model, HttpServletRequest request) {
+        String mail = request.getParameter("mail");
+        if(mail == null)
+        {
+            global_user_service.set_error_message(model,"no mail parameter");
+            return "message";
+        }
+        mail = mail.strip();
+        User quer_user = global_user_service.get_user_by_mail_or_id(mail);
+        if(quer_user == null)
+        {
+            global_user_service.set_error_message(model,"no mail submitted before");
+            return "message";
+        }
+        if(quer_user.getCheck_code() == 0)
+        {
+            global_user_service.set_error_message(model," mail already registered before");
+            return "message";
+        }
+
+        try{
+            global_user_service.SendEmail(quer_user.getMail(),"http://203.189.0.62:8088/user/register_check?mail="+quer_user.getMail()+"&check_code="+quer_user.getCheck_code(),quer_user.getU_name());
+        }catch (Exception e)
+        {
+            global_user_service.set_error_message(model,"mail send with error, contact somebody!!!");
+            return "message";
+        }
+        return "mail";
+    }
+
+    @RequestMapping(value = "/user/register_check")
+    public String register_check(Model model, HttpServletRequest request) {
+        String check_code = request.getParameter("check_code");
+        String mail = request.getParameter("mail");
+        if(check_code == null || mail == null)
+        {
+            global_user_service.set_error_message(model,"no valid  check infomation");
+            return "message";
+        }
+        int check_code_int = Integer.parseInt(check_code);
+
+        User query_user = global_user_service.get_user_by_mail_or_id(mail);
+        if(query_user == null || query_user.getCheck_code()!= check_code_int)
+        {
+            global_user_service.set_error_message(model,"no valid mail");
+            return "message";
+        }
+        if(query_user.getCheck_code()== 0)
+        {
+            global_user_service.set_valid_message(model,"you already checked the mail, you can directly login");
+            return "message";
+        }
+        query_user.setCheck_code(0);
+        global_user_service.update_user(query_user);
+        model.addAttribute("mail",query_user.getMail());
+        model.addAttribute("pwd",query_user.getU_pwd());
+
+        global_user_service.set_valid_message(model,"Process complete,  you can login now");
+        return "message";
+    }
+
     @RequestMapping(value = "/user/register_op")
     public String register_op(Model model, HttpServletRequest request) {
         HttpSession se = request.getSession();
@@ -89,24 +159,38 @@ public class UsersController {
             }
             else
             {
+                User query_user = global_user_service.get_user_by_mail_or_id(mail);
                 //if the mail already in our database
-                if(global_user_service.get_user_by_mail_or_id(mail)!= null)
+                if(query_user!= null)
                 {
-                    global_user_service.set_error_message(model,"mail already registered");
+                    if(query_user.getCheck_code() == 0)
+                        global_user_service.set_error_message(model,"mail already registered");
+                    else
+                        global_user_service.set_error_message(model,"mail already in register process");
                     return "message";
                 }
                 else
                 {
+                    int max = 999999; // specify the maximum value
+                    Random rand = new Random();
+                    int randomNumber = rand.nextInt(2,max); // generate a random integer between 0 (inclusive) and max (exclusive)
+
                     //default english 0
-                    User add_user = new User(1,name,pwd,mail,null,null,0);
+                    User add_user = new User(1,name,pwd,mail,null,null,0,randomNumber);
                     global_user_service.set_user_list_nonempty(add_user);
                     global_user_service.add_user(add_user);
-                    model.addAttribute("mail",add_user.getMail());
-                    model.addAttribute("pwd",add_user.getU_pwd());
+
+                    try{
+                        global_user_service.SendEmail(add_user.getMail(),"http://203.189.0.62:8088/user/register_check?mail="+add_user.getMail()+"&check_code="+randomNumber,add_user.getU_name());
+                    }catch (Exception e)
+                    {
+                        global_user_service.set_error_message(model,"mail send with error, contact somebody!!!");
+                        return "message";
+                    }
                 }
             }
         }
-        return "users/login";
+        return "mail";
     }
     @RequestMapping(value = "/user/login")
     public String login(Model model, HttpServletRequest request) {
@@ -138,7 +222,18 @@ public class UsersController {
                 return "users/login";
             }
             User current_user = global_user_service.get_user_by_mail_or_id(name.strip());
-
+            if(current_user == null)
+            {
+                se.removeAttribute("user");
+                se.invalidate();
+                global_user_service.set_valid_message(model,"mail is not in our system");
+                return "message";
+            }
+            if(current_user.getCheck_code() != 0)
+            {
+                global_user_service.set_valid_message(model,"Please finish the check process");
+                return "message";
+            }
             // password mathc
             if(current_user.getU_pwd().equals(psw))
             {
@@ -150,7 +245,8 @@ public class UsersController {
             }
             else
             {
-                return "users/login";
+                global_user_service.set_valid_message(model,"password is wrong for the required mail");
+                return "message";
             }
         }
         return "forward:/index";

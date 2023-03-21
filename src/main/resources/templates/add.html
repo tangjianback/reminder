@@ -39,7 +39,10 @@
 </head>
 <body>
 <script th:src="@{libs/jquery-1.12.4/jquery.min.js}"></script>
-<div  class = 'jiange_debug' style="width: 1420px;">
+<div class="jiange_debug" style="border-width: 0px;border-color:green;width: 100%; display: flex;
+      justify-content: center;
+      align-items: center;">
+<div  class = 'jiange_debug' style="border-width: 0px;width: 1420px;">
     <h2 style="text-align: center;" th:text="${user.language ==0?'Info Add':'信息录入'}">info Add</h2>
     <hr width="1200" color="black" >
     <form style="text-align: center;font-size:28px" method="post" th:action = "@{/add_op}" enctype="multipart/form-data">
@@ -106,6 +109,7 @@
     </form>
 
 
+</div>
 </div>
 <script type="text/javascript">
 

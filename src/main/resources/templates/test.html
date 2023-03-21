@@ -3,59 +3,60 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>Home</title>
+  <title>PhotoDetail</title>
   <style>
     html,
     body {
       font-family: 微软雅黑;
-      /*		overflow: hidden;*/
+      /*    overflow: hidden;*/
     }
     #up_search {
       float: left;
+    }
+    .up_search_left {
+      float: left;
+      width: 200px;
+    }
 
-      margin-top: 10px;
-    }
-    #up_search_left {
-      float: left;
-    }
-    #up_search_right {
-      float: left;
-    }
 
     .button1 {
-      margin-top: 73.3px;
+      /*    width: 420px;*/
+      /*left: 44.45%;
+            top: 24.3%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
       text-align: center;
     }
     .button2 {
+      /*    width: 440px;*/
+      /*left: 50%;
+            top: 15%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
       text-align: center;
-      padding:0px;
+    }
+    .button3 {
+      /*    width: 440px;*/
+      /*left: 50%;
+            top: 15%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
+      text-align: center;
+    }
+    .button4 {
+      /*    width: 440px;*/
+      /*left: 50%;
+            top: 15%;*/
+      /*margin-left: -200px;
+            margin-top: -40px;*/
+      text-align: center;
     }
     .button2>h2 {
       color: #666;
       letter-spacing: 2px;
     }
-    .search-text {
-      display: block;
-      height: 38px;
-      width: 420px;
-      float: left;
-      font-size: 16px;
-      color: #777;
-      outline: none;
-      padding: 0 0 0 20px;
-      margin: 0;
-      border: 1px solid #b4b4b4;
-      border-right-width: 0;
-      letter-spacing: 1px;
-    }
-    .search-text:hover {
-      border: 1px solid #888;
-      border-right-width: 0;
-    }
-    .search-text:focus {
-      border: 1px solid #2DD1AF;
-      border-right-width: 0;
-    }
+
+
     .search-btn {
       display: block;
       height: 40px;
@@ -68,149 +69,25 @@
       letter-spacing: 2px;
       font-size: 14px;
       font-family: 微软雅黑;
-      background: #2DD1AF;
-      color: #fff;
-      outline: none;
-      -moz-border-radius: 0px 0px 0px 0px;
-      -webkit-border-radius: 0px 0px 0px 0px;
-      border-radius: 0px 0px 0px 0px;
-      -webkit-transition: background 0.3s ease-in-out;
-      -moz-transition: background 0.3s ease-in-out;
-      transition: background 0.3s ease-in-out;
-    }
-    .search-btn1 {
-      display: block;
-      height: 40px;
-      width: 80px;
-      padding: 0;
-      float: left;
-      margin: 0;
-      border: none;
-      cursor: pointer;
-      letter-spacing: 2px;
-      font-size: 14px;
-      font-family: 微软雅黑;
-      background: #4e72be;
-      color: #fff;
-      outline: none;
-      -moz-border-radius: 4px 0px 0px 4px;
-      -webkit-border-radius: 4px 0px 0px 4px;
-      border-radius: 4px 0px 0px 4px;
-      -webkit-transition: background 0.3s ease-in-out;
-      -moz-transition: background 0.3s ease-in-out;
-      transition: background 0.3s ease-in-out;
-    }
-    .search-btn2 {
-      display: block;
-      height: 40px;
-      width: 80px;
-      padding: 0;
-      float: left;
-      margin: 0;
-      border: none;
-      cursor: pointer;
-      letter-spacing: 2px;
-      font-size: 14px;
-      font-family: 微软雅黑;
-      background: #b5bbb5;
-      color: #fff;
-      outline: none;
-      -moz-border-radius: 0px 4px 4px 0px;
-      -webkit-border-radius: 0px 4px 4px 0px;
-      border-radius: 0px 4px 4px 0px;
-      -webkit-transition: background 0.3s ease-in-out;
-      -moz-transition: background 0.3s ease-in-out;
-      transition: background 0.3s ease-in-out;
-    }
-    .search-btn_page {
-      display: block;
-      height: 20px;
-      width: 60px;
-      padding: 0;
-      float: left;
-      margin: 0;
-      border: none;
-      cursor: pointer;
-      letter-spacing: 2px;
-      font-size: 14px;
-      font-family: 微软雅黑;
-      background: #eae4e4;
-      color: #2d44c4;
-      outline: none;
-      /*-moz-border-radius: 4px 0px 0px 4px;*/
-      /*-webkit-border-radius: 4px 0px 0px 4px;*/
-      /*border-radius: 4px 0px 0px 4px;*/
-      -webkit-transition: background 0.3s ease-in-out;
-      -moz-transition: background 0.3s ease-in-out;
-      transition: background 0.3s ease-in-out;
-    }
-    .search-btn_small1 {
-      display: block;
-      height: 20px;
-      width: 40px;
-      padding: 0;
-      float: left;
-      margin: 0;
-      border: none;
-      cursor: pointer;
-      letter-spacing: 2px;
-      font-size: 12px;
-      font-family: 微软雅黑;
-      background: #ce71d9;
-      color: #fff;
+      background: #cbcecb;
+      color: black;
       outline: none;
       -moz-border-radius: 4px 4px 4px 4px;
       -webkit-border-radius: 4px 4px 4px 4px;
       border-radius: 4px 4px 4px 4px;
-      -webkit-transition: background 0.3s ease-in-out;
-      -moz-transition: background 0.3s ease-in-out;
-      transition: background 0.3s ease-in-out;
-    }
-    .search-btn_small2 {
-      display: block;
-      height: 20px;
-      width: 40px;
-      padding: 0;
-      float: left;
-      margin: 0;
-      border: none;
-      cursor: pointer;
-      letter-spacing: 2px;
-      font-size: 12px;
-      font-family: 微软雅黑;
-      background: #63c090;
-      color: #fff;
-      outline: none;
-      -moz-border-radius: 4px 4px 4px 4px;
-      -webkit-border-radius: 4px 4px 4px 4px;
-      border-radius: 4px 4px 4px 4px;
-      -webkit-transition: background 0.3s ease-in-out;
-      -moz-transition: background 0.3s ease-in-out;
-      transition: background 0.3s ease-in-out;
-    }
-    .search-btn_small2:hover {
-      background: #21a862;
-    }
-    .search-btn_small1:hover {
-      background: #c22ac0;
+      -webkit-transition: background 0.8s ease-in-out;
+      -moz-transition: background 0.8s ease-in-out;
+      transition: background 0.8s ease-in-out;
     }
 
-    .search-btn1:hover {
-      background: #4053be;
-    }
-    .search-btn2:hover {
-      background: #7a7a7e;
-    }
-    .search-btn_page:hover {
-      background: #b4b5bb;
-    }
     .search-btn:hover {
-      background: #29BC95;
+      background: #ffffff;
+      color: #a5a6a5;
     }
     #search-suggest {
       position: absolute;
-      left: 1000px;
-      top: 100px;
+      left: 50%;
+      top: 15%;
       margin-left: -190px;
       margin-top: 70px;
       display: none;
@@ -236,13 +113,13 @@
 
     }
     #search-suggest1 {
-      /*border-width: 2px;
+      border-width: 0px;
       border-style: dashed;
-      border-color: green;*/
+      border-color: green;
       clear: both;
       float: left;
       width: 1200px;
-      margin-left: 50px;
+      margin-left: 120px;
       display: block;
       background: #fff;
 
@@ -253,365 +130,165 @@
       cursor: pointer;
       font-size: 19px;
       word-break:break-all;
-      /*		overflow:hidden;*/
+      /*    overflow:hidden;*/
     }
-    #search-suggest1 ul li:hover {
-      padding: 3px 10px;
-      letter-spacing: 1px;
-      cursor: pointer;
-      font-size: 20px;
-      color: green;
-      word-break:break-all;
-      /*		overflow:hidden;*/
+    .tooltip {
+      position: relative;
+      display: inline-block;
     }
-    .jiange_on{
-      text-decoration: line-through;
-      text-decoration-color: red;
-      color: #a5a6a5;
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 140px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 150%;
+      left: 50%;
+      margin-left: -75px;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
-    .jiange_off{
-      text-decoration: none;
-      color: black;
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
     }
-    .jiange_not_url{
-      pointer-events:none;
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
     }
+
     .jiange_debug{
       border-style: dashed;
       border-width: 0px;
       border-color: red;
     }
   </style>
+  <link rel="stylesheet" href="css/style_photo.css">
+  <!--  <link rel="stylesheet" href="../static/css/style_photo.css">-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
-  <div class="jiange_debug" style="float:left; border-width: 0px;width: 300px; margin-top: 10px;">
-    <div style="margin-left: 80px;margin-top: 0px">
-      <a href="/love" target="_blank">
-        <img src="/img/love.png" width="100" height="100"/>
-      </a>
-    </div>
-  </div>
-  <div id = "up_search"  class="jiange_debug" style="border-width: 0px">
-    <div id = "up_search_left" class="jiange_debug">
-      <form class="button1" method="get" action="/add">
-        <input type="submit" class="search-btn1" value="Create">
-      </form>
-    </div>
-    <div id = "up_search_right"  class="jiange_debug">
-      <form class="button2" method="get" action="/index">
-        <h2>jiangege Reminder Search</h2>
-        <input class="search-text" id="search-text" type="text" placeholder="please input key words" maxlength="100" name="search_words">
-        <input type="hidden" name="select" value = "4">
-        <input type="submit" class="search-btn" value="Search">
-      </form>
-    </div>
-    <!--    <div style="float: left; border-width: 0px" class="jiange_debug">-->
-    <!--        <form class="button1" method="get" th:action="@{/searchByPage}">-->
-    <!--            <input type="hidden" name="page_index" value="0">-->
-    <!--            <input type="submit" class="search-btn2" th:value="${user.language==0?'FindAll':'全部'}">-->
-    <!--        </form>-->
-    <!--    </div>-->
-
-
-    <div  class="jiange_debug" style="width: 300px;height: 100px;float: left; border-width: 0px;margin-left: 90px" >
-      <div style="float: right; border-width: 0px;margin-top: 1px" class="jiange_debug" >
-        <a href="/user/login_out" style="color: #29BC95">login out</a>
+<div class="jiange_debug" style="border-width: 0px;border-color:green;width: 100%; display: flex;
+      justify-content: center;
+      align-items: center;">
+  <div style="width: 1400px">
+    <div id = "up_search" style="margin-top:40px; float:left; border-style: dashed;border-width: 0px;border-color: black; width: 1400px; ">
+      <div class= "up_search_left" style="margin-left: 250px">
+        <form class="button1" method="get" action="/update">
+          <input type="hidden" name = "id" value ="125">
+          <input type="submit" class="search-btn" value="修改">
+        </form>
       </div>
-      <div style="float: right; border-width: 0px; margin-right: 20px;" class="jiange_debug" >
-        <a href="/user/language" style="color: #a23232">中文</a>
+      <div class = "up_search_left" style="border-width: 0px; border-style: dashed; border-color: red">
+        <form class="button2" method="get" action="/delete_op">
+          <input type="hidden" name = "id" value ="125">
+          <input type="submit" class="search-btn" value="删除" onclick="return clicked();">
+        </form>
       </div>
-    </div>
-    <div style="clear: both"></div>
-  </div>
-</div>
-
-<div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
-  <div id="search-suggest1" style="border-style: dashed;border-color: red;border-width:1px;float: left; width: 900px;margin-left: 50px;">
-    <div class="jiange_debug" style="border-width: 1px; height: 20px;border-color: black">
-      <div class="jiange_debug" style="border-width: 1px;float: left">
-        <form id = "select_id" method="get" action="/index" >
-          <select style=" margin-top: 0px; float: left" name = 'select' onchange="selection(this)">
-            <option value="1">LATEST</option>
-            <option value="2">CATE</option>
-            <option value="3" selected="selected">ALL</option>
-            <option value="4" >*</option>
-          </select>
-
-          <input type="hidden" id = 'click_index' name = "click_index" value = "0">
+      <div class = "up_search_left">
+        <form class="button3" method="get" action="/index">
+          <input type="hidden" name="select" value = "1">
+          <input type="submit" class="search-btn" value="主页">
+        </form>
+      </div>
+      <div class = "up_search_left">
+        <form class="button4" method="get" action="/quick_add">
+          <input type="hidden" name="id" value="125">
+          <!--			0: bonding add-->
+          <input type="hidden" name="add_type" value="0">
+          <input type="submit" class="search-btn" value="待办">
+        </form>
+      </div>
+      <div class="up_search_left">
+        <form action="/downloadAll" method="get">
+          <input type="hidden" name = "id" value="125">
+          <input type="submit"  class="search-btn" value="一键下载">
         </form>
       </div>
     </div>
-    <div class="jiange_debug" style="border-width: 1px;border-color: #009900;height: 540px;">
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
 
-
-          <div style="float: left"><a href="/detail?detail=9">如何将spring-boot打包成docker运行</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=10">docker命令</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=11">spring-boot 修改网络端口</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=14">柳青农村大数据文档，api调用啥的,中国农业政策信息接口文档</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=16">java maven依赖库网址</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=46">手机用到的密码，软件密码</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=47">还钱欠钱记录</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=48">springboot的使用html页面及css、js路径的配置</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=49">mysql基本的使用，代码语句</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <div style="float: left; margin-right: 5px;"><img src="/img/note.png" width=18px /></div>
-
-
-          <div style="float: left"><a href="/detail?detail=76">实验室服务器,阿里云服务器ip地址,</a></div>
-          <div style="clear: both"></div>
-        </li>
-      </ul>
-    </div>
-
-    <!--        <div id="search-suggest1" style="border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;">-->
-    <!--        <div class="jiange_debug" style="border-width: 1px; height: 20px;">-->
-    <!--            <div class="jiange_debug" style="border-width: 1px">-->
-    <!--                <select style=" margin-top: 0px; float: left" name="0" onchange="selection(this)">-->
-    <!--                    <option value="CATE">CATE</option>-->
-    <!--                    <option value="ALL">ALL</option>-->
-    <!--                    <option value="LATEST">LATEST</option>-->
-    <!--                </select>-->
-    <!--&lt;!&ndash;                <select style=" margin-top: 0px; float: left" name="0" onchange="update_selection(this)">&ndash;&gt;-->
-    <!--&lt;!&ndash;                    <option value="CURRENT">CURRENT</option>&ndash;&gt;-->
-    <!--&lt;!&ndash;                    <option th:each="c, State : ${ini_folders}" th:value = "${c}" th:text = "${c}"></option>&ndash;&gt;-->
-    <!--&lt;!&ndash;                    <option value="*NEW*" >*NEW*</option>&ndash;&gt;-->
-    <!--&lt;!&ndash;                </select>&ndash;&gt;-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--            <div class="jiange_debug" style="border-width: 1px">-->
-    <!--        <ul>-->
-    <!--            <li>-->
-    <!--                <div style="float: left"><img src="/img/note.png" width=18px /></div>-->
-    <!--                <div style="float: left"><a href="/detail?detail=80">可编程交换机的运行基本流程</a></div>-->
-    <!--                <div style="clear: both"></div>-->
-    <!--            </li>-->
-    <!--        </ul>-->
-    <!--        <ul>-->
-    <!--            <li>-->
-    <!--                <div style="float: left"><img src="/img/note.png" width=18px /></div>-->
-    <!--                <div style="float: left"><a href="/detail?detail=79">RDMA安装过程，命令</a></div>-->
-    <!--                <div style="clear: both"></div>-->
-    <!--            </li>-->
-    <!--        </ul>-->
-    <!--        </div>-->
-
-
-    <div class="jiange_debug" style="border-width: 0px;width: 900px;" >
-      <div  class="jiange_debug" style="margin-left: 350px">
-        <form class="button1" style="margin-top: 0px;" method="get" action="/index">
-          <input type="hidden" name="page_index" value="0">
-          <input type="hidden" name="select" value="3">
-          <input type="submit" class="search-btn_page" value="Start">
-        </form>
-      </div>
-      <div  class="jiange_debug">
-        <form class="button1" style="margin-top: 0px;" method="get" action="/index">
-          <input type="hidden" name="page_index" value="0">
-          <input type="hidden" name="select" value="3">
-          <input type="submit" class="search-btn_page" value="Previous">
-        </form>
-      </div>
-      <div  class="jiange_debug">
-        <span style="float: left;width: 50px; text-align: center">No.0</span>
-      </div>
-      <div  class="jiange_debug">
-        <form class="button1" style="margin-top: 0px;" method="get" action="/index">
-          <input type="hidden" name="page_index" value="1">
-          <input type="hidden" name="select" value="3">
-          <input type="submit" class="search-btn_page" value="Next">
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div style="float: left;border-width: 0px;width: 400px;margin-left: 50px; border-left-color: #0f88eb; border-left-style: dashed;border-top-color: #0f88eb; border-top-style: dashed;">
-
-    <div class="list" style="width:400px;border-style: solid;border-color: red;border-width: 0px;">
-      <div style="float: left;border-width: 0px;border-color: red;border-style: dashed; margin-left: 140px;font-size: 20px;font-weight: bold">Todo Lists</div>
-      <form action="/quick_del" method="post">
-
-        <div  style="float: left; width: 400px;border-width: 0px"  class="jiange_debug">
-          <div class="jiange_debug" style="float: left">
-            <div style="float: left" class="jiange_debug"><input class="input_check"  id="16" type="checkbox"  value="16"  name="del_quick" onchange = "check_line(this.getAttribute(&#39;id&#39;))"></div>
-            <div style="float: left; width: 362px; margin-left: 10px;"
-                 class="jiange_debug jiange_not_url">
-              <a  style = "word-wrap:break-word;" class="jiange_off" id="16jiange"  href="/detail?detail=-1">增加分类，文件夹功能</a></div>
-            <div style="clear: both"></div>
-          </div>
+    <!--gallery画廊-->
+    <div class="gallery-section jiange_debug" style="float: left; border-width: 0px;width: 1420px;margin-left: 10px;" >
+      <div class="inner-width jiange_debug">
+        <h1>这是一次测试</h1>
+        <div class="border"></div>
+        <div style="float:left; margin-top: -30px;border-width: 0px;
+                  border-style: dashed;
+                  border-color: red;width: 1200px; margin-left: 100px">
+    <pre  style="border: 0px solid #090;border-radius: 4px;background: #f3f3f3">
+		<code class="language-plaintext" id = "myInput" style="font-size: 15px;"></code>
+    </pre>
         </div>
+      </div>
 
-        <!--            <div style="float: left; width: 400px;" >-->
-        <!--                <div class="jiange_debug" style="float: left">-->
-        <!--                    <div style="float: left" class="jiange_debug"><input class="input_check" type="checkbox"  value="1231231" onchange="check_line('test')"></div>-->
-        <!--                    <div style="margin-left:10px;float: left; width: 362px" class="jiange_debug jiange_not_url"><a  style = "word-wrap:break-word; pointer-events:none" class="jiange_off" id = "testjiange"  href="/" >nihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihao</a></div>-->
-        <!--                    <div style="clear: both"></div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div style="float: left; width: 400px;" >-->
-        <!--                <div class="jiange_debug" style="float: left">-->
-        <!--                    <div style="float: left" class="jiange_debug"><input class="input_check" type="checkbox"  value="123" onchange="check_line('test')"></div>-->
-        <!--                    <div style="margin-left:10px;float: left; width: 362px" class="jiange_debug jiange_not_url"><a  style = "word-wrap:break-word; color: black;pointer-events:none" class="jiange_off" id = "testjiange1"  href="/" >nihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihaonihao</a></div>-->
-        <!--                    <div style="clear: both"></div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-
-        <div style="margin-left:110px;float: left; width: 100px;height: 20px;border-width: 0px;border-color: green" class="jiange_debug">
-          <input type="button" class="search-btn_small1" value="Delete" style="height: 20px;width: 50px" onclick="loadXMLDoc()">
-        </div>
-        <!--    <input type="submit" value="按钮" >-->
-      </form>
-
-      <div style="float: left; width: 100px;height: 20px;border-width: 0px;border-color: black" class="jiange_debug">
-        <form action="/quick_add" method="get" target="_blank">
-          <!--                    1 represents add without bonding_id/-->
-          <input type="hidden" name="add_type" value="1">
-          <input type="submit" class="search-btn_small2" value="Create" style="height: 20px;width: 50px" >
-        </form>
+      <!--  <div style="float: left;margin-top: 10px; margin-left: 5px; clear:both;" th:each="c, State : ${file_list}">-->
+      <!--    <a th:href="'/download?file='+${c.file}"th:text="${c.short_name}"></a>-->
+      <!--    &lt;!&ndash; <span th:text = "${file_short}">a.text</span> &ndash;&gt;-->
+      <!--  </div>-->
+      <div class="gallery" style="float: left">
+        <td>
+          <a href="uploadFile/2023/03/4e98b63a-d0f6-4a16-b062-2236be5d3d23_a.png" class="image">
+            <img src="uploadFile/2023/03/4e98b63a-d0f6-4a16-b062-2236be5d3d23_a.png" alt="">
+          </a>
+        </td>
       </div>
       <div style="clear: both"></div>
     </div>
-    <!--    <div id="myDiv"><h2>使用 AJAX 修改该文本内容</h2></div>-->
-    <!--    <button type="button" onclick="loadXMLDoc()">修改内容</button>-->
   </div>
   <div style="clear: both"></div>
 </div>
-
-
+</body>
 <script>
+
+  $(".gallery").magnificPopup({
+    delegate: 'a',
+    type: 'image',
+    gallery:{
+      enabled: true
+    }
+  });
+
   var oSearchText = document.getElementById('search-text');
   var oSearchSuggest = document.getElementById('search-suggest');
+  function myFunction() {
+    var copyText = document.getElementById("myInput").innerText;
+    // alert(copyText.value)
+    // copyText.select();
+    // copyText.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(copyText);
 
-  function loadXMLDoc()
-  {
-    var xmlhttp;
-    if (window.XMLHttpRequest)
-    {
-      //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-      xmlhttp=new XMLHttpRequest();
-    }
-    else
-    {
-      // IE6, IE5 浏览器执行代码
-      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlhttp.onreadystatechange=function()
-    {
-      if (xmlhttp.readyState==4 && xmlhttp.status==200)
-      {
-        for(var i = 0;i<delte_arr.length;i++)
-        {
-          var input_temp =   document.getElementById(delte_arr[i]);
-          var input_temp_f = input_temp.parentNode.parentNode;
-          input_temp_f.parentNode.removeChild(input_temp_f);
-        }
-        document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
-      }
-    }
-    var delte_arr = []
-    var input1 = document.getElementsByClassName('input_check');
-    for(var i = 0;i< input1.length;i++)
-    {
-      if(input1[i].checked == true)
-      {
-        delte_arr.push(input1[i].value)
-      }
-    }
+    var tooltip = document.getElementById("myTooltip");
+    tooltip.innerHTML = "Copied: Complete";
+  };
 
-    var delte_parameter = ""
-    for(var i = 0;i<delte_arr.length;i++)
-    {
-      delte_parameter +=delte_arr[i]+";"
-    }
-    xmlhttp.open("GET","/ajax_delete_op?delete_uuids="+delte_parameter,true);
-    xmlhttp.send();
-  }
+  function outFunc() {
+    var tooltip = document.getElementById("myTooltip");
+    tooltip.innerHTML = "Copy to clipboard";
+  };
 
-  function check_line( name) {
-    var l1 = document.getElementById(name + 'jiange');
-    // 存在jiange
-    if (l1.getAttribute('class') && l1.getAttribute('class').indexOf('jiange_on') > -1){
-      l1.classList.remove("jiange_on");
-      l1.classList.add("jiange_off");
-    }
-    else
-    {
-      l1.classList.remove("jiange_off");
-      l1.classList.add("jiange_on");
-    }
-  }
-
+  function textAreaAdjust(element) {
+    element.style.height = "1px";
+    element.style.height = (25+element.scrollHeight)+"px";
+  };
+  function clicked() {
+    return confirm('Sure?');
+  };
   document.addEventListener('keyup', function (e) {
     e = e || event;
 
@@ -643,21 +320,6 @@
     }
 
   })
-  function selection(obj)
-  {
-    var select_index = obj.selectedIndex;
-    // alert(obj.options[select_index].value)
-
-    var select_arr = obj.parentNode.getElementsByTagName("select");
-    var current_index = 0;
-    while(select_arr[current_index] !== obj)
-    {
-      current_index++;
-    }
-    document.getElementById("click_index").setAttribute("value",(current_index-1).toString())
-    document.getElementById("select_id").submit();
-  }
-
 </script>
 </body>
 </html>

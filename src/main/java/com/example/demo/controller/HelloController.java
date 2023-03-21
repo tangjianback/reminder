@@ -105,6 +105,13 @@ public class HelloController implements ApplicationContextAware {
         else
         {
             User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
+            if(current_user == null)
+            {
+                System.out.println("the cookied user id is invalid");
+                gloabal_service.set_message(model,"服务器出现了一个不太重要的问题","index","返回主页","red");
+                se.removeAttribute("user");
+                return "message";
+            }
             model.addAttribute("user",current_user);
             String select = request.getParameter("select");
             if(select == null)

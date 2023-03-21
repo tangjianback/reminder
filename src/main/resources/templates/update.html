@@ -77,6 +77,10 @@
 
 <body>
 <!--<link href="test.css" rel="stylesheet"type="text/css">-->
+<div class="jiange_debug" style="border-width: 0px;border-color:green;width: 100%; display: flex;
+      justify-content: center;
+      align-items: center;">
+<div style="width: 1420px;">
 <div  class = 'jiange_debug' style="width: 1420px;">
   <div style="float: left; margin-left: 50px"><h2 style="text-align: center;" th:text = "${user.language==0?'Info Update':'信息修改'}">Info Update</h2>
     <hr width="1300" color="black" >
@@ -162,10 +166,9 @@
       </form>
     </div>
 
-
   </div>
-
-
+  </div>
+</div>
 </div>
 <script type="text/javascript">
   const original_select = document.getElementById('default_select').cloneNode(true);

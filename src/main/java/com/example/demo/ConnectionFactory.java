@@ -4,6 +4,8 @@ import com.example.demo.controller.HelloController;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import java.beans.PropertyVetoException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,10 +20,23 @@ public class ConnectionFactory {
         } catch (PropertyVetoException e) {
             throw new RuntimeException(e);
         }
-//        cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
-//        cpds.setUser("root");
-        cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
-        cpds.setUser("tangjian");
+
+        //the code below is to avoid manual connection configure switch
+        InetAddress address = null;
+        try {
+            address = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        if(address.getHostName().equals("macdeMBP-2"))
+        {
+            cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
+            cpds.setUser("root");
+        }
+        else {
+            cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
+            cpds.setUser("lqq");
+        }
 
         cpds.setPassword("123");
         // Optional Settings

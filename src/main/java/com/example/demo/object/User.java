@@ -12,14 +12,25 @@ public class User {
 
     int language = 0; // default english
 
-    public User(int u_id, String u_name, String u_pwd, String mail, List<Item> u_lru_list, List<Quick> quicks, int language) {
+    int check_code;
+
+    public User(int u_id, String u_name, String u_pwd, String mail, List<Item> u_lru_list, List<Quick> quicks, int language, int check_code ) {
         this.u_id = u_id;
         this.u_name = u_name;
         this.u_pwd = u_pwd;
         this.mail = mail;
         this.u_lru_list = u_lru_list;
         this.quicks = quicks;
+        this.check_code = check_code;
         this.language = language;
+    }
+
+    public int getCheck_code() {
+        return check_code;
+    }
+
+    public void setCheck_code(int check_code) {
+        this.check_code = check_code;
     }
 
     public int getU_id() {
@@ -87,6 +98,7 @@ public class User {
                 ", mail='" + mail + '\'' +
                 ", u_lru_list=" + u_lru_list +
                 ", quicks=" + quicks +
+                ", check_code=" + check_code +
                 ", language=" + language +
                 '}';
     }

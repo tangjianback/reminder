@@ -8,6 +8,10 @@ import com.example.demo.object.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 
+import java.util.Date;
+import java.util.Properties;
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -249,4 +253,50 @@ public class Service_user {
         if(current_user.getQuicks() == null)
             current_user.setQuicks(new LinkedList<Quick>());
     }
+    public void SendEmail(String harvestEmail,String check_url,String user_name) throws Exception {
+        final String MyEmail = "jianges2023@163.com";//开启授权码的邮箱
+        final String AuthorizationCode = "POHPJFISDTHAKOUX";//授权码
+        final String SMTPEmail = "smtp.163.com";// 网易163邮箱的 SMTP 服务器地址
+
+        //创建连接邮件服务器的参数配置
+        Properties props = new Properties();// 参数配置
+        props.setProperty("mail.smtp.host", SMTPEmail);// 发件人的邮箱的 SMTP 服务器地址
+        props.setProperty("mail.smtp.auth", "true");// 需要请求认证
+        props.setProperty("mail.transport.protocol", "smtp");
+        //根据配置创建会话对象和邮件服务器交互
+        Session session = Session.getInstance(props);
+        session.setDebug(false);// 设置为debug模式, 可以查看详细的发送日志
+        //创建邮件
+        MimeMessage message = createEmail(session, MyEmail, harvestEmail,user_name,check_url);
+        //使用Session获取邮件传输对象
+        Transport transport = session.getTransport();
+        //使用邮箱账号和密码连接邮件服务器
+        transport.connect(MyEmail, AuthorizationCode);
+        //发送邮件
+        transport.sendMessage(message, message.getAllRecipients());
+        //关闭连接
+        transport.close();
+    }
+
+    public  MimeMessage createEmail(Session session, String sendMail, String receiveMail,String user_name,String check_link) throws Exception {
+        //创建一封邮件
+        MimeMessage message = new MimeMessage(session);
+        //发件人
+        message.setFrom(new InternetAddress(sendMail, "Memory Register", "UTF-8"));
+        //收件人
+        message.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(receiveMail, user_name+"用户", "UTF-8"));
+        //邮件主题
+        message.setSubject("Memory Register", "UTF-8");
+        //邮件正文
+        message.setContent("Thanks for using... \n" +
+                "Click this link to complete the register process: "+ check_link, "text/html;charset=UTF-8");
+        //设置发件时间
+        message.setSentDate(new Date());
+        //保存设置
+        message.saveChanges();
+        return message;
+    }
+
+
+
 }

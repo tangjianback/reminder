@@ -8,25 +8,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.Date;
+import java.util.Properties;
+import java.util.Properties;
+import javax.mail.*;
+import javax.mail.internet.*;
+
 
 @SpringBootTest
 class DemoApplicationTests {
-	@Test
-	public void test() throws SQLException {
-		String s = "/";
-		for(String i: s.split("/"))
-		{
-			System.out.println(i);
-			System.out.println("test");
-		}
 
+	@Test
+	public void test() throws Exception {
+		//SendEmail("tangjians@icloud.com", "www.baidu.com", "jiange");
 	}
+
+
 
 }

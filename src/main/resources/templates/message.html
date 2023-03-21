@@ -9,7 +9,7 @@
     <div style="margin-bottom: 10px;">
         <span th:text="${message}" th:style = "'font-size:25px;color:'+${color}+';'"></span>
     </div>
-    <form th:action="${url}" method="get">
+    <form th:action="'/'+${url}" method="get">
         <input type="hidden" name = "detail" th:value = "${id}">
         <input type="submit" th:value = "${button_name}" style="height: 30px;width: 80px;">
     </form>

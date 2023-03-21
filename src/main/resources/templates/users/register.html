@@ -16,12 +16,13 @@
 <div id="wrapper">
   <div>
 <!--    <img src="../../static/img/jiange.png" width=300px />-->
-    <img th:src="@{img/jiange.png}" width=260px />
-    <h2>Keep Your Memory</h2>
+    <img th:src="@{img/background.png}" width=300px />
+    <h2>Your Memory</h2>
   </div>
   <nav class="switch_nav">
     <a href="javascript:;" id="switch_signup" class="switch_btn on">Register</a>
-    <a href="user/login" id="switch_login" class="switch_btn">Login</a>
+    <a href="/user/login" id="switch_login" class="switch_btn">Login</a>
+    <a href="/user/resendmail"  class="switch_btn">ResendMail</a>
     <div class="switch_bottom" id="switch_bottom"></div>
   </nav>
   <form method="post" action="user/register_op">

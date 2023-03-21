@@ -44,7 +44,7 @@
 			/*border-style: dashed;*/
 			/*margin-top:74px;*/
 			float: left;
-			width: 200px;
+			/*width: 200px;*/
 		}
 		#up_search_right {
 			float: left;
@@ -314,11 +314,20 @@
 			visibility: visible;
 			opacity: 1;
 		}
+		.jiange_debug{
+			float: left;
+			border-style: dashed;
+			border-width: 0px;
+			border-color: red;
+		}
 	</style>
 </head>
 <body>
-
-<div id = "up_search" style="border-style: dashed;border-width: 0px;border-color: red; width: 1000px; margin-left: 400px;">
+<div class="jiange_debug" style="border-width: 0px;border-color:green;width: 100%; display: flex;
+      justify-content: center;
+      align-items: center;">
+<div class="jiange_debug" style="border-width: 0px;width: 1400px">
+<div id = "up_search" style="border-style: dashed;border-width: 0px;border-color: red; margin-left: 350px;">
 	<div id = "up_search_left">
 		<form class="button1" method="get" th:action="@{/update}">
 			<input type="hidden" name = "id" th:value ="${id}">
@@ -346,7 +355,6 @@
 		</form>
 	</div>
 </div>
-
 
 <div class="suggest" id="search-suggest1" style="margin-top: 20px;">
 		<div style="border-width: 0px;
@@ -391,6 +399,8 @@
 				</div>
 
 			</div>
+</div>
+</div>
 </div>
 <script>
 	var oSearchText = document.getElementById('search-text');

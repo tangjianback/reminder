@@ -22,8 +22,9 @@
         }
 
         .button1 {
-            margin-top: 73.3px;
+            /*margin-top: 73.3px;*/
             text-align: center;
+            padding:0px;
         }
         .button2 {
             text-align: center;
@@ -240,8 +241,8 @@
             border-color: green;*/
             clear: both;
             float: left;
-            width: 1200px;
-            margin-left: 50px;
+            /*width: 1200px;*/
+            /*margin-left: 50px;*/
             display: block;
             background: #fff;
 
@@ -283,15 +284,16 @@
     </style>
 </head>
 <body>
-<div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
-    <div class="jiange_debug" style="float:left; border-width: 0px;width: 300px; margin-top: 10px;">
-        <div style="margin-left: 80px;margin-top: 0px">
+<div class="jiange_debug" style="border-width: 0px;float: left;width: 95%; margin-left: 2.5%">
+    <div class="jiange_debug" style="float:left; border-width: 0px;margin-top: 10px;">
+        <div th:if="${user.mail == 'tangjians@icloud.com'}"   style="margin-top: 0px">
             <a th:href="@{/love}" target="_blank">
             <img th:src="@{/img/love.png}" width="100" height="100"/>
             </a>
         </div>
     </div>
-<div id = "up_search"  class="jiange_debug" style="border-width: 0px">
+<div id = "up_search"  class="jiange_debug" style="border-width: 0px; margin-left: 20%;border-color: #009900">
+    <div class="jiange_debug" style="border-width: 0px;"> <h2 th:text = "${user.language == 0?' Search':'搜索'}" style="text-align: center;height: 20px;font-size: 30px">test</h2></div>
     <div id = "up_search_left" class="jiange_debug">
         <form class="button1" method="get" th:action="@{/add}">
             <input type="submit" class="search-btn1" th:value="${user.language==0?'Create':'新建'}">
@@ -299,7 +301,6 @@
     </div>
     <div id = "up_search_right"  class="jiange_debug">
         <form class="button2" method="get" th:action="@{/index}">
-            <h2 th:text = "${user.u_name}+${user.language == 0?' Reminder Search':'备忘录搜索'}">test</h2>
             <input class="search-text" id="search-text" type="text" th:placeholder="${user.language==0?'please input key words':'请输入搜索内容'}" maxlength="100" name="search_words">
             <input type="hidden" name="select" value = "4">
             <input type="submit" class="search-btn" th:value="${user.language==0?'Search':'搜索'}">
@@ -311,9 +312,8 @@
 <!--            <input type="submit" class="search-btn2" th:value="${user.language==0?'FindAll':'全部'}">-->
 <!--        </form>-->
 <!--    </div>-->
-
-
-    <div  class="jiange_debug" style="width: 300px;height: 100px;float: left; border-width: 0px;margin-left: 90px" >
+    </div>
+    <div  class="jiange_debug" style="width: 300px;height: 100px;float: right; border-width: 0px;margin-left: 1%" >
         <div style="float: right; border-width: 0px;margin-top: 0px" class="jiange_debug" >
             <a href="/user/login_out" style="color: #29BC95" th:text="${user.language==0?'login out':'登出'}">登出</a>
         </div>
@@ -323,10 +323,9 @@
     </div>
     <div style="clear: both"></div>
 </div>
-</div>
 
-<div class="jiange_debug" style="border-width: 0px;float: left;width: 1420px;">
-<div id="search-suggest1" th:style="'border-style: dashed;border-color: red;border-width:0px;float: left; width: 900px;margin-left: 50px;'+${#lists.isEmpty(user.u_lru_list)?'height:10px;':''}">
+<div class="jiange_debug" style="border-width: 0px;float: left;width: 95%; margin-left: 2.5%">
+<div id="search-suggest1" th:style="'border-style: dashed;border-color: red;border-width:0px;float: left; width: 75%;height: 70vh;'+${#lists.isEmpty(user.u_lru_list)?'height:10px;':''}">
     <div class="jiange_debug" style="border-width: 0px; height: 20px;margin-top: 5px;margin-left: 20px">
         <div class="jiange_debug" style="border-width: 0px;float: left">
             <form id = "select_id" method="get" th:action="@{/index}" >
@@ -345,7 +344,7 @@
 
         </div>
     </div>
-    <div style=" height: 540px;">
+    <div style=" height: 100%;" >
     <ul th:each="c, State : ${result_list}">
         <li>
             <div style="float: left; margin-right: 5px;" th:if="${c.category==0}"><img th:src="@{/img/note.png}" width=18px /></div>
@@ -433,16 +432,15 @@
         </div>
     </div>
 
-<div style="float: left;border-width: 0px;width: 400px;margin-left: 50px; border-left-color: #0f88eb; border-left-style: dashed;border-top-color: #0f88eb; border-top-style: dashed;">
-
-    <div class="list" style="width:400px;border-style: solid;border-color: red;border-width: 0px;">
+<div style="float: left;border-width: 0px;width: 25%;margin-left: 0px; border-left-color: #0f88eb; border-left-style: dashed;border-top-color: #0f88eb; border-top-style: dashed;">
+    <div class="list" style="width:100%;border-style: solid;border-color: red;border-width: 0px;">
         <div style="float: left;border-width: 0px;border-color: red;border-style: dashed; margin-left: 140px;font-size: 20px;font-weight: bold" th:text="${user.language==0?'Todo Lists':'待办事项'}"></div>
         <form th:action="@{/quick_del}" method="post">
 
-        <div  style="float: left; width: 400px;border-width: 0px"  th:each="c, State : ${user.quicks}" class="jiange_debug">
-            <div class="jiange_debug" style="float: left">
-                <div style="float: left" class="jiange_debug"><input class="input_check"  th:id="${c.id}" type="checkbox"  th:value="${c.id}"  name="del_quick" th:onchange = "check_line(this.getAttribute('id'))"></div>
-                <div style="float: left; width: 362px; margin-left: 10px;"
+        <div  style="float: left; width: 100%;border-width: 0px"  th:each="c, State : ${user.quicks}" class="jiange_debug">
+            <div class="jiange_debug" style="float: left;width: 100%">
+                <div style="float: left; width: 5%;" class="jiange_debug"><input class="input_check"  th:id="${c.id}" type="checkbox"  th:value="${c.id}"  name="del_quick" th:onchange = "check_line(this.getAttribute('id'))"></div>
+                <div style="float: left; margin-left: 5%; width: 90%"
                      th:class="${c.relevant_item_id==-1?'jiange_debug jiange_not_url':'jiange_debug'}">
                     <a  style = "word-wrap:break-word;" class="jiange_off" th:id="${c.id}+'jiange'"  th:href="'/detail?detail='+${c.relevant_item_id}" th:text="${c.title}"></a></div>
                 <div style="clear: both"></div>
@@ -464,13 +462,13 @@
 <!--                </div>-->
 <!--            </div>-->
 
-            <div style="margin-left:110px;float: left; width: 100px;height: 20px;border-width: 0px;border-color: green" class="jiange_debug">
+            <div style="margin-left:30%;float: left; width: 50px;height: 20px;border-width: 0px;border-color: green" class="jiange_debug">
                     <input type="button" class="search-btn_small1" th:value="${user.language==0?'Delete':'删除'}" style="height: 20px;width: 50px" onclick="loadXMLDoc()">
             </div>
             <!--    <input type="submit" value="按钮" >-->
         </form>
 
-        <div style="float: left; width: 100px;height: 20px;border-width: 0px;border-color: black" class="jiange_debug">
+        <div style="float: left; margin-left: 20%; width: 50px;height: 20px;border-width: 0px;border-color: black" class="jiange_debug">
                 <form th:action="@{/quick_add}" method="get" target="_blank">
 <!--                    1 represents add without bonding_id/-->
                     <input type="hidden" name="add_type" value="1">

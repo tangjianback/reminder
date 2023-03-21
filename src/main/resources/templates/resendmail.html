@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Input Form</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+    }
+
+    form {
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      margin: 50px auto;
+      padding: 20px;
+      width: 500px;
+    }
+
+    label {
+      display: block;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    input[type=text] {
+      border-radius: 4px;
+      border: none;
+      box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.2);
+      font-size: 16px;
+      padding: 10px;
+      width: 100%;
+    }
+
+    input[type=submit] {
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 10px;
+      width: 100%;
+    }
+
+    input[type=submit]:hover {
+      background-color: #3e8e41;
+    }
+
+  </style>
+</head>
+<body>
+<form th:action = "@{/user/resendmail_op}">
+  <label for="input">Enter your mail:</label>
+  <input type="text" id="input" name="mail">
+  <br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>

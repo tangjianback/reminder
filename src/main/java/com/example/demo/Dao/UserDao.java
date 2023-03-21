@@ -84,7 +84,7 @@ public class UserDao {
                 +out_user.getU_pwd()+"', lru = '"
                 +lur_string+"', mail = '"
                 +out_user.getMail()+"', quick = '"
-                +quick_string+"', language=" +out_user.getLanguage()+ " WHERE id = "+out_user.getU_id();
+                +quick_string+"', language=" +out_user.getLanguage()+", check_code=" +out_user.getCheck_code()+" WHERE id = "+out_user.getU_id();
 
         res = stmt.executeUpdate(sql);
         stmt.close();
@@ -105,12 +105,13 @@ public class UserDao {
 
 
         int res = 0;
-        String sql = "INSERT INTO user(name,pwd,lru,mail,quick,language)  VALUES('" +out_user.getU_name()
+        String sql = "INSERT INTO user(name,pwd,lru,mail,quick,language,check_code)  VALUES('" +out_user.getU_name()
                 + "','"+out_user.getU_pwd()
                 +"','"+lur_string
                 +"','"+out_user.getMail()
                 +"','"+quick_string
-                +"',"+out_user.getLanguage()+")";
+                +"',"+out_user.getLanguage()
+                +","+out_user.getCheck_code()+")";
 
         res = stmt.executeUpdate(sql);
         stmt.close();
@@ -142,12 +143,13 @@ public class UserDao {
             String pwd = rs.getString("pwd");
             String mail = rs.getString("mail");
             int language = rs.getInt("language");
+            int check_code = rs.getInt("check_code");
 
             String lru = rs.getString("lru");
             lru = lru == null? "":lru;
             String quick = rs.getString("quick");
             quick = quick == null? "":quick;
-            res_user = new User(id,name,pwd,mail,lru_to_item_list(lru.strip()),quick_str_to_quick_list(quick.strip()),language);
+            res_user = new User(id,name,pwd,mail,lru_to_item_list(lru.strip()),quick_str_to_quick_list(quick.strip()),language,check_code);
         }
         rs.close();
         stmt.close();

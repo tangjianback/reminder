@@ -2,7 +2,7 @@
 FROM openjdk:17-oracle
 #作者
 MAINTAINER tangjianback@gmail.com
-#声称容器卷目录（不懂)
+#声称容器卷目录（懂了吧)
 VOLUME /tmp
 #将宿主机jar包拷贝到容器中，此命令会将jar包拷贝到容器的根路径/下
 ARG DEPENDENCY=target/dependency
