@@ -28,7 +28,6 @@ public class Service_user {
         try {
             add_quick_id = UserDao.get_quick_id_by_title(out_quick.getTitle().strip(), uid);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 add_quick_id = UserDao.get_quick_id_by_title(out_quick.getTitle().strip(), uid);
             } catch (SQLException ex) {
@@ -69,7 +68,6 @@ public class Service_user {
         try {
             return UserDao.delete_quick_by_id(id);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 return UserDao.delete_quick_by_id(id);
             } catch (SQLException ex) {
@@ -84,7 +82,6 @@ public class Service_user {
         try {
             return UserDao.add_quick(out_quick);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 return UserDao.add_quick(out_quick);
             } catch (SQLException ex) {
@@ -100,7 +97,6 @@ public class Service_user {
         }catch (SQLException e)
         {
             try {
-                UserDao.flush_connection();
                 old_uesr = UserDao.get_user_by_mail_or_id(uid+"");
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -125,7 +121,6 @@ public class Service_user {
         try {
             new_head = Dao.query_by_id(item_id);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 new_head = Dao.query_by_id(item_id);
             } catch (SQLException ex) {
@@ -146,7 +141,6 @@ public class Service_user {
         try {
             UserDao.update_user(old_uesr);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 UserDao.update_user(old_uesr);
             } catch (SQLException ex) {
@@ -161,7 +155,6 @@ public class Service_user {
         try {
             old_uesr = UserDao.get_user_by_mail_or_id(uid+"");
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 old_uesr = UserDao.get_user_by_mail_or_id(uid+"");
             } catch (SQLException ex) {
@@ -175,7 +168,6 @@ public class Service_user {
         try {
             UserDao.update_user(old_uesr);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 UserDao.update_user(old_uesr);
             } catch (SQLException ex) {
@@ -190,7 +182,6 @@ public class Service_user {
         try {
             return UserDao.add_user( user_out);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 return UserDao.add_user( user_out);
             } catch (SQLException ex) {
@@ -203,7 +194,6 @@ public class Service_user {
         try {
             return  UserDao.update_user(out_user);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 return UserDao.update_user(out_user);
             } catch (SQLException ex) {
@@ -218,7 +208,6 @@ public class Service_user {
         try {
             temp = UserDao.get_user_by_mail_or_id(mail_or_id);
         } catch (SQLException e) {
-            UserDao.flush_connection();
             try {
                 temp = UserDao.get_user_by_mail_or_id(mail_or_id);
             } catch (SQLException ex) {

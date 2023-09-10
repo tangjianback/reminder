@@ -17,7 +17,6 @@ import java.util.zip.ZipOutputStream;
 
 public class Service {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
-
     public static String uploadfile_dir;
     public static int page_size = 10;
 
@@ -29,7 +28,7 @@ public class Service {
         }
     }
 
-    public List<List<String>>  get_complete_folders_by_path(String path,int current_user_id)
+    public List<List<String>>  get_complete_folders_by_path(String path,int current_user_id, StringBuffer status)
     {
         List<List<String>> init_folders =  new LinkedList<List<String>>();
         // /a/b/
@@ -45,7 +44,11 @@ public class Service {
 
                 }
 
-                String str_list = this.get_folder_by_path(path.substring(0,i+1),current_user_id);
+                String str_list = this.get_folder_by_path(path.substring(0,i+1),current_user_id,status);
+                if(!status.toString().equals("SUCC"))
+                {
+                    return null;
+                }
                 List<String> temp_str_folder_list = new LinkedList<String>();
                 for(String s: str_list.split(";"))
                 {
@@ -63,22 +66,27 @@ public class Service {
                 init_folders.add(temp_str_folder_list);
             }
         }
+        status.replace(0,status.length(), "SUCC");
         return init_folders;
     }
 
 
-    public List<Item> get_item_by_path(String s, int uid)
+    public List<Item> get_item_by_path(String s, int uid,StringBuffer status)
     {
+        status.replace(0,status.length(),"SUCC");
         try {
             return Dao.get_item_by_path(s,uid);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            status.replace(0,status.length(),"SQL ERROR "+ e.getErrorCode());
+            return null;
         }
     }
 
 
-    public String get_folder_by_path(String s, int uid)
+    public String get_folder_by_path(String s, int uid , StringBuffer status)
     {
+        status.replace(0,status.length(),"SUCC");
         int level= 0;
         for(int i = 0;i<s.length();i++)
         {
@@ -101,115 +109,132 @@ public class Service {
             }
             return floder_strs;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            status.replace(0,status.length(),"SQL ERROR "+ e.getErrorCode());
+            return null;
         }
     }
 
 
-    public List<Item> get_item_by_page(int page_index, int page_size, int u_id)
+    public List<Item> get_item_by_page(int page_index, int page_size, int u_id,StringBuffer status)
     {
+        status.replace(0,status.length(),"SUCC");
         try {
             return Dao.get_items_by_page(page_index,page_size,u_id);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 return  Dao.get_items_by_page(page_index,page_size,u_id);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
+                status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+                return null;
             }
         }
     }
-    public int get_item_total(int u_id)
+    public int get_item_total(int u_id,StringBuffer status)
     {
+        status.replace(0,status.length(),"SUCC");
         try {
             return Dao.get_item_total(u_id);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 return Dao.get_item_total(u_id);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
+                status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+                return -1;
             }
         }
     }
 
 
-    public int get_id_by_title(String title,int uid)
+    public int get_id_by_title(String title,int uid,StringBuffer status)
     {
+        status.replace(0,status.length(),"SUCC");
         try {
             return Dao.get_id_by_title(title,uid);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 return Dao.get_id_by_title(title,uid);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
+                status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+                return -2;
             }
         }
     }
     public void set_message(Model model, String message, String url, String button_value,String message_color)
     {
+
         model.addAttribute("message",message);
         model.addAttribute("color",message_color);
         model.addAttribute("url",url);
         model.addAttribute("button_name",button_value);
         return;
     }
-    public Item querry_by_id(int id){
+    public Item querry_by_id(int id,StringBuffer status){
+        status.replace(0,status.length(),"SUCC");
         Item res = null;
         try {
             res = Dao.query_by_id(id);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 res = Dao.query_by_id(id);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
+                status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+               return null;
             }
         }
         return res;
     }
-    public boolean alter_item(Item i)
+    public boolean alter_item(Item i,StringBuffer status)
     {
         try {
             return Dao.alter(i);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 return Dao.alter(i);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+                return false;
             }
         }
     }
-    public boolean delete_item_by_id(int id)
+    public boolean delete_item_by_id(int id, StringBuffer status)
     {
+        status.replace(0,status.length(),"SUCC");
         try {
             return Dao.delete_item_by_id(id);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 return Dao.delete_item_by_id(id);
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
+                status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+               return false;
             }
         }
     }
-    public boolean add_item(Item i)
+    public boolean add_item(Item i, StringBuffer status)
     {
+        status.replace(0,status.length(),"SUCC");
         try {
             return Dao.insert(i);
         } catch (SQLException e) {
-            Dao.flush_connection();
             try {
                 return Dao.insert(i);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+            }
+            catch (SQLException ex) {
+                ex.printStackTrace();
+                status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+                return false;
             }
         }
     }
-    public LinkedList<Item> query_key_word(String[] keywords,int u_id) {
+    public LinkedList<Item> query_key_word(String[] keywords,int u_id, StringBuffer status) {
     {
+        status.replace(0,status.length(),"SUCC");
         TreeMap<Item, Integer> my_map = new TreeMap<Item, Integer>();
         for(String k : keywords)
         {
@@ -219,11 +244,12 @@ public class Service {
             try {
                 temp_item_list  = Dao.query(k,u_id);
             } catch (SQLException e) {
-                Dao.flush_connection();
                 try {
                     temp_item_list  = Dao.query(k,u_id);
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    ex.printStackTrace();
+                    status.replace(0,status.length(),"SQL ERROR "+ ex.getErrorCode());
+                    return null;
                 }
             }
             for (Item temp_item: temp_item_list)
@@ -259,7 +285,6 @@ public class Service {
 //    finished 1: no dile but add 0; dircreate_file:-1; sqlerror:-2; storefail:-3;
     public int store(MultipartFile[] uploadFiles, String title, String content,int uid,int cate_id,String public_item, String path)
     {
-
         //check the item type
         if(cate_id == 1)
         {
@@ -312,8 +337,10 @@ public class Service {
         }
 
         int level = path.split("/").length;
+        StringBuffer status = new StringBuffer("SUCC");
         // sql executing
-        if(this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles),uid,cate_id,publics,path,level)))
+        this.add_item(new Item(1,title.strip(),content.strip(),this.files_to_string(stored_fles),uid,cate_id,publics,path,level),status);
+        if(status.toString().equals("SUCC"))
         {
             if(stored_fles.isEmpty())
                 return 0;
@@ -335,10 +362,13 @@ public class Service {
     //    finished :1; nofile:0; dircreate_file:-1; sqlerror:-2; storefail:-3;
     public int update(MultipartFile[] uploadFiles, String title, String content, int ID, String[] del_files, int uid,int cate_id,String path)
     {
+        StringBuffer status = new StringBuffer("SUCC");
         // prepare the new files string
-        Item query_item  = this.querry_by_id(ID);
-        if(query_item==null)
-            return -2;
+        Item query_item  = this.querry_by_id(ID,status);
+        if(!status.toString().equals("SUCC"))
+        {
+           return -2;
+        }
         List<String> old_string_files = this.get_files_by_string(query_item.getFile());
 
         //it del_files is okk ,prepare sql string array and delete files
@@ -389,8 +419,14 @@ public class Service {
         }
         // execute sql
         int level = path.split("/").length;
+        status.replace(0,status.length(),"SUCC");
         // sql successful
-        if(this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files),uid,cate_id,query_item.getPublics(),path,level)))
+        this.alter_item(new Item(ID,title.strip(),content.strip(),this.files_to_string(old_string_files),uid,cate_id,query_item.getPublics(),path,level),status);
+        if(!status.toString().equals("SUCC"))
+        {
+            return -2;
+        }
+        else
         {
             boolean del_file_flag = (del_files==null || del_files.length== 0)? false:true;
             // add and delte
@@ -406,10 +442,6 @@ public class Service {
             }
             // only del file
             return 2;
-        }
-        else
-        {
-            return -2;
         }
     }
 

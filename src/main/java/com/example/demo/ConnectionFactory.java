@@ -25,15 +25,18 @@ public class ConnectionFactory {
         InetAddress address = null;
         try {
             address = InetAddress.getLocalHost();
+            System.out.println("address is "+address);
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
-        if(address.getHostName().equals("macdeMBP-2"))
+        if(address.getHostName().contains("localhost") || address.getHostName().contains("127.0.0.1"))
         {
+            System.out.println("local debug");
             cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
             cpds.setUser("root");
         }
         else {
+            System.out.println("remote deploy");
             cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
             cpds.setUser("lqq");
         }

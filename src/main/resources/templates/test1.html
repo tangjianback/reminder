@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Decrypt File Example</title>
+</head>
+<body>
+<button onclick="fetchDataAndDecrypt()">test</button>
+</body>
+<script >
+  async function decryptFile(encryptedData, key) {
+    const iv = encryptedData.slice(0, 16);
+    const algorithm = { name: 'AES-GCM', iv: iv };
+    const importParams = { name: 'AES-GCM', length: key.length * 8 };
+    const encodedKey = await window.crypto.subtle.importKey('raw', key, importParams, false, ['decrypt']);
+    const decryptedData = await window.crypto.subtle.decrypt(algorithm, encodedKey, encryptedData.slice(16));
+    return new Uint8Array(decryptedData);
+  }
+
+  async function fetchDataAndDecrypt() {
+    // Fetch the encrypted file
+    const response = await fetch('http://localhost:8080/test_fetch');
+    const encryptedData = await response.arrayBuffer();
+
+    const key = new Uint8Array([59,109,186,188,234,143,170,87,9,125,222,29,81,204,114,253]);
+    const decryptedData = await decryptFile(encryptedData, key);
+
+    // Create a new blob from the decrypted data and download it
+    const decryptedBlob = new Blob([decryptedData]);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(decryptedBlob);
+    downloadLink.download = "testname";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+  }
+</script>
+</html>

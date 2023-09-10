@@ -12,21 +12,6 @@ public class Item implements Comparable<Item>{
         return position;
     }
 
-    @Override
-    public String toString() {
-        return "Item{" +
-                "Id=" + Id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", file='" + file + '\'' +
-                ", uid=" + uid +
-                ", category=" + category +
-                ", publics=" + publics +
-                ", position='" + position + '\'' +
-                ", level=" + level +
-                '}';
-    }
-
     public void setPosition(String position) {
         this.position = position;
     }
@@ -135,6 +120,21 @@ public class Item implements Comparable<Item>{
 
     public String getFile() {
         return file;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "Id=" + Id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", file='" + file + '\'' +
+                ", uid=" + uid +
+                ", category=" + category +
+                ", publics=" + publics +
+                ", position='" + position + '\'' +
+                ", level=" + level +
+                '}';
     }
 
     public void setFile(String file) {

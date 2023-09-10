@@ -15,26 +15,29 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UserDao {
-    public static void flush_connection()
-    {
-
-    }
 
     public static int get_quick_id_by_title(String title, int uid) throws SQLException {
         Connection conn = ConnectionFactory.get_connection();
         Statement  stmt = conn.createStatement();
 
         int res_id = -1;
-        LinkedList<Integer> res = new LinkedList<Integer>();
         String sql = "select id from quick where title = '"+ title.replaceAll("'","''")+"' and uid = "+uid;
-        ResultSet rs = stmt.executeQuery(sql);
-        if (rs.next()) {
-            // 通过字段检索
-            res_id = rs.getInt("id");
+        ResultSet rs = null;
+        try
+        {
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                // 通过字段检索
+                res_id = rs.getInt("id");
+            }
+        }catch (SQLException e)
+        {
+            throw e;
+        }finally {
+            rs.close();
+            stmt.close();
+            conn.close();
         }
-        rs.close();
-        stmt.close();
-        conn.close();
         return res_id;
     }
 
@@ -44,9 +47,16 @@ public class UserDao {
 
         int res = 0;
         String sql = "DELETE FROM  quick WHERE  id = "+id;
-        res = stmt.executeUpdate(sql);
-        stmt.close();
-        conn.close();
+        try
+        {
+            res = stmt.executeUpdate(sql);
+        }catch (SQLException e)
+        {
+            throw e;
+        }finally {
+            stmt.close();
+            conn.close();
+        }
         return (res == 1?true:false );
     }
 
@@ -59,10 +69,16 @@ public class UserDao {
         int uid = out_quick.getUid();
         int res = 0;
         String sql = "INSERT INTO quick(title,item_id,uid)  VALUES('" +out_quick.getTitle() +"',"+quick_relevant_id+","+uid+")";
-        res = stmt.executeUpdate(sql);
-        stmt.close();
-        conn.close();
 
+        try {
+            res = stmt.executeUpdate(sql);
+        }catch (SQLException e)
+        {
+            throw  e;
+        }finally {
+            stmt.close();
+            conn.close();
+        }
         return (res == 1?true:false );
     }
 
@@ -86,10 +102,15 @@ public class UserDao {
                 +out_user.getMail()+"', quick = '"
                 +quick_string+"', language=" +out_user.getLanguage()+", check_code=" +out_user.getCheck_code()+" WHERE id = "+out_user.getU_id();
 
-        res = stmt.executeUpdate(sql);
-        stmt.close();
-        conn.close();
-
+        try{
+            res = stmt.executeUpdate(sql);
+        }catch ( SQLException e)
+        {
+            throw e;
+        }finally {
+            stmt.close();
+            conn.close();
+        }
         return (res == 1?true:false );
     }
 
@@ -113,11 +134,16 @@ public class UserDao {
                 +"',"+out_user.getLanguage()
                 +","+out_user.getCheck_code()+")";
 
-        res = stmt.executeUpdate(sql);
-        stmt.close();
-        conn.close();
+        try{
+            res = stmt.executeUpdate(sql);
+        }catch (SQLException e)
+        {
+            throw e;
+        }finally {
+            stmt.close();
+            conn.close();
+        }
         return (res == 1?true:false );
-
     }
 
 
@@ -136,24 +162,31 @@ public class UserDao {
         {
             sql = "select * from user where id = "+mail_or_id.strip();
         }
-        ResultSet rs = stmt.executeQuery(sql);
-        if (rs.next()) {
-            int id  = rs.getInt("id");
-            String name = rs.getString("name");
-            String pwd = rs.getString("pwd");
-            String mail = rs.getString("mail");
-            int language = rs.getInt("language");
-            int check_code = rs.getInt("check_code");
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                int id  = rs.getInt("id");
+                String name = rs.getString("name");
+                String pwd = rs.getString("pwd");
+                String mail = rs.getString("mail");
+                int language = rs.getInt("language");
+                int check_code = rs.getInt("check_code");
 
-            String lru = rs.getString("lru");
-            lru = lru == null? "":lru;
-            String quick = rs.getString("quick");
-            quick = quick == null? "":quick;
-            res_user = new User(id,name,pwd,mail,lru_to_item_list(lru.strip()),quick_str_to_quick_list(quick.strip()),language,check_code);
+                String lru = rs.getString("lru");
+                lru = lru == null? "":lru;
+                String quick = rs.getString("quick");
+                quick = quick == null? "":quick;
+                res_user = new User(id,name,pwd,mail,lru_to_item_list(lru.strip()),quick_str_to_quick_list(quick.strip()),language,check_code);
+            }
+        }catch (SQLException e)
+        {
+            throw e;
+        }finally {
+            rs.close();
+            stmt.close();
+            conn.close();
         }
-        rs.close();
-        stmt.close();
-        conn.close();
         return res_user;
     }
 
@@ -257,19 +290,26 @@ public class UserDao {
 
         Quick res_item = null;
         String sql = "select * from quick where id = "+ id;
-        ResultSet rs = stmt.executeQuery(sql);
-        if (rs.next()) {
-            // 通过字段检索
-            int res_id = rs.getInt("id");
-            String title = rs.getString("title");
-            int relevant_item = rs.getInt("item_id");
-            int uid = rs.getInt("uid");
-            // 输出数据
-            res_item = new Quick(res_id,title,relevant_item,uid);
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                // 通过字段检索
+                int res_id = rs.getInt("id");
+                String title = rs.getString("title");
+                int relevant_item = rs.getInt("item_id");
+                int uid = rs.getInt("uid");
+                // 输出数据
+                res_item = new Quick(res_id,title,relevant_item,uid);
+            }
+        }catch (SQLException e)
+        {
+            throw e;
+        }finally {
+            rs.close();
+            stmt.close();
+            conn.close();
         }
-        rs.close();
-        stmt.close();
-        conn.close();
         return res_item;
     }
 }

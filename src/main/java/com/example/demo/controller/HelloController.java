@@ -43,7 +43,12 @@ public class HelloController implements ApplicationContextAware {
             return new ResponseEntity<>("no session!", HttpStatus.OK);
         }
         String path = request.getParameter("path");
-        String folders = gloabal_service.get_folder_by_path(path,current_user_id);
+        StringBuffer status = new StringBuffer("SUCC");
+        String folders = gloabal_service.get_folder_by_path(path,current_user_id,status);
+        if(!status.toString().equals("SUCC"))
+        {
+            return  new ResponseEntity<>(status.toString(), HttpStatus.EXPECTATION_FAILED);
+        }
         return  new ResponseEntity<>(folders, HttpStatus.OK);
     }
 
@@ -125,6 +130,7 @@ public class HelloController implements ApplicationContextAware {
             int total_count  = 0;
             int previous_page = 0;
             int next_page = 0;
+            StringBuffer status = new StringBuffer("SUCC");
 
             switch (index_type) {
                 case 1: // lru
@@ -146,7 +152,14 @@ public class HelloController implements ApplicationContextAware {
                             else
                                 break;
                         }
-                    List<Item> res_list = gloabal_service.get_item_by_path(out_path,current_user_id);
+
+                    List<Item> res_list = gloabal_service.get_item_by_path(out_path,current_user_id,status);
+                    if( !status.toString().equals("SUCC") )
+                    {
+                        gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                        return "message";
+                    }
+
                     total_count  = res_list.size();
                     previous_page = Math.max(page_index_int - 1, 0);
                     next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
@@ -156,13 +169,28 @@ public class HelloController implements ApplicationContextAware {
                     model.addAttribute("current_page",page_index_int);
                     model.addAttribute("next_page",next_page);
                     model.addAttribute("result_list", res_list.subList(page_index_int*gloabal_service.page_size,Math.min((page_index_int+1)*gloabal_service.page_size,res_list.size())));
-                    model.addAttribute("init_folders",gloabal_service.get_complete_folders_by_path(out_path,current_user_id));
+
+                    status.replace(0,status.length(),"SUCC");
+                    List<List<String>> temp_list_list = gloabal_service.get_complete_folders_by_path(out_path,current_user_id,status);
+                    if(!status.toString().equals("SUCC") )
+                    {
+                        gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                        return "message";
+                    }
+                    model.addAttribute("init_folders",temp_list_list);
+
                     model.addAttribute("selects", s==null?new LinkedList<String>():Arrays.stream(s).toList());
                     model.addAttribute("click_index", request.getParameter("click_index"));
                     model.addAttribute("init_select",2);
                     break;
                 case 3: // all
-                    total_count  = gloabal_service.get_item_total(current_user_id);
+                    status.replace(0,status.length(),"SUCC");
+                    total_count  = gloabal_service.get_item_total(current_user_id,status);
+                    if(!status.toString().equals("SUCC"))
+                    {
+                        gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                        return "message";
+                    }
                     previous_page = Math.max(page_index_int - 1, 0);
                     next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
 
@@ -170,7 +198,15 @@ public class HelloController implements ApplicationContextAware {
                     model.addAttribute("previous_page",previous_page);
                     model.addAttribute("current_page",page_index_int);
                     model.addAttribute("next_page",next_page);
-                    model.addAttribute("result_list", gloabal_service.get_item_by_page(page_index_int, gloabal_service.page_size, current_user_id));
+
+                    status.replace(0,status.length(),"SUCC");
+                    List<Item> temp_item_list = gloabal_service.get_item_by_page(page_index_int, gloabal_service.page_size, current_user_id,status);
+                    if(!status.toString().equals("SUCC"))
+                    {
+                        gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                        return "message";
+                    }
+                    model.addAttribute("result_list", temp_item_list);
                     model.addAttribute("init_select",3);
                     break;
                 default: // search
@@ -179,7 +215,14 @@ public class HelloController implements ApplicationContextAware {
                         para = "";
                     para = para.strip();
                     String[] para_array = para.split(" ");
-                    List<Item> current_list = gloabal_service.query_key_word(para_array, current_user_id);
+
+                    status.replace(0,status.length(),"SUCC");
+                    List<Item> current_list = gloabal_service.query_key_word(para_array, current_user_id,status);
+                    if(!status.toString().equals("SUCC"))
+                    {
+                        gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                        return "message";
+                    }
                     total_count  = current_list.size();
                     previous_page = Math.max(page_index_int - 1, 0);
                     next_page = ( (total_count -1)/Service.page_size <= page_index_int)?(total_count -1)/Service.page_size :page_index_int+1;
@@ -214,7 +257,15 @@ public class HelloController implements ApplicationContextAware {
         User current_user = global_service_user.get_user_by_mail_or_id(current_user_id+"");
         model.addAttribute("user",current_user );
         List<String>  ini_dirs = new LinkedList<String>();
-        for(String temp_s : gloabal_service.get_folder_by_path("/",current_user_id).split(";"))
+
+        StringBuffer status = new StringBuffer("SUCC");
+        String temp_string  = gloabal_service.get_folder_by_path("/",current_user_id,status);
+        if(!status.toString().equals("SUCC") )
+        {
+            gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+            return "message";
+        }
+        for(String temp_s : temp_string.split(";"))
         {
             if(temp_s.strip()!="")
                 ini_dirs.add(temp_s);
@@ -241,7 +292,13 @@ public class HelloController implements ApplicationContextAware {
         // get item of del_id
         Item querry_item = null;
         try{
-            querry_item = gloabal_service.querry_by_id(Integer.parseInt(del_id.strip()));
+            StringBuffer status = new StringBuffer("SUCC");
+            querry_item = gloabal_service.querry_by_id(Integer.parseInt(del_id.strip()),status);
+            if(!status.toString().equals("SUCC"))
+            {
+                gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                return "message";
+            }
         }
         catch (NumberFormatException e)
         {
@@ -269,7 +326,15 @@ public class HelloController implements ApplicationContextAware {
             model.addAttribute("type",type);
             model.addAttribute("ini_path",path);
 
-            model.addAttribute("init_folders",gloabal_service.get_complete_folders_by_path(path,current_user_id));
+
+            StringBuffer status = new StringBuffer("SUCC");
+            List<List<String>> temp_list_list = gloabal_service.get_complete_folders_by_path(path,current_user_id,status);
+            if(!status.toString().equals("SUCC"))
+            {
+                gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                return "message";
+            }
+            model.addAttribute("init_folders",temp_list_list);
 
             // if it has a corresponding file
             String file_name = querry_item.getFile().strip();
@@ -328,8 +393,16 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"输入的标题不能为空","index","返回主页","red");
             return "message";
         }
+
+        StringBuffer status = new StringBuffer("SUCC");
         // if it contains the same title
-        int query_id =  gloabal_service.get_id_by_title(title, current_user_id);
+        int query_id =  gloabal_service.get_id_by_title(title, current_user_id,status);
+        if(!status.toString().equals("SUCC"))
+        {
+            gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+            return "message";
+        }
+
         if(query_id > 0)
         {
             gloabal_service.set_message(model,"标题已经存在","index","返回主页","red");
@@ -362,7 +435,14 @@ public class HelloController implements ApplicationContextAware {
         // store successful
         if(store_res >=0)
         {
-            int id = gloabal_service.get_id_by_title(title,current_user_id);
+            status.replace(0,status.length(),"SUCC");
+            int id = gloabal_service.get_id_by_title(title,current_user_id,status);
+            if(!status.toString().equals("SUCC"))
+            {
+                gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                return "message";
+            }
+
             model.addAttribute("id",id);
             gloabal_service.set_message(model,message,"detail","查看","darkgoldenrod");
             // add lru to user
@@ -389,7 +469,13 @@ public class HelloController implements ApplicationContextAware {
         }
         Item querry_item = null;
         try{
-            querry_item =gloabal_service.querry_by_id(Integer.parseInt(del_id.strip()));
+            StringBuffer status = new StringBuffer("SUCC");
+            querry_item =gloabal_service.querry_by_id(Integer.parseInt(del_id.strip()),status);
+            if(!status.toString().equals("SUCC"))
+            {
+                gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+                return "message";
+            }
         }catch (NumberFormatException e)
         {
             e.printStackTrace();
@@ -404,12 +490,16 @@ public class HelloController implements ApplicationContextAware {
         //update user first
         global_service_user.lru_delte(Integer.parseInt(del_id),current_user_id);
         //delete the item
-        if(gloabal_service.delete_item_by_id(Integer.parseInt(del_id.strip())))
+        StringBuffer status = new StringBuffer("SUCC");
+        gloabal_service.delete_item_by_id(Integer.parseInt(del_id.strip()),status);
+        if(!status.toString().equals("SUCC"))
+        {
+            gloabal_service.set_message(model,"delete "+del_id+"failed...","index","返回主页","red");
+        }
+        else
         {
             gloabal_service.set_message(model,"delete "+del_id+"success...","index","返回主页","darkgoldenrod");
         }
-        else
-            gloabal_service.set_message(model,"delete "+del_id+"failed...","index","返回主页","red");
         return "message";
     }
     @RequestMapping(value = "/update_op")
@@ -456,7 +546,14 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"id is not parseable","index","返回主页","red");
             return "message";
         }
-        Item query_item = gloabal_service.querry_by_id(id_int);
+        StringBuffer status = new StringBuffer("SUCC");
+        Item query_item = gloabal_service.querry_by_id(id_int,status);
+        if(!status.toString().equals("SUCC"))
+        {
+            gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+            return "message";
+        }
+
         String old_path = query_item.getPosition();
         // if id is not in the database
         if(query_item== null)
@@ -465,7 +562,15 @@ public class HelloController implements ApplicationContextAware {
             return "message";
         }
         // check the updated title is already in the database
-        int query_title_id =  gloabal_service.get_id_by_title(title,current_user_id);
+
+        status.replace(0,status.length(),"SUCC");
+        int query_title_id =  gloabal_service.get_id_by_title(title,current_user_id,status);
+        if(!status.toString().equals("SUCC"))
+        {
+            gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
+            return "message";
+        }
+
         if(query_title_id > 0 && query_title_id != id_int )
         {
             gloabal_service.set_message(model,"the title is already in the database","index","返回主页","red");
@@ -538,10 +643,11 @@ public class HelloController implements ApplicationContextAware {
             gloabal_service.set_message(model,"id is un parseable", "index","回到主页","red");
             return "message";
         }
-        Item query_item = gloabal_service.querry_by_id(id_int);
-        if(query_item == null)
+        StringBuffer status = new StringBuffer("SUCC");
+        Item query_item = gloabal_service.querry_by_id(id_int,status);
+        if(!status.toString().equals("SUCC"))
         {
-            gloabal_service.set_message(model,"id is not in database", "index","回到主页","red");
+            gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
             return "message";
         }
 
@@ -609,13 +715,15 @@ public class HelloController implements ApplicationContextAware {
             e.printStackTrace();
             return null;
         }
+
+        StringBuffer status = new StringBuffer("SUCC");
         // no id in database
-        Item res = gloabal_service.querry_by_id(id_int);
-        if(res == null)
+        Item res = gloabal_service.querry_by_id(id_int,status);
+        if(!status.toString().equals("SUCC"))
         {
-            System.out.println("no id in database");
             return  null;
         }
+
         String files_string = res.getFile();
         if(files_string.equals(""))
         {
@@ -725,13 +833,15 @@ public class HelloController implements ApplicationContextAware {
                 gloabal_service.set_message(model,"id is invalid","index","回到主页","red");
                 return "message";
             }
+            StringBuffer status = new StringBuffer("SUCC");
             // id is in database?
-            Item query_item=  gloabal_service.querry_by_id(id_int);
-            if(query_item == null)
+            Item query_item=  gloabal_service.querry_by_id(id_int,status);
+            if(!status.toString().equals("SUCC"))
             {
-                gloabal_service.set_message(model,"id is not in database","index","回到主页","red");
+                gloabal_service.set_message(model,status.toString(),"index","返回主页","red");
                 return "message";
             }
+
             // add to model
             model.addAttribute("title",query_item.getTitle());
             model.addAttribute("id",query_item.getId()+"");

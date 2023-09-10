@@ -23,9 +23,16 @@ import javax.mail.internet.*;
 class DemoApplicationTests {
 
 	@Test
-	public void test() throws Exception {
+	public void test()  {
 		//SendEmail("tangjians@icloud.com", "www.baidu.com", "jiange");
+		StringBuffer strBuf = new StringBuffer("original");
+		test1(strBuf);
+		System.out.println(strBuf);
 	}
+	public void test1(StringBuffer s)
+	{
+	}
+
 
 
 

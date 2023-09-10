@@ -6,17 +6,33 @@ import com.example.demo.service.Service_user;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Controller
 public class UsersController {
     Service_user global_user_service = new Service_user();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/");
 
 
     @RequestMapping(value = "/user/language")
@@ -251,10 +267,74 @@ public class UsersController {
         }
         return "forward:/index";
     }
+
+
+
+
     @RequestMapping(value = "/test")
-    public String test(Model model, HttpServletRequest request) {
-        User current_user = global_user_service.get_user_by_mail_or_id("tangjians@icloud.com");
-        model.addAttribute("user",current_user);
-       return "photo";
+    public String test(Model model, HttpServletRequest request,@RequestParam("files") List<MultipartFile> uploadFiles) {
+
+        //store the files
+        String format = sdf.format(new Date());
+        File folder = new File(Service.uploadfile_dir + format);
+
+        // store files and adding it the list
+        // if parent dir not exists, then create it, if fails return -1
+        if(!folder.isDirectory() && folder.mkdirs() == false)
+        {
+            return "message";
+        }
+        // store uploaded file and store in mysql
+        boolean add_file_flag = false;
+        for(MultipartFile temp_file: uploadFiles)
+        {
+            if(temp_file.getName().strip().equals("") || temp_file.getSize()==0 || temp_file.isEmpty())
+                continue;
+            String newName = UUID.randomUUID().toString() +"_"+ temp_file.getOriginalFilename();
+            try {
+                File new_file = new File(folder.getAbsolutePath()+"/"+newName);
+                temp_file.transferTo(new_file);
+                add_file_flag = true;
+            } catch (IOException e) {
+                // if store failed
+                e.printStackTrace();
+                return "message";
+            }
+        }
+       return "message";
+    }
+
+
+    @RequestMapping(path = "/test_fetch", method = RequestMethod.GET)
+    public ResponseEntity<Resource> test_fetch(Model model, HttpServletRequest request) throws IOException {
+        String file_name = "2023/03/d6769e62-b96f-4c65-a0ec-3631f2427249_5a2112cc43dd22689a839b75196348bb.gif.bin";
+        // get the file
+        File file= new File(Service.uploadfile_dir+file_name.strip());
+        if(!file.exists())
+        {
+            System.out.println("no file named "+file_name+" exist");
+            return null;
+        }
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+ URLEncoder.encode(file.getName(), "UTF-8"));
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+
+    @RequestMapping(value = "/test1")
+    public String test_1(Model model, HttpServletRequest request) {
+       return "test";
+    }
+    @RequestMapping(value = "/test2")
+    public String test_2(Model model, HttpServletRequest request) {
+        return "test1";
     }
 }
