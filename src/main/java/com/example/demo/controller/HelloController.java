@@ -671,8 +671,9 @@ public class HelloController implements ApplicationContextAware {
         model.addAttribute("file_list",file_lists );
         model.addAttribute("publics",query_item.getPublics());
         model.addAttribute("user",global_service_user.get_user_by_mail_or_id(current_user_id+""));
-        // update the user
+        // update lru order of the user items/quick
         global_service_user.lru_to_front(id_int,current_user_id);
+
         // photo or normal
         int type = query_item.getCategory();
         if(type == 0)

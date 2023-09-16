@@ -442,7 +442,7 @@
                 <div style="float: left; width: 5%;" class="jiange_debug"><input class="input_check"  th:id="${c.id}" type="checkbox"  th:value="${c.id}"  name="del_quick" th:onchange = "check_line(this.getAttribute('id'))"></div>
                 <div style="float: left; margin-left: 5%; width: 90%"
                      th:class="${c.relevant_item_id==-1?'jiange_debug jiange_not_url':'jiange_debug'}">
-                    <a  style = "word-wrap:break-word;" class="jiange_off" th:id="${c.id}+'jiange'"  th:href="'/detail?detail='+${c.relevant_item_id}" th:text="${c.title}"></a></div>
+                    <a  th:style=" 'word-wrap:break-word;'+${c.relevant_item_id == -1?'':'font-weight: bold; font-style: italic; color :#ce5c5c;'}" class="jiange_off" th:id="${c.id}+'jiange'"  th:href="'/detail?detail='+${c.relevant_item_id}" th:text="${c.title}"></a></div>
                 <div style="clear: both"></div>
             </div>
         </div>
@@ -569,10 +569,8 @@
         if (oSearchText.value.length) {
 
             if (e.target.tagName.toLowerCase() != 'input') {
-
                 oSearchSuggest.style.display = 'none';
             }else {
-
                 oSearchSuggest.style.display = 'block';
             }
         }

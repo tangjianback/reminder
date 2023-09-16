@@ -29,17 +29,17 @@ public class ConnectionFactory {
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
-        if(address.getHostName().contains("localhost") || address.getHostName().contains("127.0.0.1"))
-        {
+//        if(address.getHostName().contains("localhost") || address.getHostName().contains("127.0.0.1"))
+//        {
             System.out.println("local debug");
             cpds.setJdbcUrl("jdbc:mysql://localhost:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
             cpds.setUser("root");
-        }
-        else {
-            System.out.println("remote deploy");
-            cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
-            cpds.setUser("lqq");
-        }
+//        }
+//        else {
+//            System.out.println("remote deploy");
+//            cpds.setJdbcUrl("jdbc:mysql://172.17.0.2:3306/search?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect = true");
+//            cpds.setUser("lqq");
+//        }
 
         cpds.setPassword("123");
         // Optional Settings

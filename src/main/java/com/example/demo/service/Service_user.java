@@ -106,36 +106,45 @@ public class Service_user {
         this.set_user_list_nonempty(old_uesr);
 
         List<Item> old_list = old_uesr.getU_lru_list();
-
+        Item new_head = null;
         // if it contains already then delete it
         for(Item i : old_list)
         {
             if(i.getId() == item_id)
             {
+                new_head = i;
                 old_list.remove(i);
                 break;
             }
         }
         // add in the head
-        Item new_head = null;
-        try {
-            new_head = Dao.query_by_id(item_id);
-        } catch (SQLException e) {
-            try {
-                new_head = Dao.query_by_id(item_id);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
         if(new_head == null)
         {
-            System.out.println("no new head");
+            System.out.println("no should updated lru head");
             return;
         }
-        old_list.add(0,new_head);
+        else
+            old_list.add(0,new_head);
+
         // if it exceeds the limit drop the tail
         if(old_list.size()>10)
             old_list.remove(old_list.size()-1);
+
+        List<Quick> old_quick_list = old_uesr.getQuicks();
+        Quick relevent_quick = null;
+        for(Quick tem_quick: old_quick_list)
+        {
+            if(tem_quick.getRelevant_item_id() == item_id)
+            {
+                relevent_quick = tem_quick;
+                old_quick_list.remove(tem_quick);
+                break;
+            }
+        }
+        if(relevent_quick!= null)
+        {
+            old_quick_list.add(0,relevent_quick);
+        }
 
         // write into the mysql
         try {
